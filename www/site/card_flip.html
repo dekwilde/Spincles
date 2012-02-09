@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>flip card</title>
+<style>
+body {
+	-webkit-transform-style: preserve-3d;
+	-webkit-perspective: 2000px;
+}
+.card {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	padding: 0px;
+	height: 480px;
+	width: 320px;
+	-webkit-backface-visibility: hidden;
+	-webkit-transition: -webkit-transform 1s;
+}
+.front {
+	background: #ffcc00;
+}
+.back {
+	background: black;
+	-webkit-transform: rotateY(180deg);
+}
+</style>
+<script type="text/javascript">
+var state = 1;
+function flipCard() {
+    if (state) {
+        document.getElementById("front").style.webkitTransform="rotateY(-180deg)";    
+        document.getElementById("back").style.webkitTransform="rotateY(0deg)";
+        state = 0;
+    } else {
+        document.getElementById("front").style.webkitTransform="rotateY(0deg)";    
+        document.getElementById("back").style.webkitTransform="rotateY(180deg)";
+        state = 1;
+    }        
+}
+</script>
+</head>
+<body>
+<div class="card back" id="back" onClick="flipCard();">Back of card</div>
+<div class="card front" id="front" onClick="flipCard();">Front of card ⨷⨷ ⨷ ⌫
+i ⓘ ⓘⓘⓘⓘⓘⓘⓘⓘⓘⓘⓘⓘⓘⓘⓘⓘⅈ𝒊ⓘ</div>
+</body>
+</html>
+
+
