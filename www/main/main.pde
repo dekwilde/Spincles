@@ -1,6 +1,4 @@
 Tbody body;
-ButtonInfo btInfo;
-
 
 int numSegment = 4;
 int numOfArms = 10;
@@ -23,6 +21,11 @@ float [] segLength = new float[numOfArms];
 
 boolean infoShow = false;
 PImage infoImg;
+ButtonInfo btInfo;
+ButtonClose btClose;
+ButtonLink btSupport;
+ButtonLink btContact;
+float pInfo = 480;
 
 
 void setup() {
@@ -33,6 +36,11 @@ void setup() {
   stroke(0, 100);
   
   infoImg= loadImage("infos.jpg");
+  
+  btInfo = new ButtonInfo();
+  btClose = new ButtonClose();
+  btSupport = new ButtonLink(90, 458, 60, 12);
+  btContact = new ButtonLink(230, 458, 60, 12);
   
   for(int i=0; i<numOfArms; i++) {
     rotation[i] = random(0, 360);
@@ -46,10 +54,17 @@ void setup() {
 }
 
 void draw() {
-  if (infoShow) {
-        image(infoImg, 0, 0);
-        tint(255, 0.1);
-  } else {
+      if (infoShow) {
+          image(infoImg, 0, pInfo);
+        //tint(20);
+          if (pInfo<1) {
+              pInfo = 0;
+              btClose.frame();
+              btSupport.frame();
+              btContact.frame();
+          }
+          pInfo = pInfo - pInfo/6;
+      } else {
     
       background(#ffcc00);
       
@@ -69,32 +84,86 @@ void draw() {
       airY += easing;  
       y += dy * easing + nY*10.2;
       
-      btInfo = new ButtonInfo();
+      btInfo.frame();
       body = new Tbody(x, y, noise(pi/500)*((x*y)/8000));
        
       //+ noise(pi/10)*2)
       
       pi++;
+      
+
+
+      
+     } 
+}
+
+void mouseReleased() {
+   btClose.overButton = false;
+   btInfo.overButton = false;
+   btSupport.overButton = false;
+   btContact.overButton = false;
+}
+
+void mousePressed() {
+  if (btInfo.overButton) {
+     infoShow = true;
+     println("info " + infoShow);  
+  }
+  if (btClose.overButton) {
+     pInfo = 480;    
+     infoShow = false;
+     println("close " + infoShow);
+  }
+  if (btSupport.overButton) { 
+     link("http://spincles.dekwilde.com.br/support", "_new");  
+  }
+  if (btContact.overButton) {
+     link("mailto:spincles@dekwilde.com.br", "_new"); 
   }
   
-}
-void mousePressed() {
-  if (btInfo.overButton) { 
-     infoShow = true;
-  }
 } 
 
+
+class ButtonLink {
+    boolean overButton = false;
+    int pX;
+    int pY;
+    int Width;
+    int Height;   
+    
+    ButtonLink(int x, int y, int W, int H) {  
+      pX = x;
+      pY = y;
+      Width = W;
+      Height = H;
+    }    
+    void frame() {
+        checkButton(); 
+        //fill(255);
+        //rect(pX, pY, Width, Height);
+    }
+    void checkButton() {
+          if (mouseX > pX-Width && mouseX < pX+Width && mouseY > pY-Height && mouseY < pY+Height) {
+            overButton = true;   
+          } else {
+            overButton = false;
+          }
+    }
+}
 
 
 class ButtonInfo {
     boolean overButton = false;
     int pX = 300;
     int pY = 460;   
+    
     ButtonInfo() {  
         smooth();
         rectMode(CENTER_RADIUS);
+    }    
+    void frame() {
         checkButton();
-              // Left buttom
+          // Left buttom
         if (overButton == true) {
           // circulo
           noStroke();
@@ -136,6 +205,50 @@ class ButtonInfo {
           }
     }
 }
+
+
+
+
+
+
+
+class ButtonClose {
+    boolean overButton = false;
+    int pX = 285;
+    int pY = 25;
+    int dm = 15; 
+    
+    ButtonClose() {  
+        smooth();
+        rectMode(CENTER_RADIUS);
+    }
+    
+    void frame() {
+        checkButton();
+              // Left buttom
+        if (overButton == true) {
+          // o "X"
+          stroke(#ffcc00);          
+        } else {
+          // o "X"
+          stroke(255);
+        }
+        strokeWeight(1);
+        noFill();
+        line(pX-dm, pY-dm, pX+dm, pY+dm);
+        line(pX-dm, pY+dm, pX+dm, pY-dm);
+    } 
+    
+    
+    void checkButton() {
+          if (mouseX > pX-dm && mouseX < pX+dm && mouseY > pY-dm && mouseY < pY+dm) {
+            overButton = true;   
+          } else {
+            overButton = false;
+          }
+    }
+}
+
 
 
 
