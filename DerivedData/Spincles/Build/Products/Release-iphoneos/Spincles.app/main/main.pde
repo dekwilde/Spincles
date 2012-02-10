@@ -47,12 +47,24 @@ float [] WeightSegment = new float[numOfArms];
 float [] segLength = new float[numOfArms];
 
 
+boolean infoShow = false;
+PImage infoImg;
+ButtonInfo btInfo;
+ButtonClose btClose;
+float pInfo = 480;
 
 void setup() 
 {
         size(320, 480);
+        background(0);
         frameRate(30);
         bimg = loadImage("bg.jpg");
+        
+        infoImg= loadImage("infos.jpg");
+  
+        btInfo = new ButtonInfo();
+        btClose = new ButtonClose();
+        
         //drawGradient();
         
         //noFill();
@@ -84,6 +96,15 @@ void setup()
 
 void draw() 
 {
+      if (infoShow) {
+          image(infoImg, 0, pInfo);
+        //tint(20);
+          if (pInfo<1) {
+              pInfo = 0;
+              btClose.frame();
+          }
+          pInfo = pInfo - pInfo/6;
+      } else { 
         //background(#ffff00, 0.1);	
         fill((255 - microfone*1.9), (204 - microfone*1.9), 0, (25 + microfone*5));
         rect(0,0,width,height);
@@ -101,7 +122,7 @@ void draw()
         gravityX = iphone.getAcceleration().x;
         gravityY = -iphone.getAcceleration().y;
         microfone = pow(iphone.getMicLevel(), 3) * 100;
-        println(microfone);
+        //println(microfone);
         ball.move();
 	ball.touch();
 	//ball.display();        
@@ -126,10 +147,12 @@ void draw()
         airY += easing;  
         y += dy * easing + nY*(microfone/1.5 + 5.2);
         
+        btInfo.frame();
         body = new Tbody(x, y, noise(pi/500)*((x*y)/8000) + radians(iAngle), iScale);
         //+ noise(pi/10)*2)
         
         pi++;
+    }
 }
 void drawGradient() {
   pimg = createGraphics(320, 480, P2D);
@@ -153,7 +176,13 @@ void drawGradient() {
   pimg.endDraw();
 }
 
-
+void buttonLink(int pX, int pY, int Width, int Height, char Str) {
+      if (touch1X > pX-Width && touch1X < pX+Width && touch1Y > pY-Height && touch1Y < pY+Height) {
+        println("link out " + Str);
+        link(Str, "_new");
+        // infoShow = false;
+      }
+}
 
 void gestureStarted() {
 	startAngle = iAngle;
@@ -177,6 +206,7 @@ void gestureStopped() {
 }
 
 void touch1Started() {
+  //GEsture Drag Spincles
   if (touch1X > bx-bs && touch1X < bx+bs && 
 	touch1Y > by-bs && touch1Y < by+bs) {
     bover = true;  
@@ -200,5 +230,17 @@ void touch1Moved() {
 }
 
 void touch1Stopped() {
+  if (infoShow) {
+      buttonLink(90, 458, 60, 12, "http://spincles.dekwilde.com.br/support");
+      buttonLink(230, 458, 60, 12, "mailto:spincles@dekwilde.com.br");
+  }
+  // click info var
+  //btClose.overButton = false;
+  //btInfo.overButton = false;
+  //btSupport.overButton = false;
+  //btContact.overButton = false;
+  
+  // gesture var
+  //bover = false;
   locked = false;
 }

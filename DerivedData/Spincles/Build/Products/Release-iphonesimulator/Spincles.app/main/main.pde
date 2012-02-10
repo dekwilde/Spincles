@@ -47,12 +47,27 @@ float [] WeightSegment = new float[numOfArms];
 float [] segLength = new float[numOfArms];
 
 
+boolean infoShow = false;
+PImage infoImg;
+ButtonInfo btInfo;
+ButtonClose btClose;
+ButtonLink btSupport;
+ButtonLink btContact;
+float pInfo = 480;
 
 void setup() 
 {
         size(320, 480);
         frameRate(30);
         bimg = loadImage("bg.jpg");
+        
+        infoImg= loadImage("infos.jpg");
+  
+        btInfo = new ButtonInfo();
+        btClose = new ButtonClose();
+        btSupport = new ButtonLink(90, 458, 60, 12);
+        btContact = new ButtonLink(230, 458, 60, 12);
+        
         //drawGradient();
         
         //noFill();
@@ -84,6 +99,17 @@ void setup()
 
 void draw() 
 {
+      if (infoShow) {
+          image(infoImg, 0, pInfo);
+        //tint(20);
+          if (pInfo<1) {
+              pInfo = 0;
+              btClose.frame();
+              btSupport.frame();
+              btContact.frame();
+          }
+          pInfo = pInfo - pInfo/6;
+      } else { 
         //background(#ffff00, 0.1);	
         fill((255 - microfone*1.9), (204 - microfone*1.9), 0, (25 + microfone*5));
         rect(0,0,width,height);
@@ -101,7 +127,7 @@ void draw()
         gravityX = iphone.getAcceleration().x;
         gravityY = -iphone.getAcceleration().y;
         microfone = pow(iphone.getMicLevel(), 3) * 100;
-        println(microfone);
+        //println(microfone);
         ball.move();
 	ball.touch();
 	//ball.display();        
@@ -126,10 +152,12 @@ void draw()
         airY += easing;  
         y += dy * easing + nY*(microfone/1.5 + 5.2);
         
+        btInfo.frame();
         body = new Tbody(x, y, noise(pi/500)*((x*y)/8000) + radians(iAngle), iScale);
         //+ noise(pi/10)*2)
         
         pi++;
+    }
 }
 void drawGradient() {
   pimg = createGraphics(320, 480, P2D);
@@ -177,6 +205,15 @@ void gestureStopped() {
 }
 
 void touch1Started() {
+  if (btSupport.overButton) { 
+     link("http://spincles.dekwilde.com.br/support");  
+  }
+  if (btContact.overButton) {
+     link("mailto:spincles@dekwilde.com.br", "_new"); 
+  }
+  
+  
+  //GEsture Drag Spincles
   if (touch1X > bx-bs && touch1X < bx+bs && 
 	touch1Y > by-bs && touch1Y < by+bs) {
     bover = true;  
@@ -200,5 +237,12 @@ void touch1Moved() {
 }
 
 void touch1Stopped() {
+  // click info var
+  //btClose.overButton = false;
+  //btInfo.overButton = false;
+  //btSupport.overButton = false;
+  //btContact.overButton = false;
+  
+  // gesture var
   locked = false;
 }
