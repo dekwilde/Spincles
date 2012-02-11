@@ -4,7 +4,7 @@ class Tbody {
    
   Tbody(float x, float y, float rotator, float escala) {
 
-    stroke((0 + microfone*7), 50); 
+    stroke((0 + microfone*20), (0 + microfone*5), (0 + microfone*5), 80); 
     translate(x, y);
     rotate(rotator);
     scale(escala);

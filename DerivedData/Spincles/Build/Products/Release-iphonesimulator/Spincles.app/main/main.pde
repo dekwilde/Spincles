@@ -51,13 +51,12 @@ boolean infoShow = false;
 PImage infoImg;
 ButtonInfo btInfo;
 ButtonClose btClose;
-ButtonLink btSupport;
-ButtonLink btContact;
 float pInfo = 480;
 
 void setup() 
 {
         size(320, 480);
+        background(0);
         frameRate(30);
         bimg = loadImage("bg.jpg");
         
@@ -65,8 +64,6 @@ void setup()
   
         btInfo = new ButtonInfo();
         btClose = new ButtonClose();
-        btSupport = new ButtonLink(90, 458, 60, 12);
-        btContact = new ButtonLink(230, 458, 60, 12);
         
         //drawGradient();
         
@@ -105,13 +102,15 @@ void draw()
           if (pInfo<1) {
               pInfo = 0;
               btClose.frame();
-              btSupport.frame();
-              btContact.frame();
           }
           pInfo = pInfo - pInfo/6;
       } else { 
-        //background(#ffff00, 0.1);	
-        fill((255 - microfone*1.9), (204 - microfone*1.9), 0, (25 + microfone*5));
+        //background(#ffff00, 0.1);
+        
+        delay_mic = microfone*12;  
+        delay_mic = delay_mic - delay_mic/20000;
+        	
+        fill((255 - microfone*1.9), (204 -  microfone*1.9), 0, (100 - delay_mic));
         rect(0,0,width,height);
         //background(bimg);
         
@@ -181,7 +180,13 @@ void drawGradient() {
   pimg.endDraw();
 }
 
-
+void buttonLink(int pX, int pY, int Width, int Height, char Str) {
+      if (touch1X > pX-Width && touch1X < pX+Width && touch1Y > pY-Height && touch1Y < pY+Height) {
+        println("link out " + Str);
+        link(Str, "_new");
+        // infoShow = false;
+      }
+}
 
 void gestureStarted() {
 	startAngle = iAngle;
@@ -205,14 +210,6 @@ void gestureStopped() {
 }
 
 void touch1Started() {
-  if (btSupport.overButton) { 
-     link("http://spincles.dekwilde.com.br/support");  
-  }
-  if (btContact.overButton) {
-     link("mailto:spincles@dekwilde.com.br", "_new"); 
-  }
-  
-  
   //GEsture Drag Spincles
   if (touch1X > bx-bs && touch1X < bx+bs && 
 	touch1Y > by-bs && touch1Y < by+bs) {
@@ -237,6 +234,10 @@ void touch1Moved() {
 }
 
 void touch1Stopped() {
+  if (infoShow) {
+      buttonLink(90, 458, 60, 12, "http://spincles.dekwilde.com.br/support");
+      buttonLink(230, 458, 60, 12, "mailto:spincles@dekwilde.com.br");
+  }
   // click info var
   //btClose.overButton = false;
   //btInfo.overButton = false;
@@ -244,5 +245,6 @@ void touch1Stopped() {
   //btContact.overButton = false;
   
   // gesture var
+  //bover = false;
   locked = false;
 }

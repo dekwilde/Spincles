@@ -15,7 +15,8 @@ float startAngle;
 float iScale;
 float startEscala;
 
-int microfone = 0;
+float microfone = 0;
+float delay_mic = 0;
 
 //float dim = 40;
 PImage bimg;
@@ -56,8 +57,8 @@ float pInfo = 480;
 void setup() 
 {
         size(320, 480);
-        background(0);
         frameRate(30);
+        background(0);
         bimg = loadImage("bg.jpg");
         
         infoImg= loadImage("infos.jpg");
@@ -75,7 +76,7 @@ void setup()
         for(int i=0; i<numOfArms; i++) {
           rotation[i] = random(0, 360);
           angleRadius[i] = random(0.3, 1.9);
-          angleSpeed[i] = random(0.009, 0.11);
+          angleSpeed[i] = random(0.016, 0.16);
           angleSegment[i] = random(0.09, 1.4);
           WeightSegment[i] = random(1.4, 6.1);
           segLength[i] = random(25, 65);
@@ -96,6 +97,12 @@ void setup()
 
 void draw() 
 {
+      // init vars DONT MOVE    
+      gravityX = iphone.getAcceleration().x;
+      gravityY = -iphone.getAcceleration().y;
+      microfone = pow(iphone.getMicLevel(), 1) * 100;  
+    
+      
       if (infoShow) {
           image(infoImg, 0, pInfo);
         //tint(20);
@@ -105,8 +112,31 @@ void draw()
           }
           pInfo = pInfo - pInfo/6;
       } else { 
-        //background(#ffff00, 0.1);	
-        fill((255 - microfone*1.9), (204 - microfone*1.9), 0, (25 + microfone*5));
+        //background(#ffff00, 0.1);
+        
+        delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
+        
+        if (delay_mic>255) {
+            delay_mic = 255;
+        }
+        
+        
+        colorR = 255 - microfone*10;
+        colorG = 204 - microfone*10;
+        
+        if (colorR<0) {
+            colorR = 0;
+        }
+        if (colorG<0) {
+            colorG = 0;
+        }
+        
+        println(colorR);
+        	
+        fill(colorR, colorG, 0, 255 - delay_mic);
+        
+        
+        
         rect(0,0,width,height);
         //background(bimg);
         
@@ -118,11 +148,7 @@ void draw()
         //}
         //image(pimg, 0, 0);
         
-        
-        gravityX = iphone.getAcceleration().x;
-        gravityY = -iphone.getAcceleration().y;
-        microfone = pow(iphone.getMicLevel(), 3) * 100;
-        //println(microfone);
+  
         ball.move();
 	ball.touch();
 	//ball.display();        
@@ -130,7 +156,7 @@ void draw()
         //Spincles
 
         for(int i=0; i<numOfArms; i++) {
-          angle[i] = angle[i] + angleSpeed[i] + microfone/400;
+          angle[i] = angle[i] + angleSpeed[i]*(microfone/1.6) + microfone/4000;
         }
         
         //targetX = mouseX;
@@ -138,14 +164,14 @@ void draw()
         float dx = targetX - x;
         float nX = noise(pi/10)*cos(noise(pi/10)*((width/2 - noise(pi/50)*(width))/10));
         airX += easing;
-        x += dx * easing + nX*(microfone/1.5 + 5.2);
+        x += dx * easing + nX*(microfone/3 + 5.2);
         
         //targetY = mouseY;
         targetY = ball.y;
         float dy = targetY - y;
         float nY = noise(pi/10)*sin(noise(pi/10)*((height/2 - noise(pi/50)*(height))/10));
         airY += easing;  
-        y += dy * easing + nY*(microfone/1.5 + 5.2);
+        y += dy * easing + nY*(microfone/3 + 5.2);
         
         btInfo.frame();
         body = new Tbody(x, y, noise(pi/500)*((x*y)/8000) + radians(iAngle), iScale);
