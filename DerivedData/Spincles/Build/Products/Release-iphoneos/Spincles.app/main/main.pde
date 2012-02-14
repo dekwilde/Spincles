@@ -264,7 +264,7 @@ void touch1Moved() {
 }
 
 void touch1Stopped() {
-  if (infoShow) {
+  if (infoShow && pInfo<1) {
       buttonLink(90, 458, 60, 12, "http://spincles.dekwilde.com.br/support");
       buttonLink(230, 458, 60, 12, "mailto:spincles@dekwilde.com.br");
   }

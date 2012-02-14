@@ -12,11 +12,7 @@ class ButtonClose {
     void frame() {
         checkButton();
               // Left buttom
-        if (overButton == true) {
-           pInfo = 480;    
-           infoShow = false;
-           println("close " + infoShow);
-          
+        if (overButton == true) {          
           // o "X"
           stroke(#ffcc00);          
         } else {
@@ -27,6 +23,13 @@ class ButtonClose {
         noFill();
         line(pX-dm, pY-dm, pX+dm, pY+dm);
         line(pX-dm, pY+dm, pX+dm, pY-dm);
+        
+        if (overButton == true) {
+           background(0);
+           pInfo = 480;    
+           infoShow = false;
+           println("close " + infoShow);
+        }
     } 
     
     
