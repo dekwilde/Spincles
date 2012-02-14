@@ -1,7 +1,8 @@
 class ButtonInfo {
     boolean overButton = false;
     int pX = 300;
-    int pY = 460;   
+    int pY = 460;
+    int dm = 12;   
     
     ButtonInfo() {  
         smooth();
@@ -47,7 +48,7 @@ class ButtonInfo {
         }
     }
     void checkButton() {
-          if (touch1X > pX-8 && touch1X < pX+8 && touch1Y > pY-8 && touch1Y < pY+8) {
+          if (touch1X > pX-dm && touch1X < pX+dm && touch1Y > pY-dm && touch1Y < pY+dm) {
             overButton = true;   
           } else {
             overButton = false;

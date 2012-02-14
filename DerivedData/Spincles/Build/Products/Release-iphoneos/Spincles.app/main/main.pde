@@ -76,7 +76,7 @@ void setup()
         for(int i=0; i<numOfArms; i++) {
           rotation[i] = random(0, 360);
           angleRadius[i] = random(0.3, 1.9);
-          angleSpeed[i] = random(0.016, 0.16);
+          angleSpeed[i] = random(0.009, 0.16);
           angleSegment[i] = random(0.09, 1.4);
           WeightSegment[i] = random(1.4, 6.1);
           segLength[i] = random(25, 65);
@@ -121,8 +121,13 @@ void draw()
         }
         
         
-        colorR = 255 - microfone*10;
-        colorG = 204 - microfone*10;
+        if (microfone<10) {
+            colorR = 255 - microfone*20;
+            colorG = 204 - microfone*20;
+        } else {
+            colorR = 0;
+            colorG = 0;
+        }
         
         if (colorR<0) {
             colorR = 0;
@@ -131,10 +136,10 @@ void draw()
             colorG = 0;
         }
         
-        println(colorR);
+        println(microfone);
         	
         fill(colorR, colorG, 0, 255 - delay_mic);
-        
+        noStroke();
         
         
         rect(0,0,width,height);
@@ -156,7 +161,7 @@ void draw()
         //Spincles
 
         for(int i=0; i<numOfArms; i++) {
-          angle[i] = angle[i] + angleSpeed[i]*(microfone/1.6) + microfone/4000;
+          angle[i] = angle[i] + angleSpeed[i] + microfone/400;
         }
         
         //targetX = mouseX;
@@ -174,7 +179,10 @@ void draw()
         y += dy * easing + nY*(microfone/3 + 5.2);
         
         btInfo.frame();
-        body = new Tbody(x, y, noise(pi/500)*((x*y)/8000) + radians(iAngle), iScale);
+        
+        float rotationT = noise(pi/500)*((x*y)/8000) + radians(iAngle) + microfone/40;
+        
+        body = new Tbody(x, y, rotationT, iScale);
         //+ noise(pi/10)*2)
         
         pi++;
