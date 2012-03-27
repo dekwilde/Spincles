@@ -100,7 +100,7 @@ void draw()
       // init vars DONT MOVE    
       gravityX = iphone.getAcceleration().x;
       gravityY = -iphone.getAcceleration().y;
-      microfone = pow(iphone.getMicLevel(), 1) * 100;  
+      microfone = pow(iphone.getMicLevel(), 2) * 50;  
     
       
       if (infoShow) {
