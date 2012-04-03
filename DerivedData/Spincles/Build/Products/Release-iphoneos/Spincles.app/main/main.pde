@@ -17,6 +17,7 @@ float startEscala;
 
 float microfone = 0;
 float delay_mic = 0;
+float mic_perc = 0;
 
 //float dim = 40;
 PImage bimg;
@@ -52,6 +53,7 @@ boolean infoShow = false;
 PImage infoImg;
 ButtonInfo btInfo;
 ButtonClose btClose;
+MenuSlider slider;
 float pInfo = 480;
 
 void setup() 
@@ -65,6 +67,7 @@ void setup()
   
         btInfo = new ButtonInfo();
         btClose = new ButtonClose();
+        slider = new MenuSlider();
         
         //drawGradient();
         
@@ -100,7 +103,7 @@ void draw()
       // init vars DONT MOVE    
       gravityX = iphone.getAcceleration().x;
       gravityY = -iphone.getAcceleration().y;
-      microfone = pow(iphone.getMicLevel(), 2) * 50;  
+      microfone = pow(iphone.getMicLevel(), 1) * mic_perc;  
     
       
       if (infoShow) {
@@ -108,7 +111,9 @@ void draw()
         //tint(20);
           if (pInfo<1) {
               pInfo = 0;
+              slider.frame();
               btClose.frame();
+
           }
           pInfo = pInfo - pInfo/6;
       } else { 
