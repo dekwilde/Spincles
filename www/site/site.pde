@@ -29,10 +29,10 @@ void setup() {
   
   for(int i=0; i<numOfArms; i++) {
     rotation[i] = random(0, 360);
-    angleRadius[i] = random(0.3, 1.4);
-    angleSpeed[i] = random(0.009, 0.03);
-    angleSegment[i] = random(0.09, 1.4);
-    WeightSegment[i] = random(1.4, 6.1);
+    angleRadius[i] = random(0.4, 1.3);
+    angleSpeed[i] = random(0.02, 0.14);
+    angleSegment[i] = random(0.09, 1.6);
+    WeightSegment[i] = random(1.4, 6.3);
     segLength[i] = random(30, 70);
   } 
   
@@ -57,7 +57,7 @@ void draw() {
   airY += easing;  
   y += dy * easing + nY*10.2;
   
-  body = new Tbody(x, y, noise(pi/500)*((x*y)/8000));
+  body = new Tbody(x, y, noise(pi/500)*((dx*dy*easing)/1000));
   //+ noise(pi/10)*2)
   
   pi++;

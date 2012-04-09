@@ -185,7 +185,7 @@ void draw()
         
         btInfo.frame();
         
-        float rotationT = noise(pi/500)*((x*y)/8000) + radians(iAngle) + microfone/40;
+        float rotationT = noise(pi/500)*((dx*dy*easing)/1000) + radians(iAngle) + microfone/40;
         
         body = new Tbody(x, y, rotationT, iScale);
         //+ noise(pi/10)*2)
