@@ -77,6 +77,7 @@ class Tbody {
     
     translate(x, y);
     rotate(rotator);
+    scale(2.3);
     //
     for(int i=0; i<numOfArms; i++) {
       radius = angleRadius[i] * sin(angle[i]);

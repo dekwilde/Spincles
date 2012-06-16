@@ -11,7 +11,7 @@
 // Window setup ********************************************************
 
 var webview = Titanium.UI.createWebView({url:'../main.html'});
-webview.backgroundColor = '#000000';
+webview.backgroundColor = '#FFCC00';
 webview.addEventListener('load', init);
 Titanium.UI.currentWindow.add(webview);
 

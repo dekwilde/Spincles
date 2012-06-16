@@ -1,48 +1,50 @@
-class Slider {
-  
-      
-    float bx;
-    float by;
-    int bs = 20;
-    float bdifx = 0.0; 
-    float bdify = 0.0; 
-    float init = 30;
-    float end = 290;
+class MenuSlider {
+   
+    float st_x;
+    float st_y;
+    int st_s = 30;
+    float st_difx = 0.0; 
+    float st_dify = 0.0; 
+    float init = 35;
+    float end = 285;
     
     
-    Slider() {  
-      bx = width/2.0;
-      by = 40;
+    MenuSlider() {  
+      st_x = 160;
+      st_y = 100;
       rectMode(RADIUS);  
     }
     
     void frame() {
       //Draw Line
-      line(init, by, end, by);
+      line(init, st_y, end, st_y);
       
       // Draw the button
-      if (bx>end) {
-        bx = end;
+      if (st_x>end) {
+        st_x = end;
       }
-      if (bx<init) {
-        bx = init;
+      if (st_x<init) {
+        st_x = init;
       }
-      ellipse(bx, by, bs, bs);
+      fill(0);
+      ellipse(st_x, st_y, st_s, st_s);
+
       
-      mic_perc = (bx-init) / ((end-init)/100);
+      mic_perc = (st_x-init) / ((end-init)/100);
       
       //println(perc);
       
+      
+      if (touch1X > st_x-st_s && touch1X < st_x+st_s && 
+      	touch1Y > st_y-st_s && touch1Y < st_y+st_s) {
+             st_x = touch1X;  
+         } else {
+           st_x = st_x;
+      }
+      
     }
     
-    void touch() {
-        if (touch1X > bx-bs && touch1X < bx+bs && 
-      	touch1Y > by-bs && touch1Y < by+bs) {
-              bdifx = touch1X-bx;  
-         } else {
-              bx = touch1X-bdifx; 
-        }
-    }
+ 
     
 } // end class
 

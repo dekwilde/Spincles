@@ -22,8 +22,8 @@
 	height:74px;
 	float:left;
 }
-.content {
-	position:absolute;
+.link_download {
+	position:fixed;
 	bottom:10px;
 	right:10px;
 	z-index: 3;
@@ -36,8 +36,25 @@
 	margin-bottom: 5px;
 	padding: 0px;
 }
-.bt_store {
-
+img {
+	margin:10px;
+} 
+#iphone {
+	float:left;
+	width:204px;
+	height:400px;
+	background-image: url("img/iphone_borda.png");
+	margin:10px;
+}
+#vimeo {
+	margin-top:70px;
+	margin-left:16px;
+} 
+#content {
+	position:absolute;
+	z-index:3;
+	float:left;
+	margin-top:120px;
 }
   </style>
 
@@ -46,8 +63,19 @@
 <body>
 
 	<div class="titulo"></div>
+	
+	<div id="content">   
+				<img src="img/iPhone4s_spincles03.png" style="float:left; display:block;" > 
+		<div id="iphone">
+		<iframe id="vimeo" src="http://player.vimeo.com/video/44042757?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff" width="174" height="261" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+		</div>
+		<img src="img/iPhone4s_spincles02.png" style="float:left; display:block;" >
+		<img src="img/iPhone4s_spincles01.png" style="float:left; display:block;" >
+
+	</div>
+	
   		
-	<div class="content">
+	<div class="link_download">
 		<h3 class="texto">Click to download</h3>
 		<a href="http://itunes.apple.com/us/app/spincles/id494020161?ls=1&mt=8"><img src="img/available_on_appstore.png" class="bt_store" width="200px" border="0" /></a>
 	</div>
