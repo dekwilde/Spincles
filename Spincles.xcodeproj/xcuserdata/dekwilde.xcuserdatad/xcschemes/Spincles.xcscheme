@@ -43,7 +43,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.GDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       debugDocumentVersioning = "YES"
       enablesOpenGLESFrameCapture = "YES"
       allowLocationSimulation = "YES">
@@ -63,7 +63,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Release"
+      buildConfiguration = "Distribution"
       debugDocumentVersioning = "YES">
       <BuildableProductRunnable>
          <BuildableReference

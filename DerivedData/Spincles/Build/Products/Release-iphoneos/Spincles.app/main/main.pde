@@ -27,7 +27,7 @@ int dim = 1300;
 
 Ball ball;
 IPhone iphone;
-PSound sound1;
+PSound sound1, sound2, sound3, sound4;
 Tbody body;
 
 int numSegment = 4;
@@ -95,9 +95,14 @@ void setup()
 	ball = new Ball(bx, by, bs);
 	iphone = new IPhone();
 
-	sound1 = iphone.loadSound("sound1.wav");
+	sound1 = iphone.loadSound("background.wav");
         sound1.play();
         sound1.loop();
+        
+        sound2 = iphone.loadSound("touch.wav");
+        sound2.play();
+        sound2.loop();
+        sound2.setVolume(0);
 
 	iphone.startMicMonitor();
 	iphone.startAccelerometer();
@@ -264,10 +269,12 @@ void touch1Started() {
   }
   
   if(bover) { 
-    locked = true; 
+    locked = true;
+    sound2.setVolume(100);
     //fill(255, 0, 0);
   } else {
     locked = false;
+    sound2.setVolume(0);
   }
   bdifx = touch1X-bx; 
   bdify = touch1Y-by; 

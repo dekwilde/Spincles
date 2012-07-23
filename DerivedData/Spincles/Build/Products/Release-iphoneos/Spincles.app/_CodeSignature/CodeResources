@@ -48,6 +48,10 @@
 		<data>
 		updsq7yKJWI1lkq6+RAlUQwlXhM=
 		</data>
+		<key>main/data/background.wav</key>
+		<data>
+		67uots8vcoz8OpamsZuezpBpkoQ=
+		</data>
 		<key>main/data/bg.jpg</key>
 		<data>
 		s5SbQK5v0r1rLHOgVMS0lxkzAe8=
@@ -56,9 +60,9 @@
 		<data>
 		Dw98GZEkiVx+4pGhqIj1J3EHiZQ=
 		</data>
-		<key>main/data/sound1.wav</key>
+		<key>main/data/touch.wav</key>
 		<data>
-		l8LHruz0M4RRvZJWRI3rg/A+BTY=
+		TA6dQwQ9f+ElImr6REu58Eq/1Tg=
 		</data>
 		<key>main/libraries/iprocessing.js</key>
 		<data>
@@ -78,7 +82,7 @@
 		</data>
 		<key>main/main.pde</key>
 		<data>
-		mLpPPiMD4N3Fq6i9Q7uKHdFcqU4=
+		KSSFudoBZU7KKGKodbHnHWuV8MI=
 		</data>
 	</dict>
 	<key>rules</key>

@@ -1,0 +1,32 @@
+Contents of /Users/dekwilde/Sites/Spincles/Spincles/Other Sources/ip_Prefix.pch
+3.0 (tags/Apple/clang-211.9) (based on LLVM 3.0svn)
+arm-apple-darwin10.8.0
+-x
+objective-c++
+-arch
+armv6
+-fmessage-length=0
+-fdiagnostics-print-source-range-info
+-fdiagnostics-show-category=id
+-fdiagnostics-parseable-fixits
+-fpascal-strings
+-O0
+-mdynamic-no-pic
+-DTI_VERSION=1.4.0
+-isysroot
+/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk
+-gdwarf-2
+-fvisibility=hidden
+-fvisibility-inlines-hidden
+-mthumb
+-DIBOutlet=__attribute__((iboutlet))
+-DIBOutletCollection(ClassName)=__attribute__((iboutletcollection(ClassName)))
+-DIBAction=void)__attribute__((ibaction)
+-miphoneos-version-min=4.1
+-I/Users/dekwilde/Sites/Spincles/Spincles/DerivedData/Spincles/Build/Products/Debug-iphoneos/include
+-I/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/usr/include/libxml2
+-Iheaders
+-F/Users/dekwilde/Sites/Spincles/Spincles/DerivedData/Spincles/Build/Products/Debug-iphoneos
+-DDEBUG
+-DTI_POST_1_2
+SDK_PRODUCT_BUILD_VERSION=9A334
