@@ -2,7 +2,7 @@ Tbody body;
 
 
 int numSegment = 4;
-int numOfArms = 10;
+int numOfArms = 13;
 float SegWeightPor = 1.9f;
 float radius = 0.0f;
 float easing = 0.05f;
@@ -19,6 +19,9 @@ float [] angleSpeed = new float[numOfArms];
 float [] angle = new float[numOfArms];
 float [] WeightSegment = new float[numOfArms];
 float [] segLength = new float[numOfArms];
+float angleSpeedTouch = 0.0f;
+float angleRadiusTouch = 0.0f;
+float WeightSegmentTouch = 0.0f;
 
 void setup() {
   size(screenWidth, screenHeight);
@@ -38,11 +41,34 @@ void setup() {
   
 }
 
+
+void mousePressed() {
+  //angleSpeedTouch = angleSpeedTouch + 0.4;
+}
+
+void mouseReleased() {
+  angleSpeedTouch =  random(0.02, 0.14);
+  angleRadiusTouch = angleRadiusTouch + random(-3.0, 3.0);
+  WeightSegmentTouch =  random(4.0, 10.0);
+  //angleIntensity = angleIntensity / 1.2;
+}
+
 void draw() {
   background(#ffcc00);
   
+  
+  if (mousePressed == true) {
+    //angleIntensity = angleIntensity + 0.08;
+  } else {
+    angleSpeedTouch = angleSpeedTouch / 1.02;
+    angleRadiusTouch = angleRadiusTouch / 1.008;
+    WeightSegmentTouch = WeightSegmentTouch / 1.08;
+  }
+  
+  
+  
   for(int i=0; i<numOfArms; i++) {
-    angle[i] = angle[i] + angleSpeed[i];
+    angle[i] = angle[i] + angleSpeed[i] - angleSpeedTouch;
   }
   
   targetX = mouseX;
@@ -68,6 +94,7 @@ void draw() {
 
 
 
+
 ///////////////////////////////////////////////////////////
 class Tbody {
   Arm arms;  
@@ -80,8 +107,8 @@ class Tbody {
     scale(2.3);
     //
     for(int i=0; i<numOfArms; i++) {
-      radius = angleRadius[i] * sin(angle[i]);
-      arms = new Arm(radius, WeightSegment[i], segLength[i]);
+      radius = angleRadius[i] * sin(angle[i]) + angleRadiusTouch;
+      arms = new Arm(radius, WeightSegment[i]+WeightSegmentTouch, segLength[i]);
       rotate(rotation[i]);
       
       //rotate(PI/(numOfArms/2));

@@ -4,7 +4,7 @@ class Arm {
       pushMatrix();
       for(int i=0; i<numSegment; i++) {
         if(i>0) {
-          segment(LengthSeg, 0, angleSeg*angleSegment[i]+(microfone/50), ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg);
+          segment(LengthSeg, 0, angleSeg*angleSegment[i]+(microfone/50)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg);
         } else {
           segment(0, 0, angleSeg, (numSegment+1)*WeightSeg, LengthSeg); 
         }

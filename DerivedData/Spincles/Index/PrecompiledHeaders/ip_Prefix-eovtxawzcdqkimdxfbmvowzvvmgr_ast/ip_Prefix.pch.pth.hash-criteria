@@ -1,0 +1,35 @@
+Contents of /Users/dekwilde/Sites/Spincles/Spincles/Other Sources/ip_Prefix.pch
+3.0 (tags/Apple/clang-211.10.1) (based on LLVM 3.0svn)
+i386-apple-darwin10.8.0
+-x
+c++
+-arch
+i386
+-fmessage-length=0
+-fdiagnostics-print-source-range-info
+-fdiagnostics-show-category=id
+-fdiagnostics-parseable-fixits
+-fpascal-strings
+-O0
+-mdynamic-no-pic
+-DTI_VERSION=1.4.0
+-isysroot
+/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator5.0.sdk
+-fexceptions
+-fasm-blocks
+-mmacosx-version-min=10.6
+-gdwarf-2
+-fvisibility=hidden
+-fvisibility-inlines-hidden
+-D__IPHONE_OS_VERSION_MIN_REQUIRED=40100
+-I/Users/dekwilde/Sites/Spincles/Spincles/DerivedData/Spincles/Build/Products/Debug-iphonesimulator/include
+-I/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator5.0.sdk/usr/include/libxml2
+-Iheaders
+-F/Users/dekwilde/Sites/Spincles/Spincles/DerivedData/Spincles/Build/Products/Debug-iphonesimulator
+-ferror-limit=10
+-working-directory=/Users/dekwilde/Sites/Spincles/Spincles
+-Xclang
+-detailed-preprocessing-record
+-DDEBUG
+-DTI_POST_1_2
+SDK_PRODUCT_BUILD_VERSION=9A334

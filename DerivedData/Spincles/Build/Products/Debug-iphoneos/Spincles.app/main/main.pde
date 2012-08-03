@@ -48,6 +48,9 @@ float [] angleSpeed = new float[numOfArms];
 float [] angle = new float[numOfArms];
 float [] WeightSegment = new float[numOfArms];
 float [] segLength = new float[numOfArms];
+float angleSpeedTouch = 0.0f;
+float angleRadiusTouch = 0.0f;
+float WeightSegmentTouch = 0.0f;
 
 
 boolean infoShow = false;
@@ -95,14 +98,17 @@ void setup()
 	ball = new Ball(bx, by, bs);
 	iphone = new IPhone();
 
-	sound1 = iphone.loadSound("background.wav");
+	
+        sound1 = iphone.loadSound("background.wav");
         sound1.play();
         sound1.loop();
         
-        sound2 = iphone.loadSound("touch.wav");
+        /*
+        sound2 = iphone.loadSound("soprar.wav");
         sound2.play();
         sound2.loop();
-
+        */
+        
 
 	iphone.startMicMonitor();
 	iphone.startAccelerometer();
@@ -114,9 +120,6 @@ void draw()
       gravityX = iphone.getAcceleration().x;
       gravityY = -iphone.getAcceleration().y;
       microfone = pow(iphone.getMicLevel(), 1) * mic_perc;
-      
-      sound1.setVolume(microfone/2);
-    
       
       if (infoShow) {
           image(infoImg, 0, pInfo);
@@ -131,6 +134,10 @@ void draw()
       } else { 
         
         delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
+        
+        
+            
+    
         
         if (delay_mic>255) {
             delay_mic = 255;
@@ -157,32 +164,21 @@ void draw()
             colorB = 0;
         }
         
-        println(microfone);
+        //println(microfone);
         	
         fill(colorR, colorG, colorB, 255 - delay_mic);
-        noStroke();
-        
-        
+        noStroke();        
         rect(0,0,width,height);
-        //background(bimg);
-        
-        //image(bimg, 0, 0);
-        //if (microfone < 0) {
-        //  noTint();
-        //else {
-        //  tint(255, (255 - microfone*2));
-        //}
-        //image(pimg, 0, 0);
+
         
   
         ball.move();
 	ball.touch();
 	//ball.display();        
         
-        //Spincles
-
+        
         for(int i=0; i<numOfArms; i++) {
-          angle[i] = angle[i] + angleSpeed[i] + microfone/400;
+          angle[i] = angle[i] + angleSpeed[i] + microfone/250 + angleSpeedTouch;
         }
         
         //targetX = mouseX;
@@ -206,101 +202,13 @@ void draw()
         body = new Tbody(x, y, rotationT, iScale);
         //+ noise(pi/10)*2)
         
+        sound1.setVolume(microfone/10);
+        //sound2.setVolume(delay_mic/1000);
+        
         pi++;
     }
 }
-/*
-void drawGradient() {
-  pimg = createGraphics(320, 480, P2D);
-  int radius = dim/2 - 2;
-  float r1 = 255;
-  float g1 = 204;
-  float b1 = 0;
-  float dr = (255 - r1) / radius;
-  float dg = (255 - g1) / radius;
-  float db = (0   - b1) / radius;
-  
-  pimg.beginDraw(); 
-  for (int r = radius; r > 0; --r) {
-    pimg.fill(r1, g1, b1, 180);
-    pimg.noStroke();
-    pimg.ellipse(width/2, height/2, r, r);
-    r1 += dr;
-    g1 += dg;
-    b1 += db;
-  }
-  pimg.endDraw();
-}
-*/
 
-void buttonLink(int pX, int pY, int Width, int Height, char Str) {
-      if (touch1X > pX-Width && touch1X < pX+Width && touch1Y > pY-Height && touch1Y < pY+Height) {
-        println("link out " + Str);
-        link(Str, "_new");
-        // infoShow = false;
-      }
-}
 
-void gestureStarted() {
-	startAngle = iAngle;
-	startEscala = iScale;
-}
 
-void gestureChanged() {
-	iAngle = startAngle + gestureRotation;
-	iScale = startEscala * gestureScale;
-	if (iAngle > 360) {
-		iAngle = iAngle - 360;
-	}
-	if (iAngle < 0) {
-		iAngle = 360 + iAngle;
-	}
-}
 
-void gestureStopped() {
-	startAngle = iAngle;
-	startEscala = iScale;
-}
-
-void touch1Started() {
-  sound2.setVolume(100);
-  //GEsture Drag Spincles
-  if (touch1X > bx-bs && touch1X < bx+bs && 
-	touch1Y > by-bs && touch1Y < by+bs) {
-    bover = true;  
-  }
-  
-  if(bover) { 
-    locked = true;
-    //fill(255, 0, 0);
-  } else {
-    locked = false;
-
-  }
-  bdifx = touch1X-bx; 
-  bdify = touch1Y-by; 
-}
-
-void touch1Moved() {
-  if(locked) {
-    bx = touch1X-bdifx; 
-    by = touch1Y-bdify;
-  }
-}
-
-void touch1Stopped() {
-    sound2.setVolume(0);
-  if (infoShow && pInfo<1) {
-      buttonLink(90, 458, 60, 12, "http://spincles.dekwilde.com.br/support");
-      buttonLink(230, 458, 60, 12, "mailto:spincles@dekwilde.com.br");
-  }
-  // click info var
-  //btClose.overButton = false;
-  //btInfo.overButton = false;
-  //btSupport.overButton = false;
-  //btContact.overButton = false;
-  
-  // gesture var
-  //bover = false;
-  locked = false;
-}

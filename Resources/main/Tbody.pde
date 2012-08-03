@@ -11,7 +11,7 @@ class Tbody {
     //
     for(int i=0; i<numOfArms; i++) {
       radius = angleRadius[i] * sin(angle[i]);
-      arms = new Arm(radius, WeightSegment[i], segLength[i]);
+      arms = new Arm(radius, WeightSegment[i]+WeightSegmentTouch, segLength[i]);
       rotate(rotation[i]);
       
       //rotate(PI/(numOfArms/2));

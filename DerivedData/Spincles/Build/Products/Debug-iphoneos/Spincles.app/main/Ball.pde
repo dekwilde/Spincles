@@ -45,16 +45,23 @@ class Ball {
   	touch1Y > y-bs && touch1Y < y+bs) {
           bx = x;
           by = y;
-          bover = true;  
+          bover = true;
+          
+          
           if(!locked) { 
-              //stroke(255,0,0); 
-              //fill(153);
+              //stroke(255); 
+              //fill(0);
           } 
      } else {
-          //stroke(153);
-          //fill(153);
+          //stroke(0);
+          //fill(255);          
           bover = false;
     }
+    
+    angleSpeedTouch = angleSpeedTouch / 1.08;
+    angleRadiusTouch = angleRadiusTouch / 1.08;
+    WeightSegmentTouch = WeightSegmentTouch / 1.08;
+    println("touch_off");   
   }
   
   void display() {

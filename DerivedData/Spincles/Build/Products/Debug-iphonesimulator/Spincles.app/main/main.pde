@@ -17,6 +17,7 @@ float startEscala;
 
 float microfone = 0;
 float delay_mic = 0;
+float mic_perc = 50;
 
 //float dim = 40;
 PImage bimg;
@@ -26,6 +27,7 @@ int dim = 1300;
 
 Ball ball;
 IPhone iphone;
+PSound sound1, sound2, sound3, sound4;
 Tbody body;
 
 int numSegment = 4;
@@ -52,6 +54,7 @@ boolean infoShow = false;
 PImage infoImg;
 ButtonInfo btInfo;
 ButtonClose btClose;
+MenuSlider slider;
 float pInfo = 480;
 
 void setup() 
@@ -59,12 +62,13 @@ void setup()
         size(320, 480);
         frameRate(30);
         background(0);
-        bimg = loadImage("bg.jpg");
+        //bimg = loadImage("bg.jpg");
         
         infoImg= loadImage("infos.jpg");
   
         btInfo = new ButtonInfo();
         btClose = new ButtonClose();
+        slider = new MenuSlider();
         
         //drawGradient();
         
@@ -90,9 +94,18 @@ void setup()
         
 	ball = new Ball(bx, by, bs);
 	iphone = new IPhone();
+
+	sound1 = iphone.loadSound("background.wav");
+        sound1.play();
+        sound1.loop();
+        
+        sound2 = iphone.loadSound("soprar.wav");
+        sound2.play();
+        sound2.loop();
+
+
 	iphone.startMicMonitor();
 	iphone.startAccelerometer();
-
 }
 
 void draw() 
@@ -100,7 +113,9 @@ void draw()
       // init vars DONT MOVE    
       gravityX = iphone.getAcceleration().x;
       gravityY = -iphone.getAcceleration().y;
-      microfone = pow(iphone.getMicLevel(), 1) * 100;  
+      microfone = pow(iphone.getMicLevel(), 1) * mic_perc;
+      
+      sound1.setVolume(noise(pi*10));
     
       
       if (infoShow) {
@@ -108,11 +123,12 @@ void draw()
         //tint(20);
           if (pInfo<1) {
               pInfo = 0;
+              slider.frame();
               btClose.frame();
+
           }
           pInfo = pInfo - pInfo/6;
       } else { 
-        //background(#ffff00, 0.1);
         
         delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
         
@@ -121,24 +137,29 @@ void draw()
         }
         
         
-        if (microfone<10) {
-            colorR = 255 - microfone*20;
-            colorG = 204 - microfone*20;
+        if (delay_mic<128) {
+            colorR = 255; // + microfone*20;
+            colorG = 204; // + microfone*25;
+            colorB = 0;   // + microfone*20;
         } else {
             colorR = 0;
             colorG = 0;
+            colorB = 0;
         }
         
-        if (colorR<0) {
+        if (colorR>255) {
             colorR = 0;
         }
-        if (colorG<0) {
+        if (colorG>255) {
             colorG = 0;
         }
+        if (colorB>255) {
+            colorB = 0;
+        }
         
-        println(microfone);
+        //println(microfone);
         	
-        fill(colorR, colorG, 0, 255 - delay_mic);
+        fill(colorR, colorG, colorB, 255 - delay_mic);
         noStroke();
         
         
@@ -180,7 +201,7 @@ void draw()
         
         btInfo.frame();
         
-        float rotationT = noise(pi/500)*((x*y)/8000) + radians(iAngle) + microfone/40;
+        float rotationT = noise(pi/500)*((dx*dy*easing)/450) + radians(iAngle) + microfone/40;
         
         body = new Tbody(x, y, rotationT, iScale);
         //+ noise(pi/10)*2)
@@ -188,93 +209,7 @@ void draw()
         pi++;
     }
 }
-void drawGradient() {
-  pimg = createGraphics(320, 480, P2D);
-  int radius = dim/2 - 2;
-  float r1 = 255;
-  float g1 = 204;
-  float b1 = 0;
-  float dr = (255 - r1) / radius;
-  float dg = (255 - g1) / radius;
-  float db = (0   - b1) / radius;
-  
-  pimg.beginDraw(); 
-  for (int r = radius; r > 0; --r) {
-    pimg.fill(r1, g1, b1, 180);
-    pimg.noStroke();
-    pimg.ellipse(width/2, height/2, r, r);
-    r1 += dr;
-    g1 += dg;
-    b1 += db;
-  }
-  pimg.endDraw();
-}
 
-void buttonLink(int pX, int pY, int Width, int Height, char Str) {
-      if (touch1X > pX-Width && touch1X < pX+Width && touch1Y > pY-Height && touch1Y < pY+Height) {
-        println("link out " + Str);
-        link(Str, "_new");
-        // infoShow = false;
-      }
-}
 
-void gestureStarted() {
-	startAngle = iAngle;
-	startEscala = iScale;
-}
 
-void gestureChanged() {
-	iAngle = startAngle + gestureRotation;
-	iScale = startEscala * gestureScale;
-	if (iAngle > 360) {
-		iAngle = iAngle - 360;
-	}
-	if (iAngle < 0) {
-		iAngle = 360 + iAngle;
-	}
-}
 
-void gestureStopped() {
-	startAngle = iAngle;
-	startEscala = iScale;
-}
-
-void touch1Started() {
-  //GEsture Drag Spincles
-  if (touch1X > bx-bs && touch1X < bx+bs && 
-	touch1Y > by-bs && touch1Y < by+bs) {
-    bover = true;  
-  }
-  
-  if(bover) { 
-    locked = true; 
-    //fill(255, 0, 0);
-  } else {
-    locked = false;
-  }
-  bdifx = touch1X-bx; 
-  bdify = touch1Y-by; 
-}
-
-void touch1Moved() {
-  if(locked) {
-    bx = touch1X-bdifx; 
-    by = touch1Y-bdify;
-  }
-}
-
-void touch1Stopped() {
-  if (infoShow && pInfo<1) {
-      buttonLink(90, 458, 60, 12, "http://spincles.dekwilde.com.br/support");
-      buttonLink(230, 458, 60, 12, "mailto:spincles@dekwilde.com.br");
-  }
-  // click info var
-  //btClose.overButton = false;
-  //btInfo.overButton = false;
-  //btSupport.overButton = false;
-  //btContact.overButton = false;
-  
-  // gesture var
-  //bover = false;
-  locked = false;
-}
