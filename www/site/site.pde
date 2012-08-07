@@ -2,7 +2,7 @@ Tbody body;
 
 
 int numSegment = 4;
-int numOfArms = 13;
+int numOfArms = 12;
 float SegWeightPor = 1.9f;
 float radius = 0.0f;
 float easing = 0.05f;
@@ -19,13 +19,21 @@ float [] angleSpeed = new float[numOfArms];
 float [] angle = new float[numOfArms];
 float [] WeightSegment = new float[numOfArms];
 float [] segLength = new float[numOfArms];
-float angleSpeedTouch = 0.0f;
-float angleRadiusTouch = 0.0f;
-float WeightSegmentTouch = 0.0f;
+float angleSpeedTouchDelay = 0.00;
+float angleSpeedTouch = 0.00;
+
+float angleRadiusTouchDelay = 0.00;
+float angleRadiusTouch = 0.00;
+
+float WeightSegmentTouchDelay = 0.00;
+float WeightSegmentTouch = 0.00;
+
+float segLengthTouchDelay = 0.00;
+float segLengthTouch = 0.00;
 
 void setup() {
-  size(screenWidth, screenHeight);
-  //size(320, 480);
+  //size(screenWidth, screenHeight);
+  size(320, 480);
   frameRate(30);
   //smooth(); 
   stroke(0, 100);
@@ -42,33 +50,44 @@ void setup() {
 }
 
 
-void mousePressed() {
-  //angleSpeedTouch = angleSpeedTouch + 0.4;
-}
+boolean touched = false;
 
 void mouseReleased() {
-  angleSpeedTouch =  random(0.02, 0.14);
-  angleRadiusTouch = angleRadiusTouch + random(-3.0, 3.0);
-  WeightSegmentTouch =  random(4.0, 10.0);
-  //angleIntensity = angleIntensity / 1.2;
+  angleSpeedTouch =  random(-2.0, 2.0);
+  angleRadiusTouch =  random(-3.0, 3.0);
+  WeightSegmentTouch =  random(3.0, 8.0);
+  segLengthTouch = random(-20, -50);
+  touched = true;
 }
 
 void draw() {
   background(#ffcc00);
+
+  println("Delay:" + floor(WeightSegmentTouchDelay*1000));
+  println("Value:" + floor(WeightSegmentTouch*1000));
   
+  if (floor(WeightSegmentTouchDelay*10) == floor(WeightSegmentTouch*10)) {
+    touched = false;    
+  }
   
-  if (mousePressed == true) {
-    //angleIntensity = angleIntensity + 0.08;
+
+  
+  if (touched == true) {
+    angleSpeedTouchDelay = (angleSpeedTouchDelay) + (angleSpeedTouch - angleSpeedTouchDelay)/8;
+    angleRadiusTouchDelay = (angleRadiusTouchDelay) + (angleRadiusTouch - angleRadiusTouchDelay)/6;
+    WeightSegmentTouchDelay = WeightSegmentTouchDelay + (WeightSegmentTouch - WeightSegmentTouchDelay)/10;
+    segLengthTouchDelay = segLengthTouchDelay + (segLengthTouch - segLengthTouchDelay)/8;
   } else {
-    angleSpeedTouch = angleSpeedTouch / 1.02;
-    angleRadiusTouch = angleRadiusTouch / 1.008;
-    WeightSegmentTouch = WeightSegmentTouch / 1.08;
+    angleSpeedTouchDelay = angleSpeedTouchDelay - angleSpeedTouchDelay/10;
+    angleRadiusTouchDelay = angleRadiusTouchDelay - angleRadiusTouchDelay/10;
+    WeightSegmentTouchDelay = WeightSegmentTouchDelay - WeightSegmentTouchDelay/10;
+    segLengthTouchDelay = segLengthTouchDelay - segLengthTouchDelay/10;
   }
   
   
   
   for(int i=0; i<numOfArms; i++) {
-    angle[i] = angle[i] + angleSpeed[i] - angleSpeedTouch;
+    angle[i] = angle[i] + angleSpeed[i];
   }
   
   targetX = mouseX;
@@ -104,11 +123,11 @@ class Tbody {
     
     translate(x, y);
     rotate(rotator);
-    scale(2.3);
+    scale(0.8);
     //
     for(int i=0; i<numOfArms; i++) {
-      radius = angleRadius[i] * sin(angle[i]) + angleRadiusTouch;
-      arms = new Arm(radius, WeightSegment[i]+WeightSegmentTouch, segLength[i]);
+      radius = angleRadius[i] * sin(angle[i]) + noise(angleRadiusTouchDelay);
+      arms = new Arm(radius  ,   WeightSegment[i]+random(noise(WeightSegmentTouchDelay), (WeightSegmentTouchDelay))   ,   segLength[i]+random(floor(segLengthTouchDelay), ceil(segLengthTouchDelay)));
       rotate(rotation[i]);
       
       //rotate(PI/(numOfArms/2));
@@ -125,7 +144,7 @@ class Arm {
       pushMatrix();
       for(int i=0; i<numSegment; i++) {
         if(i>0) {
-          segment(LengthSeg, 0, angleSeg*angleSegment[i], ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg);
+          segment(LengthSeg, 0, angleSeg*angleSegment[i]+angleSpeedTouchDelay, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg);
         } else {
           segment(0, 0, angleSeg, (numSegment+1)*WeightSeg, LengthSeg); 
         }
