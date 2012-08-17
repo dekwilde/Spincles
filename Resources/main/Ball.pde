@@ -61,7 +61,7 @@ class Ball {
     angleSpeedTouch = angleSpeedTouch / 1.02;
     angleRadiusTouch = angleRadiusTouch / 1.008;
     WeightSegmentTouch = WeightSegmentTouch / 1.08;
-    println("touch_off");   
+    //println("touch_off"); 
   }
   
   void display() {

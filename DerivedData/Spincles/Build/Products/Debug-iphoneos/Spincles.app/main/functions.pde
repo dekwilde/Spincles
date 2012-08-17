@@ -52,11 +52,11 @@ void touch1Stopped() {
   if (touch1X > bx-bs && touch1X < bx+bs && 
 	touch1Y > by-bs && touch1Y < by+bs) {
   
-         angleSpeedTouch = angleSpeedTouch - random(0.3, 0.8);
-         angleRadiusTouch = angleRadiusTouch + random(-0.8, 0.8);
-         WeightSegmentTouch = WeightSegmentTouch + random(4.0, 10.0);
-         println("touch_on"); 
-  
+         angleSpeedTouch =  random(0.02, 0.14);
+         angleRadiusTouch = angleRadiusTouch + random(-3.0, 3.0);
+         WeightSegmentTouch =  random(4.0, 10.0);
+         //println("touch_on"); 
+         
   }
   
   // click info var

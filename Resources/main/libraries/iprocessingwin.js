@@ -28,7 +28,7 @@ function p(code) {
 
 function init(e) {
 	// initialise iPhone
-	Titanium.Geolocation.purpose = "Location Demo";
+	Titanium.Geolocation.purpose = "Spincles Location";
 	Titanium.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_BEST;
 	
 	// initialise iProcessing

@@ -55,8 +55,8 @@ void touch1Stopped() {
          angleSpeedTouch =  random(0.02, 0.14);
          angleRadiusTouch = angleRadiusTouch + random(-3.0, 3.0);
          WeightSegmentTouch =  random(4.0, 10.0);
-         println("touch_on"); 
-  
+         //println("touch_on"); 
+         
   }
   
   // click info var

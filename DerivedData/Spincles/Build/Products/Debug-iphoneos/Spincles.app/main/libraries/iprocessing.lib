@@ -522,7 +522,9 @@ IPhone = function IPhone(processing) {
 	ip.uuid = uuid;
 	ip.latitude = null;
 	ip.longitude = null;
-	ip.altitude = null;																								
+	ip.altitude = null;
+	ip.heading = null;
+	ip.speed = null;																							
 	ip.accelerationX = null;
 	ip.accelerationY = null;
 	ip.accelerationZ = null;
@@ -601,7 +603,17 @@ IPhone = function IPhone(processing) {
 				
 	ip.getCurrentLocation = function() {
 		Titanium.App.fireEvent('getCurrentLocation');
-	};
+	}; 
+	
+	ip.locationEvent =function() {
+		return locLatitude;
+		return locLongitude;
+		return locAltitude;
+		return locHeading;
+		return locSpeed;		
+	}
+
+		
 	
 	// compass -----------------------------------------------------
 	
@@ -612,6 +624,10 @@ IPhone = function IPhone(processing) {
 	ip.stopCompass = function() {
 		Titanium.App.fireEvent('stopCompass');
 		compassHeading = null;
+	};
+	
+	ip.compassEvent = function() {
+		return compassHeading;
 	};
 	
 	// proximity ---------------------------------------------------
@@ -645,7 +661,7 @@ IPhone = function IPhone(processing) {
 		acceleration.y = accelerationY;
 		acceleration.z = accelerationZ;
 		return acceleration;
-	};	
+	};
 	
 	// state saving ------------------------------------------------
 	

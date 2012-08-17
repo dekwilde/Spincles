@@ -73,6 +73,10 @@ void setup()
         btClose = new ButtonClose();
         slider = new MenuSlider();
         
+        
+        PFont fontA = loadFont("SansSerif-10.vlw");
+	textFont(fontA, 10);
+        
         //drawGradient();
         
         //noFill();
@@ -112,6 +116,9 @@ void setup()
 
 	iphone.startMicMonitor();
 	iphone.startAccelerometer();
+        iphone.startCompass();
+        iphone.startLocation();
+
 }
 
 void draw() 
@@ -169,9 +176,9 @@ void draw()
         fill(colorR, colorG, colorB, 255 - delay_mic);
         noStroke();        
         rect(0,0,width,height);
-
         
-  
+        
+        location();
         ball.move();
 	ball.touch();
 	//ball.display();        
@@ -202,7 +209,7 @@ void draw()
         body = new Tbody(x, y, rotationT, iScale);
         //+ noise(pi/10)*2)
         
-        sound1.setVolume(microfone/10);
+        sound1.setVolume(microfone*10);
         //sound2.setVolume(delay_mic/1000);
         
         pi++;
