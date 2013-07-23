@@ -1,5 +1,3 @@
-Classes
-tmp
-build
-headers
-lib
+iOS/tmp
+iOS/build
+iOS/DerivedData
