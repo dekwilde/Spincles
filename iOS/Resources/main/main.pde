@@ -116,8 +116,9 @@ void setup()
 
 	iphone.startMicMonitor();
 	iphone.startAccelerometer();
-        iphone.startCompass();
-        iphone.startLocation();
+    iphone.startCompass();
+    iphone.startLocation();
+        
 
 }
 

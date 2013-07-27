@@ -9,30 +9,33 @@ void location()
 {
    int currentTime = millis();
    if (currentTime > lastTime+3000) {
-
         Location loc = iphone.getLocation();
         lt = loc.latitude;
         lg = loc.longitude;
         al = loc.altitude;
         hd = loc.heading;
         sp = loc.speed;
-        
+
+
+
         lastTime = currentTime;
-        
+        iphone.getCurrentLocation();
+        println("location LT:" + lt + " LG:" + lg + " AL:" +al + " HD:" + hd + " SP:" + sp);
+
     }
     fill(0); 
-    text("LT:" + lt + " LG:" + lg + " AL:" +al, 10, 40);
-    //text("HD:" + hd + " SP:" + sp, 10, 60);
-    iphone.getCurrentLocation();
+    text("location LT:" + lt + " LG:" + lg + " AL:" +al + " HD:" + hd + " SP:" + sp, 10, 40);
+
 }
 
 
 void compassEvent() {
-  println(compassHeading);
+  //println(compassHeading);
 }
 
 void locationEvent() {
-  text("LT:" + locLatitude + " LG:" + locLongitude + " AL:" +locAltitude, 10, 80);
+  text("locationEvent LT:" + locLatitude + " LG:" + locLongitude + " AL:" +locAltitude + " HD:" + locHeading, 10, 80);
+  println("locationEvent LT:" + locLatitude + " LG:" + locLongitude + " AL:" +locAltitude + " HD:" + locHeading);
 }
 
 void shakeEvent()
