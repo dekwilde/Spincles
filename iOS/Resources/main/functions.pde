@@ -69,3 +69,11 @@ void touch1Stopped() {
   //bover = false;
   locked = false;
 }
+
+void shakeEvent()
+{
+  println("shaked");
+}
+
+
+

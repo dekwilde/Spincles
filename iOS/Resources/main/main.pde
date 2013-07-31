@@ -29,6 +29,7 @@ Ball ball;
 IPhone iphone;
 PSound sound1, sound2, sound3, sound4;
 Tbody body;
+TCompass compass;
 
 int numSegment = 4;
 int numOfArms = 10;
@@ -72,7 +73,7 @@ void setup()
         btInfo = new ButtonInfo();
         btClose = new ButtonClose();
         slider = new MenuSlider();
-        
+        compass = new Tcompass();
         
         PFont fontA = loadFont("SansSerif-10.vlw");
 	textFont(fontA, 10);
@@ -116,8 +117,8 @@ void setup()
 
 	iphone.startMicMonitor();
 	iphone.startAccelerometer();
-    iphone.startCompass();
-    iphone.startLocation();
+        iphone.startCompass();
+        iphone.startLocation();
         
 
 }
@@ -179,7 +180,7 @@ void draw()
         rect(0,0,width,height);
         
         
-        location();
+        
         ball.move();
 	ball.touch();
 	//ball.display();        
@@ -204,6 +205,9 @@ void draw()
         y += dy * easing + nY*(microfone/3 + 5.2);
         
         btInfo.frame();
+        location();
+        compass.frame(targetDEGREE - compassDEGREE);
+        
         
         float rotationT = noise(pi/500)*((dx*dy*easing)/450) + radians(iAngle) + microfone/40;
         
@@ -212,8 +216,9 @@ void draw()
         
         sound1.setVolume(microfone*10);
         //sound2.setVolume(delay_mic/1000);
-        
         pi++;
+        
+
     }
 }
 
