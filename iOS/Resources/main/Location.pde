@@ -1,4 +1,5 @@
 int lastTime = 0;
+int interval = 5000;
    float lt;
    float lg;
    float al;
@@ -13,7 +14,7 @@ int lastTime = 0;
 
 void location() {
    int currentTime = millis();
-   if (currentTime > lastTime+3000) {
+   if (currentTime > lastTime+interval) {
         Location loc = iphone.getLocation();
         lt = loc.latitude;
         lg = loc.longitude;

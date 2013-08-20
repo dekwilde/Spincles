@@ -9,8 +9,11 @@ class Tcompass {
     rotate(radians(angleCompass));
     
     //println(angleCompass);
-    rect(0, 0, 100, 5);
-    ellipse(-100, 0, 15, 15);
-    popMatrix(); 
+    noFill();
+    stroke(0);
+    ellipse(0, 0, 250, 250);
+    fill(0);
+    ellipse(-125, 0, 15, 15);
+    popMatrix();
   }  
 }
