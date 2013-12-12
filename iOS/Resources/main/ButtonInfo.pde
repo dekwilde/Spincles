@@ -14,7 +14,6 @@ class ButtonInfo {
         if (overButton == true) {
           infoShow = true;
           println("info " + infoShow); 
-          
           // circulo          
           noStroke();
           fill(0);

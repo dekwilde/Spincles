@@ -1,4 +1,4 @@
-Titanium.UI.setBackgroundColor('#000000');
+Titanium.UI.setBackgroundColor('#FFCC00');
 var window = Titanium.UI.createWindow({url:'main/libraries/iprocessingwin.js'});
 
 window.fullscreen = true;

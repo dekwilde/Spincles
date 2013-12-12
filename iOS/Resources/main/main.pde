@@ -20,7 +20,7 @@ float delay_mic = 0;
 float mic_perc = 50;
 
 //float dim = 40;
-PImage bimg;
+PImage camImg;
 
 PGraphics pimg;
 int dim = 1300;
@@ -66,7 +66,6 @@ void setup()
         size(320, 480);
         frameRate(30);
         background(0);
-        //bimg = loadImage("bg.jpg");
         
         infoImg= loadImage("infos.jpg");
   
@@ -119,7 +118,7 @@ void setup()
 	iphone.startAccelerometer();
         iphone.startCompass();
         iphone.startLocation();
-        
+        iphone.openCamera();        
 
 }
 
@@ -140,8 +139,8 @@ void draw()
 
           }
           pInfo = pInfo - pInfo/6;
-      } else { 
-        
+      } else {
+                
         delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
         
         
@@ -179,7 +178,8 @@ void draw()
         noStroke();        
         rect(0,0,width,height);
         
-        
+        camImg = loadImage(iphone.getCamera());
+        image(camImg,0,0); 
         
         ball.move();
 	ball.touch();

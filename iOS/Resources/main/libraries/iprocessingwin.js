@@ -390,30 +390,62 @@ function openPhotos(e) {
 }
 
 // camera ------------------------------------------------------
-
+var cameraOverlay;
+var updateCameraTimer;
 function openCamera(e) {
-	var edit = e.data;
+	cameraOverlay = Ti.UI.createView({
+	            //backgroundImage:'/images',
+				touchEnabled: false,
+				top:0,
+				left:0,
+				zIndex: 0,
+	            width:Ti.Platform.displayCaps.platformWidth,
+	            height:Ti.Platform.displayCaps.platformHeight
+	        });
+	Titanium.UI.currentWindow.add(cameraOverlay);
+	cameraOverlay.show();
+			
 	Titanium.Media.showCamera({
 		success: function(event) {
 			var image = event.media;
-			var filename = String((new Date()).getTime()).replace(/\D/gi,'')+".png";
-			var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
-			f.write(image);
+			//var filename = String((new Date()).getTime()).replace(/\D/gi,'')+".png";
+			//var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
+			//f.write(image);
 			p(
-				'cameraCaptured("' + filename + '");'
-			);											
+				'cameraCaptured("' + image + '");'
+			);
+			updateCameraTimer = setTimeout(updateCamera, 10);
+			Ti.API.debug(event.media);											
 		},
 		cancel: function() {
 		  p(
 			  'cameraCancelled();'
 			);
+		  Ti.API.debug("canceled");
 		},
 		error: function(error) {
-			//error												
+			Ti.API.debug(error);   									
 		},
-		allowImageEditing: edit
+		saveToPhotoGallery:false,
+		allowEditing:false,
+	    showControls:false,  
+	    autohide:false,
+		inPopOver: false,
+		animated : false,
+		mediaTypes:Ti.Media.MEDIA_TYPE_PHOTO,
+		transform:Ti.UI.create2DMatrix().scale(1),
+		overlay:cameraOverlay
+		
 	});
+	Ti.Media.switchCamera(Ti.Media.CAMERA_REAR); 
+	updateCameraTimer = setTimeout(updateCamera, 4000);
+		
+} 
+ 
+function updateCamera() {
+	Ti.Media.takePicture();
 }
+
 
 // keyboard ----------------------------------------------------
 

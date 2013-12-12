@@ -50,6 +50,7 @@ var state = null;
 
 var volume = null;
 var micLevel = null;
+var cam = null;
 
 var proximity = null;
 
@@ -481,6 +482,7 @@ function photoCancelled() {
 }
 
 function cameraCaptured(f) {
+	cam = f;
 	if ( p.cameraCaptured ) {
 		p.cameraCaptured(f);
 	}
@@ -491,6 +493,7 @@ function cameraCancelled() {
 		p.cameraCancelled();
 	}
 }
+
 
 function keyPressed(k,kc) {
 	p.key = k;
@@ -747,7 +750,10 @@ IPhone = function IPhone(processing) {
 
 	ip.openCamera = function(e) {
 		if (e == null){ var edit = false; } else { var edit = e; }
-		//Titanium.App.fireEvent('openCamera', {data:edit});
+		Titanium.App.fireEvent('openCamera', {data:edit});
+	};
+	ip.getCamera = function() {
+		return cam;
 	};
 	
 	// keyboard ----------------------------------------------------
