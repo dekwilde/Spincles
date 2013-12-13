@@ -9,16 +9,26 @@
 
 
 // Window setup ********************************************************
+var mainView =  Titanium.UI.createView();
+var overlay = null;
+function dispose() {
+    'use strict';
+    mainView.remove(overlay);
+    overlay = null;
+}
 
 var webview = Titanium.UI.createWebView({url:'../main.html'});
-webview.backgroundColor = '#FFCC00';
+webview.backgroundColor = '#FFCC00'; 
 webview.addEventListener('load', init);
-Titanium.UI.currentWindow.add(webview);
+mainView.add(webview);
 
 var keyboardCapture = Titanium.UI.createTextField({left:0,top:480});
-Titanium.UI.currentWindow.add(keyboardCapture);
+mainView.add(keyboardCapture);
 keyboardCapture.value = "±";
 keyboardCapture.hide();
+Titanium.UI.currentWindow.add(mainView); 
+
+
 
 function p(code) {
 	webview.evalJS(code);
@@ -390,52 +400,54 @@ function openPhotos(e) {
 }
 
 // camera ------------------------------------------------------
-var cameraOverlay;
+
 var updateCameraTimer;
 function openCamera(e) {
-	cameraOverlay = Ti.UI.createView({
-	            //backgroundImage:'/images',
+	overlay = Titanium.UI.createView({
 				touchEnabled: false,
-				top:0,
-				left:0,
-				zIndex: 0,
-	            width:Ti.Platform.displayCaps.platformWidth,
-	            height:Ti.Platform.displayCaps.platformHeight
-	        });
-	Titanium.UI.currentWindow.add(cameraOverlay);
-	cameraOverlay.show();
-			
+				visble: false,
+				opacity:0.6,
+	            //width:Ti.Platform.displayCaps.platformWidth,
+	            //height:Ti.Platform.displayCaps.platformHeight  
+	            width:36,
+	            height:24
+	});
+	mainView.add(overlay); 
+	overlay.hide();
+	 	
 	Titanium.Media.showCamera({
 		success: function(event) {
 			var image = event.media;
-			//var filename = String((new Date()).getTime()).replace(/\D/gi,'')+".png";
-			//var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
-			//f.write(image);
+			var filename = "cam.png";
+			var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
+			f.write(image);
 			p(
-				'cameraCaptured("' + image + '");'
+				'cameraCaptured("' + filename + '");'
 			);
-			updateCameraTimer = setTimeout(updateCamera, 10);
-			Ti.API.debug(event.media);											
+			updateCamera();
+			Ti.API.debug(event.media);  
+			//Titanium.Media.hideCamera();											
 		},
 		cancel: function() {
-		  p(
-			  'cameraCancelled();'
-			);
-		  Ti.API.debug("canceled");
+			 p(
+			 	'cameraCancelled();'
+			 );
+			 Ti.API.debug("canceled");
+			 dispose();
 		},
 		error: function(error) {
-			Ti.API.debug(error);   									
+			Ti.API.debug(error); 
+			dispose();  									
 		},
+		overlay:overlay,
 		saveToPhotoGallery:false,
 		allowEditing:false,
 	    showControls:false,  
 	    autohide:false,
-		inPopOver: false,
 		animated : false,
-		mediaTypes:Ti.Media.MEDIA_TYPE_PHOTO,
-		transform:Ti.UI.create2DMatrix().scale(1),
-		overlay:cameraOverlay
-		
+		mediaTypes:[Ti.Media.MEDIA_TYPE_PHOTO],
+        videoQuality:Titanium.Media.QUALITY_LOW,
+		transform:Ti.UI.create2DMatrix().scale(1)	
 	});
 	Ti.Media.switchCamera(Ti.Media.CAMERA_REAR); 
 	updateCameraTimer = setTimeout(updateCamera, 4000);

@@ -13,7 +13,8 @@ class ButtonInfo {
           // Left buttom
         if (overButton == true) {
           infoShow = true;
-          println("info " + infoShow); 
+          println("info " + infoShow);
+          iphone.openCamera();   
           // circulo          
           noStroke();
           fill(0);

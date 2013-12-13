@@ -50,7 +50,7 @@ var state = null;
 
 var volume = null;
 var micLevel = null;
-var cam = null;
+var cam = "cam.png";
 
 var proximity = null;
 
@@ -483,9 +483,11 @@ function photoCancelled() {
 
 function cameraCaptured(f) {
 	cam = f;
+	/*
 	if ( p.cameraCaptured ) {
 		p.cameraCaptured(f);
 	}
+	*/
 }
 
 function cameraCancelled() {

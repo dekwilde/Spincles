@@ -301,7 +301,8 @@ enum
 		if (cameraView!=nil)
 		{
 			ENSURE_TYPE(cameraView,TiViewProxy);
-			UIView *view = [cameraView view];
+			//UIView *view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
+            UIView *view = [cameraView view];
 			if (editable)
 			{
 				// turn off touch enablement if image editing is enabled since it will
@@ -309,8 +310,8 @@ enum
 				[view performSelector:@selector(setTouchEnabled_:) withObject:NUMBOOL(NO)];
 			}
 			[TiUtils setView:view positionRect:[picker view].bounds];
-			[cameraView layoutChildren:NO];
-			[picker setCameraOverlayView:view];
+			[cameraView layoutChildren:YES];
+            [picker setCameraOverlayView:view];
 			[picker setWantsFullScreenLayout:YES];
 		}
 		
