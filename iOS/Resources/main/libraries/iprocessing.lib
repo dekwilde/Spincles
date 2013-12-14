@@ -754,6 +754,11 @@ IPhone = function IPhone(processing) {
 		if (e == null){ var edit = false; } else { var edit = e; }
 		Titanium.App.fireEvent('openCamera', {data:edit});
 	};
+    ip.squareCamera = function(e) {
+		if (e == null){ var edit = false; } else { var edit = e; }
+		Titanium.App.fireEvent('squareCamera', {data:edit});
+	};
+
 	ip.getCamera = function() {
 		return cam;
 	};

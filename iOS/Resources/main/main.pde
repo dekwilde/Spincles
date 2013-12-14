@@ -118,8 +118,8 @@ void setup()
 	iphone.startAccelerometer();
         iphone.startCompass();
         iphone.startLocation();
-        iphone.openCamera();    
-        camImg = loadImage(iphone.getCamera());
+        //iphone.openCamera();    
+        //camImg = loadImage(iphone.getCamera());
         //camImg = loadImage("cam.png");  
 
 }
@@ -180,8 +180,8 @@ void draw()
         noStroke();        
         rect(0,0,width,height);
         
-        println(iphone.getCamera()); 
-        image(camImg,0,0); 
+        //println(iphone.getCamera()); 
+        //image(camImg,0,0); 
         
         ball.move();
 	ball.touch();
