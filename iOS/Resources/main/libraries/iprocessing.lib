@@ -483,6 +483,8 @@ function photoCancelled() {
 
 function cameraCaptured(f) {
 	cam = f;
+	video = document.getElementById('video');
+	video.src = "data/" + cam + "?rand=" + new Date();
 	/*
 	if ( p.cameraCaptured ) {
 		p.cameraCaptured(f);

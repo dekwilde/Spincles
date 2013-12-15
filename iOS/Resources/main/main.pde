@@ -1,3 +1,8 @@
+var video = document.createElement("img");
+video.setAttribute("style", "display:none;");
+video.src = "data/cam.png?rand=" + new Date();
+
+
 float spring = 0.5;
 float gravityX = 0;
 float gravityY = 0;
@@ -20,6 +25,7 @@ float delay_mic = 0;
 float mic_perc = 50;
 
 //float dim = 40;
+var ctx;
 PImage camImg;
 
 PGraphics pimg;
@@ -64,6 +70,7 @@ float pInfo = 480;
 void setup() 
 {
         size(320, 480);
+        ctx = externals.context;
         frameRate(30);
         background(0);
         
@@ -118,9 +125,8 @@ void setup()
 	iphone.startAccelerometer();
         iphone.startCompass();
         iphone.startLocation();
-        //iphone.openCamera();    
+        iphone.squareCamera();    
         //camImg = loadImage(iphone.getCamera());
-        //camImg = loadImage("cam.png");  
 
 }
 
@@ -181,7 +187,15 @@ void draw()
         rect(0,0,width,height);
         
         //println(iphone.getCamera()); 
-        //image(camImg,0,0); 
+        //camImg = loadImage(iphone.getCamera());
+        pushMatrix();
+        translate(width,0);
+        scale(-1,1);//mirror the video
+        ctx.drawImage(video, 0, 0, width, height); //video is defined outside processing code
+        popMatrix();
+        camImg=get();
+        
+        image(camImg,0,0); 
         
         ball.move();
 	ball.touch();

@@ -14,8 +14,6 @@ class ButtonInfo {
         if (overButton == true) {
           infoShow = true;
           println("info " + infoShow);
-          //iphone.openCamera();
-          iphone.squareCamera();
           
           // circulo          
           noStroke();

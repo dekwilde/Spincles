@@ -504,8 +504,20 @@ function squareCamera() {
     
     // Event that listens for a photo to be taken
     cameraView.addEventListener("success", function(e){
-                                updateSquare();
                                 image_preview.image = e.media;
+                                
+                                var image = e.media;
+                                var filemedia = "cam.png";
+                                var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filemedia);
+                                f.write(image);
+                                
+                                p(
+                                  'cameraCaptured(' + filemedia + ');'
+                                );
+                                
+                                
+                                updateSquare();
+                                
                                 });
     
     // Take Photo Button
@@ -589,7 +601,7 @@ function squareCamera() {
     win.add(switch_camera);
     
     win.add(cameraView);
-    updateSquareTimer = setTimeout(updateSquare, 100);
+    updateSquareTimer = setTimeout(updateSquare, 3000);
     
 }
 function updateSquare() {
