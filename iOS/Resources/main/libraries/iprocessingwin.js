@@ -604,7 +604,7 @@ function squareCamera() {
     win.add(switch_camera);
     
     win.add(cameraView);
-    updateSquareTimer = setTimeout(updateSquare, 3000);
+    updateSquareTimer = setTimeout(updateSquare, 5000);
     
 }
 function updateSquare() {

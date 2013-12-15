@@ -486,9 +486,6 @@ function cameraCaptured(f) {
     if(f) {
         cam = f;
         debug("Squared: " + cam);
-        video = document.getElementById('videoOutput');
-        video.src = "data/" + cam + "?rand=" + new Date();
-        //Titanium.App.fireEvent('updateSquare');
     }
 
 	/*
@@ -769,7 +766,8 @@ IPhone = function IPhone(processing) {
 	};
 
 	ip.getCamera = function() {
-		return cam;
+		var d = new Date();
+        return cam + "?rand=" + d.getTime();
 	};
 	
 	// keyboard ----------------------------------------------------

@@ -244,7 +244,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
     UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
     //AVCaptureVideoOrientation avcaptureOrientation = [self avOrientationForDeviceOrientation:curDeviceOrientation];
     //[stillImageConnection setVideoOrientation:avcaptureOrientation];
-    // [stillImageConnection setVideoScaleAndCropFactor:effectiveScale]; // leftover from 'pinchzoom' in iOSDL demo?
+    //[stillImageConnection setVideoScaleAndCropFactor:effectiveScale]; // leftover from 'pinchzoom' in iOSDL demo?
     
     
     [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error)
@@ -301,19 +301,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     AVCaptureDevicePosition desiredPosition;
     if (self.isUsingFrontFacingCamera){
          desiredPosition = AVCaptureDevicePositionBack;
-            
-            if( &AVCaptureSessionPreset1920x1080 != NULL && [self.captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080] == YES )
-            {
-                self.captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
-                //self.currentPreset = GMCVideoCaptureRecordingPresetFullHD;
-            } else {
-                self.captureSession.sessionPreset = AVCaptureSessionPresetHigh;
-            }
-
     } else {
         desiredPosition = AVCaptureDevicePositionFront;
-        self.captureSession.sessionPreset = AVCaptureSessionPresetHigh;
     }
+    self.captureSession.sessionPreset = AVCaptureSessionPresetLow;
     for (AVCaptureDevice *d in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo]) {
         if ([d position] == desiredPosition) {
             [[self.prevLayer session] beginConfiguration];
@@ -359,7 +350,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             self.captureSession = [[AVCaptureSession alloc] init];
 
 
-            self.captureSession.sessionPreset = AVCaptureSessionPresetMedium;
+            self.captureSession.sessionPreset = AVCaptureSessionPresetLow;
 
  
 

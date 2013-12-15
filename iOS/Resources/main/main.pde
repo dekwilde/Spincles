@@ -1,9 +1,3 @@
-var video = document.createElement("img");
-video.setAttribute("style", "display:none;");
-video.id = "videoOutput";
-video.src = "data/cam.png";
-
-
 float spring = 0.5;
 float gravityX = 0;
 float gravityY = 0;
@@ -28,6 +22,7 @@ float mic_perc = 50;
 //float dim = 40;
 var ctx;
 PImage camImg;
+int cNum = 0;
 
 PGraphics pimg;
 int dim = 1300;
@@ -126,8 +121,8 @@ void setup()
 	iphone.startAccelerometer();
         iphone.startCompass();
         iphone.startLocation();
-        iphone.squareCamera();    
-        //camImg = loadImage(iphone.getCamera());
+           
+        camImg = loadImage(iphone.getCamera());
 
 }
 
@@ -187,21 +182,15 @@ void draw()
         noStroke();        
         rect(0,0,width,height);
         
-        //println(iphone.getCamera()); 
-        //camImg = loadImage(iphone.getCamera());
+        println("ip: " + cNum + iphone.getCamera());
+        if (cNum>5) {
+            camImg = loadImage(iphone.getCamera());
+            cNum = 0;
+        }
+        cNum++;
         
-        /*
-        pushMatrix();
-        translate(320,0);
-        scale(-1,1);//mirror the video
-        ctx.drawImage(video, 0, 0, 320, 480); //video is defined outside processing code
-        popMatrix();
-        camImg=get();
-        */
-        
-        
-        
-        //image(camImg,0,0); 
+
+        image(camImg); 
         
         ball.move();
 	ball.touch();
