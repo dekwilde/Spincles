@@ -482,14 +482,21 @@ function photoCancelled() {
 }
 
 function cameraCaptured(f) {
-	cam = f;
-	video = document.getElementById('video');
-	video.src = "data/" + cam + "?rand=" + new Date();
+
+    if(f) {
+        cam = f;
+        debug("Squared: " + cam);
+        video = document.getElementById('videoOutput');
+        video.src = "data/" + cam + "?rand=" + new Date();
+        //Titanium.App.fireEvent('updateSquare');
+    }
+
 	/*
 	if ( p.cameraCaptured ) {
 		p.cameraCaptured(f);
 	}
-	*/
+    */
+	
 }
 
 function cameraCancelled() {
@@ -617,7 +624,7 @@ IPhone = function IPhone(processing) {
 		return locLongitude;
 		return locAltitude;
 		return locHeading;
-		return locSpeed;		
+		return locSpeed;
 	}
 
 		

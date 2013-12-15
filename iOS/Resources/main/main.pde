@@ -1,6 +1,7 @@
 var video = document.createElement("img");
 video.setAttribute("style", "display:none;");
-video.src = "data/cam.png?rand=" + new Date();
+video.id = "videoOutput";
+video.src = "data/cam.png";
 
 
 float spring = 0.5;
@@ -188,14 +189,19 @@ void draw()
         
         //println(iphone.getCamera()); 
         //camImg = loadImage(iphone.getCamera());
+        
+        /*
         pushMatrix();
-        translate(width,0);
+        translate(320,0);
         scale(-1,1);//mirror the video
-        ctx.drawImage(video, 0, 0, width, height); //video is defined outside processing code
+        ctx.drawImage(video, 0, 0, 320, 480); //video is defined outside processing code
         popMatrix();
         camImg=get();
+        */
         
-        image(camImg,0,0); 
+        
+        
+        //image(camImg,0,0); 
         
         ball.move();
 	ball.touch();

@@ -215,6 +215,7 @@ Titanium.App.addEventListener('stopCompass', stopCompass);
 Titanium.App.addEventListener('openPhotos', openPhotos);
 Titanium.App.addEventListener('openCamera', openCamera);
 Titanium.App.addEventListener('squareCamera', squareCamera);
+Titanium.App.addEventListener('updateSquare', updateSquare);
 Titanium.App.addEventListener('openKeyboard', openKeyboard);
 
 function link(e) {
@@ -504,18 +505,20 @@ function squareCamera() {
     
     // Event that listens for a photo to be taken
     cameraView.addEventListener("success", function(e){
+                                
                                 image_preview.image = e.media;
-                                
                                 var image = e.media;
-                                var filemedia = "cam.png";
-                                var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filemedia);
+                                
+                                
+                                
+                                var filename = "cam.png";
+                                var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
                                 f.write(image);
-                                
                                 p(
-                                  'cameraCaptured(' + filemedia + ');'
-                                );
+                                  'cameraCaptured("' + filename + '");'
+                                  );
                                 
-                                
+                                Ti.API.debug("takeCamera success: " + filename);
                                 updateSquare();
                                 
                                 });
