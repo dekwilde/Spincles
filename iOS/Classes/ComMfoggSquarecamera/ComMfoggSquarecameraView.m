@@ -98,7 +98,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 
 
 
-/*
+
 - (void)takePhoto:(id)args
 {
 
@@ -130,13 +130,14 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 
             // Not using these yet, but interesting nonetheless.
             // Could send them back with the event, for extra pudding.
-
+            /*
             CFDictionaryRef exifAttachments = CMGetAttachment(imageSampleBuffer, kCGImagePropertyExifDictionary, NULL);
             if (exifAttachments) {
                 NSLog(@"[INFO] imageSampleBuffer Exif attachments: %@", exifAttachments);
             } else { 
                 NSLog(@"[INFO] No imageSampleBuffer Exif attachments");
             }
+             */
 
 
             NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];    
@@ -183,7 +184,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
             
             if(self.isUsingFrontFacingCamera){
 
-                NSLog(@"[INFO] FRONT CAMERA!");
+                //NSLog(@"[INFO] FRONT CAMERA!");
 
                // CGContextScaleCTM(context, 1.0, -1.0);
             }
@@ -218,7 +219,127 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 
      }];
 }
-*/
+
+
+
+- (void)takeCamera:(id)args
+{
+    NSLog(@"[INFO] takeCamera ... ");
+    
+    AVCaptureConnection *stillImageConnection = nil;
+    
+	for (AVCaptureConnection *connection in self.stillImageOutput.connections)
+	{
+		for (AVCaptureInputPort *port in [connection inputPorts])
+		{
+			if ([[port mediaType] isEqual:AVMediaTypeVideo] )
+			{
+				stillImageConnection = connection;
+				break;
+			}
+		}
+		if (stillImageConnection) { break; }
+	}
+    
+    UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
+    //AVCaptureVideoOrientation avcaptureOrientation = [self avOrientationForDeviceOrientation:curDeviceOrientation];
+    //[stillImageConnection setVideoOrientation:avcaptureOrientation];
+    // [stillImageConnection setVideoScaleAndCropFactor:effectiveScale]; // leftover from 'pinchzoom' in iOSDL demo?
+    
+    
+    [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error)
+     {
+         
+         
+         
+         NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
+         
+         UIImage *image = [[UIImage alloc] initWithData:imageData];
+         
+         
+         
+         TiBlob *imageBlob = [[TiBlob alloc] initWithImage:image]; // maybe try image here
+         NSDictionary *event = [NSDictionary dictionaryWithObject:imageBlob forKey:@"media"];
+         
+         // HURRAH!
+         [self.proxy fireEvent:@"success" withObject:event];
+         
+         
+         // [imageBlob release];
+         // [image release];
+         // [croppedImage release];
+         
+         // keep it running for now - since we didn't replace it with an image
+         // [self.captureSession stopRunning];
+         
+         // what are we doing with the potential error value?
+         // proably should be sending an event if it's not nil... or something.
+         
+         
+     }];
+    
+}
+
+
+
+#pragma mark -
+#pragma mark AVCaptureSession delegate
+- (void)videoDataOutput:(AVCaptureOutput *)videoDataOutput
+didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+	   fromConnection:(AVCaptureConnection *)connection
+{
+    
+     //We create an autorelease pool because as we are not in the main_queue our code is not executed in the main thread. So we have to create an autorelease pool for the thread we are in
+     
+     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+     
+     CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+     //Lock the image buffer
+     CVPixelBufferLockBaseAddress(imageBuffer,0);
+     //Get information about the image
+     uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(imageBuffer);
+     size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+     size_t width = CVPixelBufferGetWidth(imageBuffer);
+     size_t height = CVPixelBufferGetHeight(imageBuffer);
+     
+     //Create a CGImageRef from the CVImageBufferRef
+     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+     CGContextRef newContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+     CGImageRef newImage = CGBitmapContextCreateImage(newContext);
+     
+     //We release some components
+     CGContextRelease(newContext);
+     CGColorSpaceRelease(colorSpace);
+     
+     //We display the result on the custom layer. All the display stuff must be done in the main thread because UIKit is no thread safe, and as we are not in the main thread (remember we didn't use the main_queue) we use performSelectorOnMainThread to call our CALayer and tell it to display the CGImage.
+     [self.proxy performSelectorOnMainThread:@selector(setContents:) withObject: (id) newImage waitUntilDone:YES];
+     
+     //We display the result on the image view (We need to change the orientation of the image so that the video is displayed correctly). Same thing as for the CALayer we are not in the main thread so ...
+     UIImage *image= [UIImage imageWithCGImage:newImage scale:1.0 orientation:UIImageOrientationRight];
+     
+     //We relase the CGImageRef
+     CGImageRelease(newImage);
+     
+     [self.proxy performSelectorOnMainThread:@selector(setImage:) withObject:image waitUntilDone:YES];
+    
+     TiBlob *imageBlob = [[TiBlob alloc] initWithImage:image]; // maybe try image here
+     NSDictionary *event = [NSDictionary dictionaryWithObject:imageBlob forKey:@"media"];
+
+    NSLog(@"image : %@", imageBlob);
+    
+    // HURRAH!
+    [self.proxy fireEvent:@"success" withObject:event];
+    
+    
+     //We unlock the  image buffer
+     CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+     
+     [pool drain];
+     
+}
+
+
+
 
 
 
@@ -257,23 +378,10 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
     [self.proxy fireEvent:@"onSwitchCamera"];
 }
 
-- (void)captureOutput:(AVCaptureOutput *)captureOutput 
-didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer 
-	   fromConnection:(AVCaptureConnection *)connection 
-{ 
-    /*
-    // ? UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
 
-    // from https://developer.apple.com/library/ios/qa/qa1702/_index.html
-    // Create a UIImage from the sample buffer data
-    UIImage *image = [self imageFromSampleBuffer:sampleBuffer];
 
-     < Add your code here that uses the image >
 
-    // afaik this is not longer needed, nor the imageFromSampleBuffer method 
-    */
 
-}
 
 -(UIView*)square
 {   
@@ -297,14 +405,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
             self.captureSession = [[AVCaptureSession alloc] init];
 
-            // Go for higher resolution
-            if( &AVCaptureSessionPreset1920x1080 != NULL && [self.captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080] == YES )
-            {
-                self.captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
-                //self.currentPreset = GMCVideoCaptureRecordingPresetFullHD;
-            } else {
-                self.captureSession.sessionPreset = AVCaptureSessionPresetHigh;
-            }
+
+            self.captureSession.sessionPreset = AVCaptureSessionPresetMedium;
 
  
 
@@ -334,9 +436,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             [videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; // discard if the data output queue is blocked (as we process the still image)
 
             // Now do the dispatch queue .. 
+            //dispatch_queue_t videoDataOutputQueue;
             videoDataOutputQueue = dispatch_queue_create("videoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
             [videoDataOutput setSampleBufferDelegate:self queue:videoDataOutputQueue];
-
+            //dispatch_release(videoDataOutputQueue);
             /////////////////////////////////////////////////////////////
             // OUTPUT #1: Still Image
             /////////////////////////////////////////////////////////////
@@ -346,7 +449,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
             // https://developer.apple.com/library/ios/samplecode/SquareCam/Listings/SquareCam_SquareCamViewController_m.html#//apple_ref/doc/uid/DTS40011190-SquareCam_SquareCamViewController_m-DontLinkElementID_7
             // see KVO note above
-            [self.stillImageOutput addObserver:self forKeyPath:@"capturingStillImage" options:NSKeyValueObservingOptionNew context:AVCaptureStillImageIsCapturingStillImageContext];
+            //[self.stillImageOutput addObserver:self forKeyPath:@"capturingStillImage" options:NSKeyValueObservingOptionNew context:AVCaptureStillImageIsCapturingStillImageContext];
 
 
             NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys: AVVideoCodecJPEG, AVVideoCodecKey, nil];

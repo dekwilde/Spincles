@@ -11,11 +11,13 @@
 // Window setup ********************************************************
 var mainView =  Titanium.UI.createView();
 var overlay = null;
+var cameraView = null;
 function dispose() {
     'use strict';
     mainView.remove(overlay);
     overlay = null;
 }
+var cameraView = null;
 
 var webview = Titanium.UI.createWebView({url:'../main.html'});
 webview.backgroundColor = '#FFCC00'; 
@@ -458,6 +460,7 @@ function updateCamera() {
 }
 
 // square camera -----------------------------------------------
+var updateSquareTimer = null;
 function squareCamera() {
     var SquareCamera = require('com.mfogg.squarecamera');
     Ti.API.info("module is => " + SquareCamera);
@@ -465,7 +468,7 @@ function squareCamera() {
     // open a single window
     var win = Titanium.UI.currentWindow;
     
-    var cameraView = SquareCamera.createView({
+    cameraView = SquareCamera.createView({
                                              top: 0,
                                              height: 320,
                                              width: 320,
@@ -480,7 +483,7 @@ function squareCamera() {
                                               borderColor:'#ddd',
                                               height: 160,
                                               backgroundColor: '#444',
-                                              image: 'loading_bg_sq.png'
+                                              image: '../../Default.png'
                                               });
     
     
@@ -501,19 +504,8 @@ function squareCamera() {
     
     // Event that listens for a photo to be taken
     cameraView.addEventListener("success", function(e){
-                                
-                                Ti.API.info(JSON.stringify(e));
-                                
-                                Ti.API.info(e.media);
-                                
+                                updateSquare();
                                 image_preview.image = e.media;
-                                
-                                // Let's save it ..
-                                Ti.Media.saveToPhotoGallery(e.media);
-                                
-                                
-                                //alert("Picture Taken");
-                                
                                 });
     
     // Take Photo Button
@@ -534,6 +526,7 @@ function squareCamera() {
     take_photo.addEventListener("click", function(e){
                                 cameraView.takePhoto();
                                 });
+
     
     win.add(take_photo);
     
@@ -596,10 +589,13 @@ function squareCamera() {
     win.add(switch_camera);
     
     win.add(cameraView);
-    //win.open();
+    updateSquareTimer = setTimeout(updateSquare, 100);
     
 }
-
+function updateSquare() {
+    //cameraView.takePhoto();
+    cameraView.takeCamera();
+}
 
 
 

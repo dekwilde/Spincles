@@ -14,6 +14,10 @@
 {
 	[[self view] performSelectorOnMainThread:@selector(takePhoto:) withObject:args waitUntilDone:NO];
 }
+-(void)takeCamera:(id)args
+{
+	[[self view] performSelectorOnMainThread:@selector(takeCamera:) withObject:args waitUntilDone:NO];
+}
 
 -(void)turnFlashOn:(id)args
 {
