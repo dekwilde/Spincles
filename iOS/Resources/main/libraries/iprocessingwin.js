@@ -9,26 +9,44 @@
 
 
 // Window setup ********************************************************
-var mainView =  Titanium.UI.createView();
+// open a single window
+var win = Titanium.UI.currentWindow;
 var overlay = null;
-var cameraView = null;
+
 function dispose() {
     'use strict';
-    mainView.remove(overlay);
+    win.remove(overlay);
     overlay = null;
 }
-var cameraView = null;
 
-var webview = Titanium.UI.createWebView({url:'../main.html'});
-webview.backgroundColor = '#FFCC00'; 
+
+
+var SquareCamera = require('com.mfogg.squarecamera');
+Ti.API.info("module is => " + SquareCamera);
+var cameraView = null;
+cameraView = SquareCamera.createView({
+                                     top: 0,
+                                     height: 480,
+                                     width: 320,
+                                     backgroundColor: "#000"
+                                     });
+win.add(cameraView);
+
+
+var webview = Titanium.UI.createWebView({
+                                        url:'../main.html',
+                                        height: 480,
+                                        width: 320,
+                                        backgroundColor:'transparent',
+                                        opacity:0.5
+                                        });
 webview.addEventListener('load', init);
-mainView.add(webview);
+win.add(webview);
 
 var keyboardCapture = Titanium.UI.createTextField({left:0,top:480});
-mainView.add(keyboardCapture);
+win.add(keyboardCapture);
 keyboardCapture.value = "±";
 keyboardCapture.hide();
-Titanium.UI.currentWindow.add(mainView); 
 
 
 
@@ -414,7 +432,7 @@ function openCamera(e) {
 	            width:36,
 	            height:24
 	});
-	mainView.add(overlay); 
+	win.add(overlay);
 	overlay.hide();
 	 	
 	Titanium.Media.showCamera({
@@ -463,19 +481,7 @@ function updateCamera() {
 // square camera -----------------------------------------------
 var updateSquareTimer = null;
 function squareCamera() {
-    var SquareCamera = require('com.mfogg.squarecamera');
-    Ti.API.info("module is => " + SquareCamera);
-    
-    // open a single window
-    var win = Titanium.UI.currentWindow;
-    
-    cameraView = SquareCamera.createView({
-                                             top: 0,
-                                             height: 320,
-                                             width: 320,
-                                             backgroundColor: "#fff"
-                                             });
-    
+
     var image_preview = Ti.UI.createImageView({
                                               right: 10,
                                               bottom: 10,
@@ -487,6 +493,7 @@ function squareCamera() {
                                               image: '../../Default.png'
                                               });
     
+    //win.add(image_preview);
     
     // Event that listens for the flash to turn on
     cameraView.addEventListener("onFlashOn", function(e){
@@ -506,7 +513,7 @@ function squareCamera() {
     // Event that listens for a photo to be taken
     cameraView.addEventListener("success", function(e){
                                 
-                                image_preview.image = e.media;
+                                //image_preview.image = e.media;
                                 var image = e.media;
                                 
                                 
@@ -533,17 +540,10 @@ function squareCamera() {
                                       borderRadius:30
                                       });
     
-    
-    
-    win.add(image_preview);
-    
-    
     take_photo.addEventListener("click", function(e){
                                 cameraView.takePhoto();
                                 });
-
-    
-    win.add(take_photo);
+    //win.add(take_photo);
     
     // Flash
     
@@ -576,7 +576,7 @@ function squareCamera() {
                            };
                            });
     
-    win.add(flash);
+    //win.add(flash);
     
     // Switch Camera
     
@@ -601,9 +601,9 @@ function squareCamera() {
                                    cameraView.switchCamera();
                                    });
     
-    win.add(switch_camera);
+    //win.add(switch_camera);
     
-    win.add(cameraView);
+    
     updateSquareTimer = setTimeout(updateSquare, 5000);
     
 }

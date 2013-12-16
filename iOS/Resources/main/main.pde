@@ -1,3 +1,6 @@
+/* @pjs transparent="true"; */
+
+
 float spring = 0.5;
 float gravityX = 0;
 float gravityY = 0;
@@ -57,8 +60,10 @@ float WeightSegmentTouch = 0.0f;
 
 
 boolean infoShow = false;
+boolean cameraShow = false;
 PImage infoImg;
 ButtonInfo btInfo;
+ButtonCamera btCamera;
 ButtonClose btClose;
 MenuSlider slider;
 float pInfo = 480;
@@ -68,11 +73,12 @@ void setup()
         size(320, 480);
         ctx = externals.context;
         frameRate(30);
-        background(0);
+        //background(0);
         
         infoImg= loadImage("infos.jpg");
   
         btInfo = new ButtonInfo();
+        btCamera = new ButtonCamera();
         btClose = new ButtonClose();
         slider = new MenuSlider();
         compass = new Tcompass();
@@ -177,20 +183,26 @@ void draw()
         }
         
         //println(microfone);
-        	
-        fill(colorR, colorG, colorB, 255 - delay_mic);
-        noStroke();        
-        rect(0,0,width,height);
         
-        println("ip: " + cNum + iphone.getCamera());
-        if (cNum>5) {
+        
+        if (cameraShow) {  
+          externals.context.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
+          //background(0,0,0,0);
+          println("ip: " + cNum + iphone.getCamera());
+          if (cNum>10) {
             camImg = loadImage(iphone.getCamera());
             cNum = 0;
+          }
+          cNum++;
+          //image(camImg); 
+        } else {
+          fill(colorR, colorG, colorB, 255 - delay_mic);
+          noStroke();        
+          rect(0,0,width,height);
         }
-        cNum++;
         
 
-        image(camImg); 
+        
         
         ball.move();
 	ball.touch();
@@ -216,6 +228,7 @@ void draw()
         y += dy * easing + nY*(microfone/3 + 5.2);
         
         btInfo.frame();
+        btCamera.frame();
         location();
         compass.frame(targetDEGREE - compassDEGREE);
         

@@ -62,6 +62,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 - (void)turnFlashOn:(id)args
 {
     if([self.captureDevice lockForConfiguration:true]){
+        [self.captureDevice setTorchMode:AVCaptureTorchModeOn];
         [self.captureDevice setFlashMode:AVCaptureFlashModeOn];
         self.flashOn = YES;  
         [self.captureDevice lockForConfiguration:false];
@@ -73,6 +74,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 - (void)turnFlashOff:(id)args
 {
     if([self.captureDevice lockForConfiguration:true]){
+        [self.captureDevice setTorchMode:AVCaptureTorchModeOff];
         [self.captureDevice setFlashMode:AVCaptureFlashModeOff];
         self.flashOn = NO;  
         [self.captureDevice lockForConfiguration:false];

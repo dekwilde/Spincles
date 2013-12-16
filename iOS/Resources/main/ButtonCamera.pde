@@ -1,10 +1,10 @@
-class ButtonInfo {
+class ButtonCamera {
     boolean overButton = false;
-    int pX = 300;
+    int pX = 20;
     int pY = 460;
     int dm = 12;   
     
-    ButtonInfo() {  
+    ButtonCamera() {  
         smooth();
         rectMode(CENTER_RADIUS);
     }    
@@ -12,39 +12,23 @@ class ButtonInfo {
         checkButton();
           // Left buttom
         if (overButton == true) {
-          infoShow = true;
-          println("info " + infoShow);
+          cameraShow = true;
+          println("camera " + cameraShow);
+          iphone.squareCamera();
           
           // circulo          
           noStroke();
           fill(0);
-          ellipse(pX, pY, 16, 16);
+          rect(pX, pY, 16, 16);
           
-          // o "i"
-          noStroke();
-          fill(#ffcc00);
-          rect(pX, pY+2, 1, 4);
           
-          //ping do i
-          noStroke();
-          fill(#ffcc00);
-          ellipse(pX, pY-4, 2, 2);
         } else {
           // circulo
           stroke(0);
           strokeWeight(1);
           noFill();
-          ellipse(pX, pY, 16, 16);
+          rect(pX, pY, 8, 8);
           
-          // o "i"
-          noStroke();
-          fill(0);
-          rect(pX, pY+2, 1, 4);
-          
-          //ping do i
-          noStroke();
-          fill(0);
-          ellipse(pX, pY-4, 2, 2);
         }
     }
     void checkButton() {

@@ -1,7 +1,4 @@
-var video = document.createElement("img");
-video.setAttribute("style", "display:none;");
-video.id = "videoOutput";
-video.src = "data/cam.png";
+/* @pjs transparent="true"; */
 
 
 float spring = 0.5;
@@ -28,6 +25,7 @@ float mic_perc = 50;
 //float dim = 40;
 var ctx;
 PImage camImg;
+int cNum = 0;
 
 PGraphics pimg;
 int dim = 1300;
@@ -62,8 +60,10 @@ float WeightSegmentTouch = 0.0f;
 
 
 boolean infoShow = false;
+boolean cameraShow = false;
 PImage infoImg;
 ButtonInfo btInfo;
+ButtonCamera btCamera;
 ButtonClose btClose;
 MenuSlider slider;
 float pInfo = 480;
@@ -78,6 +78,7 @@ void setup()
         infoImg= loadImage("infos.jpg");
   
         btInfo = new ButtonInfo();
+        btCamera = new ButtonCamera();
         btClose = new ButtonClose();
         slider = new MenuSlider();
         compass = new Tcompass();
@@ -126,8 +127,8 @@ void setup()
 	iphone.startAccelerometer();
         iphone.startCompass();
         iphone.startLocation();
-        iphone.squareCamera();    
-        //camImg = loadImage(iphone.getCamera());
+           
+        camImg = loadImage(iphone.getCamera());
 
 }
 
@@ -182,26 +183,25 @@ void draw()
         }
         
         //println(microfone);
-        	
-        fill(colorR, colorG, colorB, 255 - delay_mic);
-        noStroke();        
-        rect(0,0,width,height);
-        
-        //println(iphone.getCamera()); 
-        //camImg = loadImage(iphone.getCamera());
-        
-        /*
-        pushMatrix();
-        translate(320,0);
-        scale(-1,1);//mirror the video
-        ctx.drawImage(video, 0, 0, 320, 480); //video is defined outside processing code
-        popMatrix();
-        camImg=get();
-        */
         
         
+        if (cameraShow) {  
+          background(0,0,0,0);
+          println("ip: " + cNum + iphone.getCamera());
+          if (cNum>5) {
+            camImg = loadImage(iphone.getCamera());
+            cNum = 0;
+          }
+          cNum++;
+          image(camImg); 
+        } else {
+          fill(colorR, colorG, colorB, 255 - delay_mic);
+          noStroke();        
+          rect(0,0,width,height);
+        }
         
-        //image(camImg,0,0); 
+
+        
         
         ball.move();
 	ball.touch();
@@ -227,6 +227,7 @@ void draw()
         y += dy * easing + nY*(microfone/3 + 5.2);
         
         btInfo.frame();
+        btCamera.frame();
         location();
         compass.frame(targetDEGREE - compassDEGREE);
         
@@ -338,6 +339,48 @@ class Ball {
     ellipse(x, y, diameter+diameter*microfone, diameter+diameter*microfone);
   }
 }
+class ButtonCamera {
+    boolean overButton = false;
+    int pX = 20;
+    int pY = 460;
+    int dm = 12;   
+    
+    ButtonCamera() {  
+        smooth();
+        rectMode(CENTER_RADIUS);
+    }    
+    void frame() {
+        checkButton();
+          // Left buttom
+        if (overButton == true) {
+          cameraShow = true;
+          println("camera " + cameraShow);
+          iphone.squareCamera();
+          
+          // circulo          
+          noStroke();
+          fill(0);
+          rect(pX, pY, 16, 16);
+          
+          
+        } else {
+          // circulo
+          stroke(0);
+          strokeWeight(1);
+          noFill();
+          rect(pX, pY, 8, 8);
+          
+        }
+    }
+    void checkButton() {
+          if (touch1X > pX-dm && touch1X < pX+dm && touch1Y > pY-dm && touch1Y < pY+dm) {
+            overButton = true;   
+          } else {
+            overButton = false;
+          }
+    }
+}
+
 class ButtonClose {
     boolean overButton = false;
     int pX = 285;
