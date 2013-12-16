@@ -1211,7 +1211,6 @@
 		p.movieCompleted			= undef;	
 		p.photoSelected				= undef;
 		p.photoCancelled			= undef;
-		p.cameraCaptured			= undef;
 		p.cameraCancelled			= undef;	
 		// #######################################################################
 

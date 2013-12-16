@@ -484,13 +484,8 @@ function photoCancelled() {
 function cameraCaptured(f) {
     if(f) {
         cam = f;
-        debug("Squared: " + cam);
+        debug("cameraCaptured: " + cam);
     }
-	
-	if ( p.cameraCaptured ) {
-		p.cameraCaptured(f);
-	}
-	
 }
 
 function cameraCancelled() {

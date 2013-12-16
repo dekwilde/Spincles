@@ -189,7 +189,7 @@ void draw()
           externals.context.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
           //background(0,0,0,0);
           
-          if (cNum>30) {
+          if (cNum>10) {
             println("ip: " + cNum + iphone.getCamera());
             camImg = loadImage(iphone.getCamera());
             cNum = 0;
