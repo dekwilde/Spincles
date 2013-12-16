@@ -482,17 +482,14 @@ function photoCancelled() {
 }
 
 function cameraCaptured(f) {
-
     if(f) {
         cam = f;
         debug("Squared: " + cam);
     }
-
-	/*
+	
 	if ( p.cameraCaptured ) {
 		p.cameraCaptured(f);
 	}
-    */
 	
 }
 
@@ -763,6 +760,9 @@ IPhone = function IPhone(processing) {
     ip.squareCamera = function(e) {
 		if (e == null){ var edit = false; } else { var edit = e; }
 		Titanium.App.fireEvent('squareCamera', {data:edit});
+	};
+    ip.updateSquare = function() {
+		Titanium.App.fireEvent('updateSquare');
 	};
 
 	ip.getCamera = function() {

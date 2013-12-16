@@ -64,5 +64,8 @@
 
 @property(nonatomic) Boolean isUsingFrontFacingCamera;
 
+
+
+
 @end
 

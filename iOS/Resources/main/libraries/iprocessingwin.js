@@ -515,9 +515,7 @@ function squareCamera() {
                                 
                                 //image_preview.image = e.media;
                                 var image = e.media;
-                                
-                                
-                                
+                                                                
                                 var filename = "cam.png";
                                 var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
                                 f.write(image);
@@ -526,8 +524,6 @@ function squareCamera() {
                                   );
                                 
                                 Ti.API.debug("takeCamera success: " + filename);
-                                updateSquare();
-                                
                                 });
     
     // Take Photo Button

@@ -18,8 +18,8 @@ class ButtonCamera {
           
           // circulo          
           noStroke();
-          fill(0);
-          rect(pX, pY, 16, 16);
+          fill(255);
+          rect(pX, pY, 8, 8);
           
           
         } else {

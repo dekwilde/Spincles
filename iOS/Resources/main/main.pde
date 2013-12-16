@@ -188,13 +188,15 @@ void draw()
         if (cameraShow) {  
           externals.context.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
           //background(0,0,0,0);
-          println("ip: " + cNum + iphone.getCamera());
-          if (cNum>10) {
+          
+          if (cNum>30) {
+            println("ip: " + cNum + iphone.getCamera());
             camImg = loadImage(iphone.getCamera());
             cNum = 0;
+            iphone.updateSquare();
           }
           cNum++;
-          //image(camImg); 
+          image(camImg); 
         } else {
           fill(colorR, colorG, colorB, 255 - delay_mic);
           noStroke();        

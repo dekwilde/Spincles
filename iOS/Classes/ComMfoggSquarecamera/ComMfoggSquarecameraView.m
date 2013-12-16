@@ -243,11 +243,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 		if (stillImageConnection) { break; }
 	}
     
-    UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
-    //AVCaptureVideoOrientation avcaptureOrientation = [self avOrientationForDeviceOrientation:curDeviceOrientation];
-    //[stillImageConnection setVideoOrientation:avcaptureOrientation];
-    //[stillImageConnection setVideoScaleAndCropFactor:effectiveScale]; // leftover from 'pinchzoom' in iOSDL demo?
-    
+    UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];    
     
     [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error)
      {
@@ -259,8 +255,38 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
          UIImage *image = [[UIImage alloc] initWithData:imageData];
          
          
+         CGSize size = image.size;  // this will be the full size of the screen
          
-         TiBlob *imageBlob = [[TiBlob alloc] initWithImage:image]; // maybe try image here
+         CGRect cropRect = CGRectMake(
+                                      0,
+                                      0,
+                                      320,
+                                      480
+                                      );
+         
+         CGRect customImageRect = CGRectMake(
+                                             -((((cropRect.size.width/size.width)*size.height)-cropRect.size.height)/2),
+                                             0,
+                                             ((cropRect.size.width/size.width)*size.height),
+                                             cropRect.size.width);
+         
+         UIGraphicsBeginImageContext(cropRect.size);
+         CGContextRef context = UIGraphicsGetCurrentContext();
+         
+         CGContextScaleCTM(context, 1.0, -1.0);
+         CGContextRotateCTM(context, -M_PI/2);
+         
+         
+         CGContextDrawImage(context, customImageRect,
+                            image.CGImage);
+         
+         UIImage *croppedImage = UIGraphicsGetImageFromCurrentImageContext();
+         UIGraphicsEndImageContext();
+         
+         
+         
+         
+         TiBlob *imageBlob = [[TiBlob alloc] initWithImage:croppedImage]; // maybe try image here
          NSDictionary *event = [NSDictionary dictionaryWithObject:imageBlob forKey:@"media"];
          
          // HURRAH!
@@ -306,7 +332,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     } else {
         desiredPosition = AVCaptureDevicePositionFront;
     }
-    self.captureSession.sessionPreset = AVCaptureSessionPresetLow;
     for (AVCaptureDevice *d in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo]) {
         if ([d position] == desiredPosition) {
             [[self.prevLayer session] beginConfiguration];
