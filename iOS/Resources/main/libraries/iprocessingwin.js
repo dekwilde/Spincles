@@ -12,6 +12,7 @@
 // open a single window
 var win = Titanium.UI.currentWindow;
 var overlay = null;
+var cameraView = null;
 
 function dispose() {
     'use strict';
@@ -19,26 +20,18 @@ function dispose() {
     overlay = null;
 }
 
-
-
-var SquareCamera = require('com.mfogg.squarecamera');
-Ti.API.info("module is => " + SquareCamera);
-var cameraView = null;
-cameraView = SquareCamera.createView({
-                                     top: 0,
-                                     height: 480,
-                                     width: 320,
-                                     backgroundColor: "#000"
-                                     });
-win.add(cameraView);
+var mainCamera = Titanium.UI.createView({
+                                        touchEnabled: false,
+                                        enabled: false
+                                       });
+win.add(mainCamera);
 
 
 var webview = Titanium.UI.createWebView({
                                         url:'../main.html',
                                         height: 480,
                                         width: 320,
-                                        backgroundColor:'transparent',
-                                        opacity:0.5
+                                        backgroundColor:'transparent'
                                         });
 webview.addEventListener('load', init);
 win.add(webview);
@@ -482,6 +475,17 @@ function updateCamera() {
 var updateSquareTimer = null;
 function squareCamera() {
 
+    var SquareCamera = require('com.mfogg.squarecamera');
+    Ti.API.info("module is => " + SquareCamera);
+    cameraView = SquareCamera.createView({
+                                         top: 0,
+                                         height: 480,
+                                         width: 320,
+                                         backgroundColor: "#000",
+                                         keepScreenOn: true
+                                         });
+    mainCamera.add(cameraView);
+    
     var image_preview = Ti.UI.createImageView({
                                               right: 10,
                                               bottom: 10,
@@ -539,7 +543,7 @@ function squareCamera() {
     take_photo.addEventListener("click", function(e){
                                 cameraView.takePhoto();
                                 });
-    //win.add(take_photo);
+    //mainCamera.add(take_photo);
     
     // Flash
     
@@ -572,7 +576,7 @@ function squareCamera() {
                            };
                            });
     
-    //win.add(flash);
+    //mainCamera.add(flash);
     
     // Switch Camera
     
@@ -597,7 +601,7 @@ function squareCamera() {
                                    cameraView.switchCamera();
                                    });
     
-    //win.add(switch_camera);
+    //mainCamera.add(switch_camera);
     
     
     updateSquareTimer = setTimeout(updateSquare, 5000);

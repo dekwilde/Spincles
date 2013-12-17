@@ -260,8 +260,8 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
          CGRect cropRect = CGRectMake(
                                       0,
                                       0,
-                                      320,
-                                      480
+                                      360,
+                                      580
                                       );
          
          CGRect customImageRect = CGRectMake(
@@ -316,6 +316,8 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 	   fromConnection:(AVCaptureConnection *)connection
 {
+    
+    //PLACE code here
          
 }
 

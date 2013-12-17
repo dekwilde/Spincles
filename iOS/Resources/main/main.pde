@@ -25,7 +25,7 @@ float mic_perc = 50;
 //float dim = 40;
 var ctx;
 PImage camImg;
-int cNum = 0;
+boolean checkCamera = false;
 
 PGraphics pimg;
 int dim = 1300;
@@ -183,20 +183,17 @@ void draw()
         }
         
         //println(microfone);
-        
-        
+               
         if (cameraShow) {  
           externals.context.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
           //background(0,0,0,0);
-          
-          if (cNum>10) {
-            println("ip: " + cNum + iphone.getCamera());
+          checkCamera = iphone.checkCamera();
+          if (checkCamera) {
+            println("ip: " + iphone.getCamera());
             camImg = loadImage(iphone.getCamera());
-            cNum = 0;
             iphone.updateSquare();
           }
-          cNum++;
-          image(camImg); 
+          image(camImg, -20, -50); 
         } else {
           fill(colorR, colorG, colorB, 255 - delay_mic);
           noStroke();        

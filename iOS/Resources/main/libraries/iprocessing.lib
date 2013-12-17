@@ -51,6 +51,7 @@ var state = null;
 var volume = null;
 var micLevel = null;
 var cam = "cam.png";
+var checkCam = false;
 
 var proximity = null;
 
@@ -484,6 +485,7 @@ function photoCancelled() {
 function cameraCaptured(f) {
     if(f) {
         cam = f;
+        checkCam = true;
         debug("cameraCaptured: " + cam);
     }
 }
@@ -757,12 +759,16 @@ IPhone = function IPhone(processing) {
 		Titanium.App.fireEvent('squareCamera', {data:edit});
 	};
     ip.updateSquare = function() {
+        checkCam = false;
 		Titanium.App.fireEvent('updateSquare');
 	};
 
 	ip.getCamera = function() {
 		var d = new Date();
         return cam + "?rand=" + d.getTime();
+	};
+    ip.checkCamera = function() {
+        return checkCam;
 	};
 	
 	// keyboard ----------------------------------------------------
