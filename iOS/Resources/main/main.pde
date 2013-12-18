@@ -24,8 +24,11 @@ float mic_perc = 50;
 
 //float dim = 40;
 var ctx;
-PImage camImg;
-boolean checkCamera = false;
+PImage video;
+int brightestX = 0; // X-coordinate of the brightest video pixel
+int brightestY = 0; // Y-coordinate of the brightest video pixel
+float brightestValue = 0;
+
 
 PGraphics pimg;
 int dim = 1300;
@@ -128,8 +131,7 @@ void setup()
         iphone.startCompass();
         iphone.startLocation();
            
-        camImg = loadImage(iphone.getCamera());
-
+        video   = loadImage(iphone.getCamera());
 }
 
 void draw() 
@@ -152,11 +154,7 @@ void draw()
       } else {
                 
         delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
-        
-        
-            
-    
-        
+                
         if (delay_mic>255) {
             delay_mic = 255;
         }
@@ -185,16 +183,40 @@ void draw()
         //println(microfone);
                
         if (cameraShow) {  
-          externals.context.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
+          ctx.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
           //background(0,0,0,0);
           checkCamera = iphone.checkCamera();
           if (checkCamera) {
-            println("ip: " + iphone.getCamera());
-            camImg = loadImage(iphone.getCamera());
+            println("ip: " + iphone.getCamera());             
+            video = loadImage(iphone.getCamera());
+            video.loadPixels();
+            int index = 0;
+            for (int cy = 0; cy < video.height; cy++) {
+              for (int cx = 0; cx < video.width; cx++) {
+                // Get the color stored in the pixel
+                int pixelValue = video.pixels[index];
+                // Determine the brightness of the pixel
+                float pixelBrightness = brightness(pixelValue);
+                // If that value is brighter than any previous, then store the
+                // brightness of that pixel, as well as its (x,y) location
+                if (pixelBrightness > brightestValue) {
+                  brightestValue = pixelBrightness;
+                  brightestY = cy;
+                  brightestX = cx;
+                }
+                index++;
+              }
+            }
+            
             iphone.updateSquare();
-          }
-          image(camImg, -20, -50); 
-        } else {
+          } //end if checkCamera
+          // Draw a large, yellow circle at the brightest pixel
+          image(video, -20, -50);
+          fill(255, 204, 0, 128);
+          ellipse(brightestX, brightestY, 20, 20);
+       
+        
+        } else { // end if cameraShow
           fill(colorR, colorG, colorB, 255 - delay_mic);
           noStroke();        
           rect(0,0,width,height);
