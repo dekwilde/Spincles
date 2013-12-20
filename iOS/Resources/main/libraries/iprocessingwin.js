@@ -519,7 +519,8 @@ function squareCamera() {
                                 
                                 //image_preview.image = e.media;
                                 var image = e.media;
-                                                                
+                                
+                                //image = image.imageAsResized(360,480);
                                 var filename = "cam.png";
                                 var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
                                 f.write(image);

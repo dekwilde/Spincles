@@ -165,7 +165,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
                     image_square_wh
                 );
 
-            //CGRect cropRect = self.stillImage.frame; // this is only 300 x 300 (the size of the square)
+            //CGRect cropRect = self.stillImage.frame; //  (the size of the square)
             
 
 
@@ -257,11 +257,12 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
          
          CGSize size = image.size;  // this will be the full size of the screen
          
+         //CGRect cropRect = self.stillImage.frame; //  (the size of the square)
          CGRect cropRect = CGRectMake(
                                       0,
                                       0,
-                                      360,
-                                      580
+                                      18,
+                                      29
                                       );
          
          CGRect customImageRect = CGRectMake(
@@ -275,6 +276,9 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
          
          CGContextScaleCTM(context, 1.0, -1.0);
          CGContextRotateCTM(context, -M_PI/2);
+         CGContextSetRGBFillColor(context, (0.0/255.0), (0.0/255.0), 0.0/255.0, 1.0);
+         CGContextFillRect(context, self.frame);
+         //CGContextSetAlpha(context, 0.0);
          
          
          CGContextDrawImage(context, customImageRect,
@@ -287,6 +291,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
          
          
          TiBlob *imageBlob = [[TiBlob alloc] initWithImage:croppedImage]; // maybe try image here
+         
          NSDictionary *event = [NSDictionary dictionaryWithObject:imageBlob forKey:@"media"];
          
          // HURRAH!

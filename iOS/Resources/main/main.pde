@@ -24,11 +24,6 @@ float mic_perc = 50;
 
 //float dim = 40;
 var ctx;
-PImage video;
-int brightestX = 0; // X-coordinate of the brightest video pixel
-int brightestY = 0; // Y-coordinate of the brightest video pixel
-float brightestValue = 0;
-
 
 PGraphics pimg;
 int dim = 1300;
@@ -130,8 +125,8 @@ void setup()
 	iphone.startAccelerometer();
         iphone.startCompass();
         iphone.startLocation();
-           
-        video   = loadImage(iphone.getCamera());
+        
+        video = createImage(0, 0, RGB);   
 }
 
 void draw() 
@@ -183,39 +178,7 @@ void draw()
         //println(microfone);
                
         if (cameraShow) {  
-          ctx.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
-          //background(0,0,0,0);
-          checkCamera = iphone.checkCamera();
-          if (checkCamera) {
-            println("ip: " + iphone.getCamera());             
-            video = loadImage(iphone.getCamera());
-            video.loadPixels();
-            int index = 0;
-            for (int cy = 0; cy < video.height; cy++) {
-              for (int cx = 0; cx < video.width; cx++) {
-                // Get the color stored in the pixel
-                int pixelValue = video.pixels[index];
-                // Determine the brightness of the pixel
-                float pixelBrightness = brightness(pixelValue);
-                // If that value is brighter than any previous, then store the
-                // brightness of that pixel, as well as its (x,y) location
-                if (pixelBrightness > brightestValue) {
-                  brightestValue = pixelBrightness;
-                  brightestY = cy;
-                  brightestX = cx;
-                }
-                index++;
-              }
-            }
-            
-            iphone.updateSquare();
-          } //end if checkCamera
-          // Draw a large, yellow circle at the brightest pixel
-          image(video, -20, -50);
-          fill(255, 204, 0, 128);
-          ellipse(brightestX, brightestY, 20, 20);
-       
-        
+            Camera();
         } else { // end if cameraShow
           fill(colorR, colorG, colorB, 255 - delay_mic);
           noStroke();        
