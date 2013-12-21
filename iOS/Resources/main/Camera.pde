@@ -26,7 +26,7 @@ void Camera() {
       brightestY = 0; // Y-coordinate of the brightest video pixel
       brightestValue = 0;
       
-      image(video, 0,0, video.width, video.height); // get the pixels      
+      //image(video, 0,0, video.width, video.height); // get the pixels      
       video.loadPixels();
       int index = 0;
       for (int cy = 0; cy < video.height; cy++) {
@@ -50,7 +50,7 @@ void Camera() {
   
   
   // Draw a large, yellow circle at the brightest pixel
-  image(video, -20, -50, video.width*20, video.height*20);
+  //image(video, -20, -50, video.width*10, video.height*10);
   fill(255, 204, 0, 128);
-  ellipse(brightestX*20, brightestY*20, 20, 20);
+  ellipse(brightestX*10, brightestY*10, 20, 20);
 }

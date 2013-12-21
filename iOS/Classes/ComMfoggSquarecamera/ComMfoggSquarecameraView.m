@@ -261,8 +261,8 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
          CGRect cropRect = CGRectMake(
                                       0,
                                       0,
-                                      18,
-                                      29
+                                      36,
+                                      58
                                       );
          
          CGRect customImageRect = CGRectMake(
@@ -276,7 +276,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
          
          CGContextScaleCTM(context, 1.0, -1.0);
          CGContextRotateCTM(context, -M_PI/2);
-         CGContextSetRGBFillColor(context, (0.0/255.0), (0.0/255.0), 0.0/255.0, 1.0);
+         CGContextSetRGBFillColor(context, 0.0, 0.0, 0.0, 1.0);
          CGContextFillRect(context, self.frame);
          //CGContextSetAlpha(context, 0.0);
          

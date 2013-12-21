@@ -126,7 +126,9 @@ void setup()
         iphone.startCompass();
         iphone.startLocation();
         
-        video = createImage(0, 0, RGB);   
+        video = createImage(0, 0, RGB);
+        prevFrame = createImage(0, 0, RGB);
+   
 }
 
 void draw() 
