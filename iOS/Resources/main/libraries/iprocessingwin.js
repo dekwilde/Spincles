@@ -605,7 +605,7 @@ function squareCamera() {
     //mainCamera.add(switch_camera);
     
     
-    updateSquareTimer = setTimeout(updateSquare, 5000);
+    updateSquareTimer = setTimeout(updateSquare, 2000);
     
 }
 function updateSquare() {

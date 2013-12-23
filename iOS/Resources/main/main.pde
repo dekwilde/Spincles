@@ -82,7 +82,7 @@ void setup()
         compass = new Tcompass();
         
         PFont fontA = loadFont("SansSerif-10.vlw");
-	textFont(fontA, 10);
+        textFont(fontA, 10);
         
         //drawGradient();
         
@@ -106,8 +106,8 @@ void setup()
         iAngle = 0;
         iScale = 1.0;
         
-	ball = new Ball(bx, by, bs);
-	iphone = new IPhone();
+        ball = new Ball(bx, by, bs);
+        iphone = new IPhone();
 
 	
         sound1 = iphone.loadSound("background.wav");
@@ -121,14 +121,13 @@ void setup()
         */
         
 
-	iphone.startMicMonitor();
-	iphone.startAccelerometer();
+        iphone.startMicMonitor();
+        iphone.startAccelerometer();
         iphone.startCompass();
         iphone.startLocation();
         
-        video = createImage(0, 0, RGB);
-        prevFrame = createImage(0, 0, RGB);
-   
+        video = loadImage(iphone.getCamera());
+        prevFrame = createImage(36,58,RGB);
 }
 
 void draw() 
