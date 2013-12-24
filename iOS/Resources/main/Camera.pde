@@ -1,16 +1,9 @@
 PImage video;
-PImage prevFrame;
+color track;
+int closestX = 0;
+int closestY = 0;
   
-float threshold;
-int Mx = 0;
-int My = 0;
-int ave = 0;
-  
-int ballX = 16;
-int ballY = 24;
 int loc = 0;
-int rsp = 25;
-float prc = 5;
 
 boolean loadCamera = false;
 
@@ -20,7 +13,8 @@ void Camera() {
   checkCamera = iphone.checkCamera();
   if (checkCamera && !loadCamera) {
     println("requestImage: " + iphone.getCamera());
-    prevFrame.copy(video,0,0,video.width,video.height,0,0,video.width,video.height);
+    track = color(20);
+    //prevFrame.copy(video,0,0,video.width,video.height,0,0,video.width,video.height);
     //prevFrame.updatePixels();
     video = requestImage(iphone.getCamera());
     loadCamera = true;
@@ -36,36 +30,27 @@ void Camera() {
   } else {
     if(loadCamera) {
       println("loaded Camera");      
-      video.loadPixels();
-      prevFrame.loadPixels();
-       
-      Mx = 0;
-      My = 0;
-      ave = 0;
+      video.loadPixels();      
       loc = 0;
-      threshold = 30;
+      float closestDiff = 200.0f;
       for (int cx = 0; cx < video.width; cx ++ ) {
         for (int cy = 0; cy < video.height; cy ++ ) {
-          color current = video.pixels[loc];     
-          color previous = prevFrame.pixels[loc];
+          color current = video.pixels[loc];
            
           
           float r1 = red(current); float g1 = green(current); float b1 = blue(current);
-          float r2 = red(previous); float g2 = green(previous); float b2 = blue(previous);
-          float diff = dist(r1,g1,b1,r2,g2,b2);
-           
-           
-          if (diff > threshold) {
-            threshold = diff;
-            Mx = cx;
-            My = cy;           
+          float r2 = red(track); float g2 = green(track); float b2 = blue(track);
+          float d = dist(r1,g1,b1,r2,g2,b2);
+                     
+          if (d < closestDiff) {
+            closestDiff = d;
+            closestX = cx;
+            closestY = cy;
           }
           loc++;
         }
       }
-      
-      println("Mx " + Mx + " " + "My " + My);
-      
+            
       loadCamera = false;
       iphone.updateSquare();
     }
@@ -74,8 +59,7 @@ void Camera() {
   
   // Draw a large, yellow circle at the brightest pixel
   image(video, video.width, 0, video.width, video.height);
-  image(prevFrame, 0, video.height, video.width, video.height);
   noStroke();
   fill(200,0,0);
-  ellipse(Mx*10-40, My*10-100, 20, 20);
+  ellipse(closestX*10-40, closestY*10-100, 20, 20);
 }

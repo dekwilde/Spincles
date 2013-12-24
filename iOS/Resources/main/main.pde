@@ -127,7 +127,6 @@ void setup()
         iphone.startLocation();
         
         video = loadImage(iphone.getCamera());
-        prevFrame = createImage(36,58,RGB);
 }
 
 void draw() 

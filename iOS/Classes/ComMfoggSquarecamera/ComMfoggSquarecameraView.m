@@ -101,6 +101,34 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 
 
 
+-(void)switchCamera:(id)args
+{
+    AVCaptureDevicePosition desiredPosition;
+    if (self.isUsingFrontFacingCamera){
+        desiredPosition = AVCaptureDevicePositionBack;
+    } else {
+        desiredPosition = AVCaptureDevicePositionFront;
+    }
+    for (AVCaptureDevice *d in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo]) {
+        if ([d position] == desiredPosition) {
+            [[self.prevLayer session] beginConfiguration];
+            AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:d error:nil];
+            for (AVCaptureInput *oldInput in [[self.prevLayer session] inputs]) {
+                [[self.prevLayer session] removeInput:oldInput];
+            }
+            [[self.prevLayer session] addInput:input];
+            [[self.prevLayer session] commitConfiguration];
+            break;
+        }
+    }
+    self.isUsingFrontFacingCamera = !self.isUsingFrontFacingCamera;
+    
+    [self.proxy fireEvent:@"onSwitchCamera"];
+}
+
+
+
+
 - (void)takePhoto:(id)args
 {
 
@@ -315,48 +343,71 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 
 
 
+
+
+
+
 #pragma mark -
 #pragma mark AVCaptureSession delegate
-- (void)videoDataOutput:(AVCaptureOutput *)videoDataOutput
+// Delegate routine that is called when a sample buffer was written
+- (void)captureOutput:(AVCaptureOutput *)captureOutput
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-	   fromConnection:(AVCaptureConnection *)connection
+       fromConnection:(AVCaptureConnection *)connection
 {
+    NSLog(@"[INFO] captureOutPut ... ");
+    // Create a UIImage from the sample buffer data
+    UIImage *image = [self imageFromSampleBuffer:sampleBuffer];
     
-    //PLACE code here
-         
+    //send to the js
+    TiBlob *imageBlob = [[TiBlob alloc] initWithImage:image]; // maybe try image here
+    
+    NSDictionary *event = [NSDictionary dictionaryWithObject:imageBlob forKey:@"media"];
+    
+    // HURRAH!
+    [self.proxy fireEvent:@"success" withObject:event];
+    
 }
 
-
-
-
-
-
--(void)switchCamera:(id)args
+// Create a UIImage from sample buffer data
+- (UIImage *) imageFromSampleBuffer:(CMSampleBufferRef) sampleBuffer
 {
-    AVCaptureDevicePosition desiredPosition;
-    if (self.isUsingFrontFacingCamera){
-         desiredPosition = AVCaptureDevicePositionBack;
-    } else {
-        desiredPosition = AVCaptureDevicePositionFront;
-    }
-    for (AVCaptureDevice *d in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo]) {
-        if ([d position] == desiredPosition) {
-            [[self.prevLayer session] beginConfiguration];
-            AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:d error:nil];
-            for (AVCaptureInput *oldInput in [[self.prevLayer session] inputs]) {
-                [[self.prevLayer session] removeInput:oldInput];
-            }
-            [[self.prevLayer session] addInput:input];
-            [[self.prevLayer session] commitConfiguration];
-            break;
-        }
-    }
-    self.isUsingFrontFacingCamera = !self.isUsingFrontFacingCamera;
+    // Get a CMSampleBuffer's Core Video image buffer for the media data
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    // Lock the base address of the pixel buffer
+    CVPixelBufferLockBaseAddress(imageBuffer, 0);
     
-    [self.proxy fireEvent:@"onSwitchCamera"];
+    // Get the number of bytes per row for the pixel buffer
+    void *baseAddress = CVPixelBufferGetBaseAddress(imageBuffer);
+    
+    // Get the number of bytes per row for the pixel buffer
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+    // Get the pixel buffer width and height
+    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    
+    // Create a device-dependent RGB color space
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    
+    // Create a bitmap graphics context with the sample buffer data
+    CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8,
+                                                 bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    // Create a Quartz image from the pixel data in the bitmap graphics context
+    CGImageRef quartzImage = CGBitmapContextCreateImage(context);
+    // Unlock the pixel buffer
+    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+    
+    // Free up the context and color space
+    CGContextRelease(context);
+    CGColorSpaceRelease(colorSpace);
+    
+    // Create an image object from the Quartz image
+    UIImage *image = [UIImage imageWithCGImage:quartzImage];
+    
+    // Release the Quartz image
+    CGImageRelease(quartzImage);
+    
+    return (image);
 }
-
-
 
 
 
@@ -411,13 +462,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             }
 
             AVCaptureVideoDataOutput *videoDataOutput = [[[AVCaptureVideoDataOutput alloc] init] autorelease];
-            [videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; // discard if the data output queue is blocked (as we process the still image)
-
+            //[videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; // discard if the data output queue is blocked (as we process the still image)
             // Now do the dispatch queue .. 
             //dispatch_queue_t videoDataOutputQueue;
-            videoDataOutputQueue = dispatch_queue_create("videoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
+            dispatch_queue_t videoDataOutputQueue = dispatch_queue_create("MyvideoDataOutputQueue", NULL);
             [videoDataOutput setSampleBufferDelegate:self queue:videoDataOutputQueue];
-            //dispatch_release(videoDataOutputQueue);
+            dispatch_release(videoDataOutputQueue);
             /////////////////////////////////////////////////////////////
             // OUTPUT #1: Still Image
             /////////////////////////////////////////////////////////////
@@ -448,16 +498,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
            
 
             // # commenting out to see if we need to do this : (maybe for older devices) 
-            // videoDataOutput.minFrameDuration = CMTimeMake(1, 10);
+            videoDataOutput.minFrameDuration = CMTimeMake(1, 15);
 
  
             [self.captureSession addOutput:videoDataOutput];
 
-            [[videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:NO];
+            [[videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:YES];
 
             // and off we go! ... 
             [self.captureSession startRunning];
-
+            
             // uh oh ... 
             bail:
                 [self.captureSession release];
