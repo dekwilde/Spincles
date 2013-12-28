@@ -355,16 +355,57 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection
 {
     NSLog(@"[INFO] captureOutPut ... ");
+
+    
+    UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
     // Create a UIImage from the sample buffer data
     UIImage *image = [self imageFromSampleBuffer:sampleBuffer];
+
     
-    //send to the js
-    TiBlob *imageBlob = [[TiBlob alloc] initWithImage:image]; // maybe try image here
+    CGSize size = image.size;  // this will be the full size of the screen
+    
+    //CGRect cropRect = self.stillImage.frame; //  (the size of the square)
+    CGRect cropRect = CGRectMake(
+                                 0,
+                                 0,
+                                 36,
+                                 48
+                                 );
+    
+    CGRect customImageRect = CGRectMake(
+                                        -((((cropRect.size.width/size.width)*size.height)-cropRect.size.height)/2),
+                                        0,
+                                        ((cropRect.size.width/size.width)*size.height),
+                                        cropRect.size.width);
+    
+    UIGraphicsBeginImageContext(cropRect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextScaleCTM(context, 1.0, -1.0);
+    CGContextRotateCTM(context, -M_PI/2);
+    //CGContextSetRGBFillColor(context, 0.0, 0.0, 0.0, 1.0);
+    //CGContextFillRect(context, self.frame);
+    //CGContextSetAlpha(context, 0.0);
+    
+    
+    CGContextDrawImage(context, customImageRect,
+                       image.CGImage);
+    
+    UIImage *croppedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    
+    
+    
+    TiBlob *imageBlob = [[TiBlob alloc] initWithImage:croppedImage]; // maybe try image here
     
     NSDictionary *event = [NSDictionary dictionaryWithObject:imageBlob forKey:@"media"];
     
     // HURRAH!
     [self.proxy fireEvent:@"success" withObject:event];
+    
+    
+    
     
 }
 
@@ -391,6 +432,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // Create a bitmap graphics context with the sample buffer data
     CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8,
                                                  bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    
     // Create a Quartz image from the pixel data in the bitmap graphics context
     CGImageRef quartzImage = CGBitmapContextCreateImage(context);
     // Unlock the pixel buffer
@@ -399,9 +441,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // Free up the context and color space
     CGContextRelease(context);
     CGColorSpaceRelease(colorSpace);
+
+    
     
     // Create an image object from the Quartz image
-    UIImage *image = [UIImage imageWithCGImage:quartzImage];
+    //UIImage *image = [UIImage imageWithCGImage:quartzImage];
+    
+    UIImage *image =  [UIImage imageWithCGImage:quartzImage scale:1.0 orientation:UIImageOrientationRight];
     
     // Release the Quartz image
     CGImageRelease(quartzImage);
@@ -462,7 +508,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             }
 
             AVCaptureVideoDataOutput *videoDataOutput = [[[AVCaptureVideoDataOutput alloc] init] autorelease];
-            //[videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; // discard if the data output queue is blocked (as we process the still image)
+            [videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; // discard if the data output queue is blocked (as we process the still image)
             // Now do the dispatch queue .. 
             //dispatch_queue_t videoDataOutputQueue;
             dispatch_queue_t videoDataOutputQueue = dispatch_queue_create("MyvideoDataOutputQueue", NULL);

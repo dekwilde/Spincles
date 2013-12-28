@@ -58,7 +58,7 @@ void Camera() {
   
   
   // Draw a large, yellow circle at the brightest pixel
-  image(video, video.width, 0, video.width, video.height);
+  image(video, 0, 0, video.width, video.height);
   noStroke();
   fill(200,0,0);
   ellipse(closestX*10-40, closestY*10-100, 20, 20);
