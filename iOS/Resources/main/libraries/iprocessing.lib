@@ -72,31 +72,36 @@ var compassHeading = null;
 // Init and start/stop *****************************************************
 
 function init(v) {
-	var values = v.split(';');
+
+    var values = v.split(';');
 	
 	// make a reference to Processing - should be the first instance
-	p = Processing.instances[0]; 
-
-	// initialise variables
-	name							= values[0];
+	//p = Processing.instances[0];
+    p = Processing.getInstanceById("p5js");
+    debug("Start " + p);
+    // initialise variables
+	name						= values[0];
 	device						= values[1];
-	os								= values[2];
+	os							= values[2];
 	version						= values[3];
-	uuid							= values[4];
-	volume						= p.float(values[5]);
-	proximity					= p.int(values[6]);
-	p.orientation			= findOrientation(p.int(values[7]));
-	networkConnected	= p.boolean(values[8]);
-	networkType				= p.int(values[9]);
-	networkAddress		= values[10];
-	state							= values[11];
+	uuid						= values[4];
+	volume						= values[5]; 
+    proximity					= values[6];
+	p.orientation               = findOrientation(values[7]);
+	networkConnected            = values[8];
+	networkType                 = values[9];
+	networkAddress              = values[10];
+	state						= values[11];
+    
+    debug("Start " + v);
+
 
 	// start iProcessing
 	start();
 }
 
 function start() {
-	if (p) {
+    if (p) {
 		// add touch events to canvas
 		c = p.externals.canvas;
 		addTouchEvents(c);

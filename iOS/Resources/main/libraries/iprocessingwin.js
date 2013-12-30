@@ -71,6 +71,8 @@ function init(e) {
 	p(
 		'init("' + values + '");'
 	);
+    
+    Ti.API.info("init =>  start");
 }
 
 // iPhone events/functions *********************************************

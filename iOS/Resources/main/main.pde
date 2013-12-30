@@ -68,7 +68,7 @@ float pInfo = 480;
 
 void setup() 
 {
-        size(320, 480);
+        size(320, 480, P3D);
         ctx = externals.context;
         frameRate(30);
         //background(0);
@@ -185,7 +185,7 @@ void draw()
           rect(0,0,width,height);
         }
         
-
+        Three();
         
         
         ball.move();
