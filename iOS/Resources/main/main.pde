@@ -126,6 +126,7 @@ void setup()
         iphone.startCompass();
         iphone.startLocation();
         
+        setupThree();
         video = loadImage(iphone.getCamera());
 }
 
