@@ -82,7 +82,7 @@ void setup()
         compass = new Tcompass();
         
         PFont fontA = loadFont("SansSerif-10.vlw");
-        textFont(fontA, 10);
+        textFont(fontA, 20);
         
         //drawGradient();
         
