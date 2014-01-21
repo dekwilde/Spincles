@@ -29,8 +29,8 @@ win.add(mainCamera);
 
 var webview = Titanium.UI.createWebView({
                                         url:'../main.html',
-                                        height: 480,
-                                        width: 320,
+                                        //height: 480,
+                                        //width: 320,
                                         backgroundColor:'transparent'
                                         });
 webview.addEventListener('load', init);
@@ -72,7 +72,7 @@ function init(e) {
 		'init("' + values + '");'
 	);
     
-    Ti.API.info("init =>  start");
+    Ti.API.info("init win =>  start");
 }
 
 // iPhone events/functions *********************************************

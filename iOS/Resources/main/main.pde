@@ -68,7 +68,7 @@ float pInfo = 480;
 
 void setup() 
 {
-        size(320, 480, P3D);
+        size(screenWidth, screenHeight, P3D);
         ctx = externals.context;
         frameRate(30);
         //background(0);
