@@ -68,7 +68,7 @@ float pInfo = 480;
 
 void setup() 
 {
-        size(screenWidth, screenHeight, P3D);
+        size(screenWidth, screenHeight);
         ctx = externals.context;
         frameRate(30);
         //background(0);
@@ -126,7 +126,7 @@ void setup()
         iphone.startCompass();
         iphone.startLocation();
         
-        setupThree();
+        //setupThree();
         video = loadImage(iphone.getCamera());
 }
 
@@ -186,7 +186,7 @@ void draw()
           rect(0,0,width,height);
         }
         
-        Three();
+        //Three();
         
         
         ball.move();
