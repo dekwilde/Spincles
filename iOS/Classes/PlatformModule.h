@@ -3,13 +3,11 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_PLATFORM
 
 #import "TiModule.h"
-#import "PlatformModuleDisplayCapsProxy.h"
+#import "TiPlatformDisplayCaps.h"
 
 @interface PlatformModule : TiModule 
 {
@@ -17,13 +15,12 @@
 	NSString *model;
 	NSString *version;
 	NSString *architecture;
-	NSString *macaddress;
 	NSNumber *processorCount;
 	NSString *username;
 	NSString *address;
 	NSString *ostype;
 	NSNumber *availableMemory;
-	PlatformModuleDisplayCapsProxy *capabilities;
+	TiPlatformDisplayCaps *capabilities;
 	BOOL batteryEnabled;
 }
 
@@ -32,13 +29,14 @@
 @property(readonly,nonatomic) NSString *model;
 @property(readonly,nonatomic) NSString *version;
 @property(readonly,nonatomic) NSString *architecture;
+@property(readonly,nonatomic) NSString *manufacturer;
 @property(readonly,nonatomic) NSString *macaddress;
 @property(readonly,nonatomic) NSNumber *processorCount;
 @property(readonly,nonatomic) NSString *username;
 @property(readonly,nonatomic) NSString *address;
 @property(readonly,nonatomic) NSString *ostype;
 @property(readonly,nonatomic) NSNumber *availableMemory;
-@property(readonly,nonatomic) PlatformModuleDisplayCapsProxy *displayCaps;
+@property(readonly,nonatomic) TiPlatformDisplayCaps *displayCaps;
 @property(readonly,nonatomic) NSNumber *batteryState;
 @property(readonly,nonatomic) NSNumber *batteryLevel;
 @property(readonly,nonatomic) NSString *locale;

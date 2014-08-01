@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UITABLEVIEW
 
@@ -16,7 +14,9 @@ typedef enum
 	TiUITableViewActionUpdateRow,
 	TiUITableViewActionDeleteRow,
 	TiUITableViewActionInsertRowBefore,
+    TiUITableViewActionInsertSectionBefore,
 	TiUITableViewActionInsertRowAfter,
+    TiUITableViewActionInsertSectionAfter,
 	TiUITableViewActionAppendRow,
     TiUITableViewActionAppendRowWithSection,
 	TiUITableViewActionSectionReload,
@@ -28,17 +28,15 @@ typedef enum
 @interface TiUITableViewAction : NSObject {
 @private
 	NSInteger animation;
-	NSInteger section;
 	TiUITableViewActionType type;
-	TiUITableViewRowProxy *row;
+	id obj;
 }
 
 @property(nonatomic,readonly) NSInteger animation;
-@property(nonatomic,readonly) NSInteger section;
 @property(nonatomic,readonly) TiUITableViewActionType type;
-@property(nonatomic,readonly) TiUITableViewRowProxy *row;
+@property(nonatomic,readonly) id obj;
 
--(id)initWithRow:(TiUITableViewRowProxy*)row animation:(NSDictionary*)animation section:(NSInteger)section type:(TiUITableViewActionType)type;
+-(id)initWithObject:(id)obj_ animation:(NSDictionary*)animation_ type:(TiUITableViewActionType)type_;
 +(UITableViewRowAnimation)animationStyleForProperties:(NSDictionary*)properties;
 
 @end

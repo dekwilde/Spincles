@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
 
+// Have to rename this symbol to avoid conflicts; see below
 extern NSString * SBJSONErrorDomain;
 
 enum {
@@ -84,6 +85,9 @@ in arrays or objects. Nor does it support embedded comments, or
 anything else not in the JSON specification.
  
 */
+
+// In order to preserve our SBJSON modifications while allowing modules to use their own (and updated)
+// SBJSON, we have to have an internal name for this class and alias it.
 @interface SBJSON : NSObject {
     BOOL humanReadable;
     BOOL sortKeys;

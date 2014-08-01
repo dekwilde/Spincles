@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UITEXTFIELD
 
@@ -12,9 +10,13 @@
 #import "TiUITextFieldProxy.h"
 
 #import "TiUtils.h"
-#import "TiRange.h"
 #import "TiViewProxy.h"
 #import "TiApp.h"
+#import "TiUITextWidget.h"
+
+#ifdef USE_TI_UIIOSATTRIBUTEDSTRING
+#import "TiUIiOSAttributedStringProxy.h"
+#endif
 
 @implementation TiTextField
 
@@ -40,6 +42,35 @@
 	RELEASE_TO_NIL(leftView);
 	RELEASE_TO_NIL(rightView);
 	[super dealloc];
+}
+
+-(void)setTouchHandler:(TiUIView*)handler
+{
+    //Assign only. No retain
+    touchHandler = handler;
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event 
+{
+    [touchHandler processTouchesBegan:touches withEvent:event];
+    [super touchesBegan:touches withEvent:event];
+}
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event 
+{
+    [touchHandler processTouchesMoved:touches withEvent:event];
+    [super touchesMoved:touches withEvent:event];
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event 
+{
+    [touchHandler processTouchesEnded:touches withEvent:event];
+    [super touchesEnded:touches withEvent:event];
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event 
+{
+    [touchHandler processTouchesCancelled:touches withEvent:event];
+    [super touchesCancelled:touches withEvent:event];
 }
 
 -(UIView*)newPadView:(CGFloat)width height:(CGFloat)height
@@ -163,38 +194,38 @@
 	}
 }
 
--(BOOL)canBecomeFirstResponder
-{
-	return YES;
-}
 
 -(BOOL)resignFirstResponder
 {
-	becameResponder = NO;
-	
 	if ([super resignFirstResponder])
 	{
 		[self repaintMode];
-		return YES;
+        if (becameResponder) {
+            becameResponder = NO;
+            [touchHandler makeRootViewFirstResponder];
+        }
+        return YES;
 	}
 	return NO;
 }
 
 -(BOOL)becomeFirstResponder
 {
-	becameResponder = YES;
-	
-	if ([super becomeFirstResponder])
-	{
-		[self repaintMode];
-		return YES;
-	}
-	return NO;
+    if (self.isEnabled) {
+        if ([super becomeFirstResponder])
+        {
+            becameResponder = YES;
+            [self repaintMode];
+            return YES;
+        }
+    }
+    return NO;
 }
+
 
 -(BOOL)isFirstResponder
 {
-	if ([TiUtils isiPhoneOS3_2OrGreater] && becameResponder) return YES;
+	if (becameResponder) return YES;
 	return [super isFirstResponder];
 }
 
@@ -246,10 +277,12 @@
 -(void)frameSizeChanged:(CGRect)frame bounds:(CGRect)bounds
 {
 	[TiUtils setView:textWidgetView positionRect:bounds];
+    [super frameSizeChanged:frame bounds:bounds];
 }
 
 - (void) dealloc
 {
+	WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:UITextFieldTextDidChangeNotification object:nil];
 	[super dealloc];
 }
@@ -265,15 +298,11 @@
 		((TiTextField *)textWidgetView).textAlignment = UITextAlignmentLeft;
 		((TiTextField *)textWidgetView).contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
 		[(TiTextField *)textWidgetView configure];
+		[(TiTextField *)textWidgetView setTouchHandler:self];
 		[self addSubview:textWidgetView];
+		self.clipsToBounds = YES;
+		WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
 		NSNotificationCenter * theNC = [NSNotificationCenter defaultCenter];
-		[theNC addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-		[theNC addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-		[theNC addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
-		if ([TiUtils isiPhoneOS3_2OrGreater]) {
-			[theNC addObserver:self selector:@selector(keyboardWillHideForReal:) name:TiKeyboardHideNotification object:nil];
-			[theNC addObserver:self selector:@selector(keyboardWillShow:) name:TiKeyboardShowNotification object:nil];
-		}
 		[theNC addObserver:self selector:@selector(textFieldDidChange:) name:UITextFieldTextDidChangeNotification object:textWidgetView];
 	}
 	return textWidgetView;
@@ -302,10 +331,18 @@
 	[self textWidgetView].rightButtonPadding = [TiUtils floatValue:value];
 }
 
+-(void)setEditable_:(id)value
+{
+    BOOL _trulyEnabled = ([TiUtils boolValue:value def:YES] && [TiUtils boolValue:[[self proxy] valueForUndefinedKey:@"enabled"] def:YES]);
+    [[self textWidgetView] setEnabled:_trulyEnabled];
+}
+
 -(void)setEnabled_:(id)value
 {
-	[[self textWidgetView] setEnabled:[TiUtils boolValue:value]];
+    BOOL _trulyEnabled = ([TiUtils boolValue:value def:YES] && [TiUtils boolValue:[[self proxy] valueForUndefinedKey:@"editable"] def:YES]);
+    [[self textWidgetView] setEnabled:_trulyEnabled];
 }
+
 
 -(void)setBackgroundImage_:(id)image
 {
@@ -329,6 +366,15 @@
 -(void)setHintText_:(id)value
 {
 	[[self textWidgetView] setPlaceholder:[TiUtils stringValue:value]];
+}
+
+-(void)setAttributedHintText_:(id)value
+{
+#ifdef USE_TI_UIIOSATTRIBUTEDSTRING
+    ENSURE_SINGLE_ARG(value,TiUIiOSAttributedStringProxy);
+    [[self proxy] replaceValue:value forKey:@"attributedHintText" notification:NO];
+    [[self textWidgetView] setAttributedPlaceholder:[value attributedString]];
+#endif
 }
 
 -(void)setMinimumFontSize_:(id)value
@@ -433,61 +479,51 @@
 
 - (void)textFieldDidBeginEditing:(UITextField *)tf
 {
-	if ([TiUtils isiPhoneOS3_2OrGreater]) {
-		[(TiUITextWidgetProxy*)self.proxy fireShowNotification];
-	}
-
-	if ([self.proxy _hasListeners:@"focus"])
-	{
-		[self.proxy fireEvent:@"focus" withObject:[NSDictionary dictionaryWithObject:[tf text] forKey:@"value"] propagate:NO];
-	}
+    TiUITextWidgetProxy * ourProxy = (TiUITextWidgetProxy *)[self proxy];
+    
+    //TIMOB-14563. Set the right text value.
+    if ([ourProxy suppressFocusEvents]) {
+        NSString* theText = [ourProxy valueForKey:@"value"];
+        [tf setText:theText];
+    }
+    
+	[self textWidget:tf didFocusWithText:[tf text]];
+	[self performSelector:@selector(textFieldDidChange:) onThread:[NSThread currentThread] withObject:nil waitUntilDone:NO];
 }
 
 
 #pragma mark Keyboard Delegates
 
-
-
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField;        // return NO to disallow editing.
 {
-	return YES;
+    return YES;
 }
 
 - (BOOL)textField:(UITextField *)tf shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-	NSString *curText = [tf text];
-	
-	if ([string isEqualToString:@""])
-	{
-		curText = [curText substringToIndex:[curText length]-range.length];
-	}
-	else
-	{
-		curText = [NSString stringWithFormat:@"%@%@",curText,string];
-	}
-
-	[(TiUITextFieldProxy *)self.proxy noteValueChange:curText];
+    NSString *curText = [[tf text] stringByReplacingCharactersInRange:range withString:string];
+   
+    if ( (maxLength > -1) && ([curText length] > maxLength) ) {
+        [self setValue_:curText];
+        return NO;
+    }
 	return YES;
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)tf
 {
-	if ([TiUtils isiPhoneOS3_2OrGreater]) {
-		[(TiUITextWidgetProxy*)self.proxy fireHideNotification];
-	}
-	
-	if ([self.proxy _hasListeners:@"blur"])
-	{
-		[self.proxy fireEvent:@"blur" withObject:[NSDictionary dictionaryWithObject:[tf text] forKey:@"value"] propagate:NO];
-	}
-	
-	// In order to capture gestures properly, we need to force the root view to become the first responder.
-	[[[[TiApp app] controller] view] becomeFirstResponder];
+	[self textWidget:tf didBlurWithText:[tf text]];
 }
 
 - (void)textFieldDidChange:(NSNotification *)notification
 {
-	[(TiUITextFieldProxy *)self.proxy noteValueChange:[(UITextField *)textWidgetView text]];
+    TiUITextWidgetProxy * ourProxy = (TiUITextWidgetProxy *)[self proxy];
+    
+    //TIMOB-14563. This is incorrect when passowrd mark is used. Just ignore.
+    if ([ourProxy suppressFocusEvents]) {
+        return;
+    }
+    [ourProxy noteValueChange:[(UITextField *)textWidgetView text]];
 }
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)tf
@@ -518,6 +554,18 @@
 
 	return YES;
 }
+
+-(CGFloat)contentWidthForWidth:(CGFloat)value
+{
+	return [[self textWidgetView] sizeThatFits:CGSizeMake(value, 0)].width;
+}
+
+-(CGFloat)contentHeightForWidth:(CGFloat)value
+{
+	return [[self textWidgetView] sizeThatFits:CGSizeMake(value, 0)].height;
+}
+
+
 	
 @end
 

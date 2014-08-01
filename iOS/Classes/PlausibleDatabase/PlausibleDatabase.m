@@ -84,16 +84,16 @@ NSString *PLDatabaseErrorVendorStringKey = @"com.plausiblelabs.pldatabase.error.
     /* Create the userInfo dictionary */
     userInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
                 localizedDescription, NSLocalizedDescriptionKey,
-                vendorError, PLDatabaseErrorVendorErrorKey,
-                vendorErrorString, PLDatabaseErrorVendorStringKey,
+                vendorError, TI_PLDatabaseErrorVendorErrorKey,
+                vendorErrorString, TI_PLDatabaseErrorVendorStringKey,
                 nil];
     
     /* Optionally insert the query string. */
     if (queryString != nil)
-        [userInfo setObject: queryString forKey: PLDatabaseErrorQueryStringKey];
+        [userInfo setObject: queryString forKey: TI_PLDatabaseErrorQueryStringKey];
     
     /* Return the NSError */
-    return [NSError errorWithDomain: PLDatabaseErrorDomain code: errorCode userInfo: userInfo];
+    return [NSError errorWithDomain: TI_PLDatabaseErrorDomain code: errorCode userInfo: userInfo];
 }
 
 @end

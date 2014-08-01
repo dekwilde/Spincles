@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UITAB
 
@@ -15,25 +13,40 @@
 
 @implementation TiUITabGroupProxy
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+static NSArray* tabGroupKeySequence;
+-(NSArray *)keySequence
 {
-	if ([self viewAttached])
-	{
-		[(TiUITabGroup *)[self view] willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
-	}
-	[super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    if (tabGroupKeySequence == nil)
+    {
+        //URL has to be processed first since the spinner depends on URL being remote
+        tabGroupKeySequence = [[NSArray arrayWithObjects:@"tabs",@"activeTab",nil] retain];
+    }
+    return tabGroupKeySequence;
 }
 
 -(void)dealloc
 {
+	for (id thisTab in tabs)
+	{
+        [thisTab removeFromTabGroup];
+		[thisTab setParentOrientationController:nil];
+		[thisTab setTabGroup:nil];
+        [self forgetProxy:thisTab];
+	}
 	RELEASE_TO_NIL(tabs);
 	[super dealloc];
 }
 
+-(NSString*)apiName
+{
+    return @"Ti.UI.TabGroup";
+}
+
 -(void)_initWithProperties:(NSDictionary *)properties
 {
-	[self setValue:[NSNumber numberWithBool:YES] forKey:@"allowUserCustomization"];
-	[super _initWithProperties:properties];
+    [self initializeProperty:@"allowUserCustomization" defaultValue:NUMBOOL(YES)];
+    [self initializeProperty:@"extendEdges" defaultValue: [NSArray arrayWithObjects:NUMINT(15), nil]];
+    [super _initWithProperties:properties];
 }
 
 -(void)_destroy
@@ -53,15 +66,22 @@
 	return [(TiUITabGroup*)[self view] tabbar];
 }
 
+-(BOOL)canFocusTabs
+{
+    return focussed;
+}
+
 #pragma mark Public APIs
 
 -(void)addTab:(id)tabProxy
 {
 	ENSURE_SINGLE_ARG(tabProxy,TiUITabProxy);
+	[self rememberProxy:tabProxy];
 	if (tabs == nil)
 	{
 		tabs = [[NSMutableArray alloc] initWithCapacity:4];
 	}
+	[tabProxy setParentOrientationController:self];
 	[tabs addObject:tabProxy];
 	[tabProxy setTabGroup:self];
 	[self replaceValue:tabs forKey:@"tabs" notification:YES];
@@ -84,9 +104,11 @@
 		
 		//TODO: close all the tabs and fire events
 		
-		[tabProxy setTabGroup:nil];
+        [tabProxy removeFromTabGroup];
+		[tabProxy setParentOrientationController:nil];
 		[tabs removeObject:tabProxy];
 		[self replaceValue:tabs forKey:@"tabs" notification:YES];
+		[self forgetProxy:tabProxy];
 	}
 }
 
@@ -103,6 +125,24 @@
 		ENSURE_TYPE(thisTab,TiUITabProxy);
 	}
 
+	for (id thisTab in tabs)
+	{
+		if (![newTabs containsObject:thisTab])
+		{
+			[thisTab setParentOrientationController:nil];
+			[thisTab setTabGroup:nil];
+			[self forgetProxy:thisTab];
+		}
+	}
+	for (id thisTab in newTabs)
+	{
+		if (![tabs containsObject:thisTab])
+		{
+			[self rememberProxy:thisTab];
+			[thisTab setTabGroup:self];
+			[thisTab setParentOrientationController:self];
+		}
+	}
 	[tabs release];
 	tabs = [newTabs mutableCopy];
 
@@ -117,38 +157,23 @@
 }
 
 
--(BOOL)handleFocusEvents
-{
-	return NO;
-}
-
--(void)_tabFocus
-{
-	[(TiUITabGroup *)[self view] focusVisibleWindow];
-}
-
--(void)_tabBlur
-{
-	[(TiUITabGroup *)[self view] blurVisibleWindow];
-}
-
 #pragma mark Window Management
 
--(BOOL)_handleOpen:(id)args
+-(void)windowWillOpen
 {
 	TiUITabGroup *tg = (TiUITabGroup*)self.view;
-	[tg open:args];
-	return YES;
+	[tg open:nil];
+	return [super windowWillOpen];
 }
 
--(BOOL)_handleClose:(id)args
+-(void)windowWillClose
 {
 	TiUITabGroup *tabGroup = (TiUITabGroup*)self.view;
 	if (tabGroup!=nil)
 	{
-		[tabGroup close:args];
+		[tabGroup close:nil];
 	}
-	return YES;
+	return [super windowWillClose];
 }
 
 -(void)didReceiveMemoryWarning:(NSNotification*)notification
@@ -156,6 +181,145 @@
 	// override but don't drop the tab group, causes problems
 }
 
+-(BOOL)handleFocusEvents
+{
+	return NO;
+}
+
+
+-(void)gainFocus
+{
+    if (!focussed) {
+        UITabBarController * tabController = [(TiUITabGroup *)[self view] tabController];
+        int blessedController = [tabController selectedIndex];
+        if (blessedController != NSNotFound)
+        {
+            [[tabs objectAtIndex:blessedController] handleDidFocus:nil];
+        }
+    }
+    [super gainFocus];
+}
+
+-(void)resignFocus
+{
+    if (focussed) {
+        UITabBarController * tabController = [(TiUITabGroup *)[self view] tabController];
+        int blessedController = [tabController selectedIndex];
+        if (blessedController != NSNotFound)
+        {
+            [[tabs objectAtIndex:blessedController] handleDidBlur:nil];
+        }
+    }
+    [super resignFocus];
+}
+
+- (void)viewWillAppear:(BOOL)animated;
+{
+	if ([self viewAttached])
+	{
+		UITabBarController * tabController = [(TiUITabGroup *)[self view] tabController];
+		[tabController viewWillAppear:animated];
+	}
+    [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated;
+{
+	if ([self viewAttached])
+	{
+		UITabBarController * tabController = [(TiUITabGroup *)[self view] tabController];
+		[tabController viewDidAppear:animated];
+	}
+    [super viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated;
+{
+	if ([self viewAttached])
+	{
+		UITabBarController * tabController = [(TiUITabGroup *)[self view] tabController];
+		[tabController viewWillDisappear:animated];
+	}
+    [super viewWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated;
+{
+	if ([self viewAttached])
+	{
+		UITabBarController * tabController = [(TiUITabGroup *)[self view] tabController];
+		[tabController viewDidDisappear:animated];
+	}
+    [super viewDidDisappear:animated];
+}
+
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+	if ([self viewAttached])
+	{
+		[(TiUITabGroup *)[self view] willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	}
+	[super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+-(void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+	if ([self viewAttached])
+	{
+		[(TiUITabGroup *)[self view] willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	}
+}
+-(void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    if ([self viewAttached])
+	{
+		[(TiUITabGroup *)[self view] didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	}
+}
+
+-(UIStatusBarStyle)preferredStatusBarStyle;
+{
+    UITabBarController * tabController = [(TiUITabGroup *)[self view] tabController];
+    int blessedController = [tabController selectedIndex];
+    if (blessedController != NSNotFound) {
+        return [[tabs objectAtIndex:blessedController] preferredStatusBarStyle];
+    }
+    return [super preferredStatusBarStyle];
+}
+
+-(BOOL) hidesStatusBar
+{
+    UITabBarController * tabController = [(TiUITabGroup *)[self view] tabController];
+    int blessedController = [tabController selectedIndex];
+    if (blessedController != NSNotFound) {
+        return [[tabs objectAtIndex:blessedController] hidesStatusBar];
+    }
+    return [super hidesStatusBar];
+}
+
+
+-(TiOrientationFlags)orientationFlags
+{
+	UITabBarController * tabController = [(TiUITabGroup *)[self view] tabController];
+	int blessedController = [tabController selectedIndex];
+	if (blessedController != NSNotFound)
+	{
+		TiOrientationFlags result = [[tabs objectAtIndex:blessedController] orientationFlags];
+		if (result != TiOrientationNone) {
+			return result;
+		}
+	}
+	return [super orientationFlags];
+}
+
+-(void)willChangeSize
+{
+	[super willChangeSize];
+
+	[tabs makeObjectsPerformSelector:@selector(willChangeSize)];
+	//TODO: Shouldn't tabs have a lock protecting them?
+}
 
 @end
 

@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #import "TiModule.h"
 
@@ -17,6 +15,7 @@
 @property(nonatomic,readonly) NSString *resourcesDirectory;
 @property(nonatomic,readonly) NSString *applicationDirectory;
 @property(nonatomic,readonly) NSString *applicationDataDirectory;
+@property(nonatomic,readonly) NSString *applicationCacheDirectory;
 @property(nonatomic,readonly) NSString *tempDirectory;
 @property(nonatomic,readonly) NSString *separator;
 @property(nonatomic,readonly) NSString *lineEnding;

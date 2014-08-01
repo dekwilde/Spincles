@@ -1,27 +1,35 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2010 by test3, Inc. All Rights Reserved.
+ * Copyright (c) 2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
 #import "TiBase.h"
+#include <math.h>
+
+#define INCH_IN_CM 2.54
+#define INCH_IN_MM 25.4
+
 
 //Not a class for speed reasons, like LayoutConstraint.
 
 typedef enum {
 	TiDimensionTypeUndefined,
-	TiDimensionTypePixels,
+	TiDimensionTypeDip,
 	TiDimensionTypeAuto,
+    TiDimensionTypeAutoSize,
+    TiDimensionTypeAutoFill,
 	TiDimensionTypePercent,
 } TiDimensionType;
 
+/**
+ The dimension struct.
+ */
 struct TiDimension {
 	TiDimensionType type;
 	CGFloat value;
-	//If type is TiDimensionTypePixels, value is a pixel constant,
+	//If type is TiDimensionTypeDip, value is a Dip constant,
 	//If type is TiDimensionTypePercent, value ranges from 0 (0%) to 1.0 (100%)
 };
 
@@ -29,20 +37,21 @@ typedef struct TiDimension TiDimension;
 
 extern const TiDimension TiDimensionZero;
 extern const TiDimension TiDimensionAuto;
+extern const TiDimension TiDimensionAutoSize;
+extern const TiDimension TiDimensionAutoFill;
 extern const TiDimension TiDimensionUndefined;
 
+TiDimension TiDimensionMake(TiDimensionType type, CGFloat value);
+TiDimension TiDimensionFromObject(id object);
+CGFloat convertInchToPixels(CGFloat value);
+CGFloat convertPixelsToDip(CGFloat value);
+CGFloat convertDipToInch(CGFloat value);
 
-TI_INLINE TiDimension TiDimensionMake(TiDimensionType type, CGFloat value)
-{
-	TiDimension dimension;
-	dimension.type = type;
-	dimension.value = value;
-	return dimension;
-}
+CGFloat convertDipToPixels(CGFloat value);
 
-TI_INLINE TiDimension TiDimensionPixels(CGFloat value)
+TI_INLINE TiDimension TiDimensionDip(CGFloat value)
 {
-	return TiDimensionMake(TiDimensionTypePixels,value);
+	return TiDimensionMake(TiDimensionTypeDip,value);
 }
 
 TI_INLINE bool TiDimensionIsPercent(TiDimension dimension)
@@ -55,9 +64,19 @@ TI_INLINE bool TiDimensionIsAuto(TiDimension dimension)
 	return dimension.type == TiDimensionTypeAuto;
 }
 
-TI_INLINE bool TiDimensionIsPixels(TiDimension dimension)
+TI_INLINE bool TiDimensionIsAutoSize(TiDimension dimension)
 {
-	return dimension.type == TiDimensionTypePixels;
+	return dimension.type == TiDimensionTypeAutoSize;
+}
+
+TI_INLINE bool TiDimensionIsAutoFill(TiDimension dimension)
+{
+	return dimension.type == TiDimensionTypeAutoFill;
+}
+
+TI_INLINE bool TiDimensionIsDip(TiDimension dimension)
+{
+	return dimension.type == TiDimensionTypeDip;
 }
 
 TI_INLINE bool TiDimensionIsUndefined(TiDimension dimension)
@@ -71,52 +90,26 @@ TI_INLINE bool TiDimensionEqual(TiDimension dimension1, TiDimension dimension2)
 	{
 		return false;
 	}
-	if (TiDimensionIsPixels(dimension1) || TiDimensionIsPercent(dimension1)) {
-		//Value is only valid in pixels and percent. In undefined and auto, value is ignored.
+	if (TiDimensionIsDip(dimension1) || TiDimensionIsPercent(dimension1)) {
 		return dimension1.value == dimension2.value;
 	}
 	return true;
 }
 
-TI_INLINE TiDimension TiDimensionFromObject(id object)
-{
-	if ([object isKindOfClass:[NSString class]])
-	{
-		if ([object caseInsensitiveCompare:@"auto"]==NSOrderedSame)
-		{
-			return TiDimensionAuto;
-		}
-		// do px vs % parsing
-		NSRange range = [object rangeOfString:@"px"];
-		if (range.location!=NSNotFound)
-		{
-			NSString *value = [[object substringToIndex:range.location] stringByReplacingOccurrencesOfString:@" " withString:@""];
-			return TiDimensionMake(TiDimensionTypePixels, [value floatValue]);
-		}
-		range = [object rangeOfString:@"%"];
-		if (range.location!=NSNotFound)
-		{
-			NSString *value = [[object substringToIndex:range.location] stringByReplacingOccurrencesOfString:@" " withString:@""];
-			return TiDimensionMake(TiDimensionTypePercent, ([value floatValue] / 100.0));
-		}
-	}
-	if ([object respondsToSelector:@selector(floatValue)])
-	{
-		return TiDimensionMake(TiDimensionTypePixels, [object floatValue]);
-	}
-	return TiDimensionUndefined;
-}
 
 TI_INLINE BOOL TiDimensionDidCalculateValue(TiDimension dimension,CGFloat boundingValue,CGFloat * result)
 {
 	switch (dimension.type)
 	{
-		case TiDimensionTypePixels:
+		case TiDimensionTypeDip:
 			*result = dimension.value;
 			return YES;
 		case TiDimensionTypePercent:
-			*result = dimension.value * boundingValue;
+			*result = roundf(dimension.value * boundingValue);
 			return YES;
+		default: {
+			break;
+		}
 	}
 	return NO;
 }
@@ -131,7 +124,34 @@ TI_INLINE CGFloat TiDimensionCalculateValue(TiDimension dimension,CGFloat boundi
 	return 0.0;
 }
 
+TI_INLINE CGFloat TiDimensionCalculateRatio(TiDimension dimension,CGFloat boundingValue)
+{
+	switch (dimension.type)
+	{
+		case TiDimensionTypePercent:
+			return dimension.value;
+		case TiDimensionTypeDip:
+			return dimension.value / boundingValue;
+		default: {
+			break;
+		}
+	}
+	return 0.0;
+}
+
 TI_INLINE CGFloat TiDimensionCalculateMargins(TiDimension dimension1, TiDimension dimension2, CGFloat boundingValue)
 {
 	return boundingValue - (TiDimensionCalculateValue(dimension1, boundingValue) + TiDimensionCalculateValue(dimension2, boundingValue));
+}
+
+//TODO: Do these ALL have to be TI_INLINE?
+TI_INLINE CGRect TiDimensionLayerContentCenter(TiDimension top, TiDimension left, TiDimension bottom, TiDimension right, CGSize imageSize)
+{
+	CGRect result;
+	result.origin.y = TiDimensionCalculateRatio(top,imageSize.height);
+	result.size.height = 1.0 - TiDimensionCalculateRatio(bottom,imageSize.height) - result.origin.y;
+	result.origin.x = TiDimensionCalculateRatio(left,imageSize.width);
+	result.size.width = 1.0 - TiDimensionCalculateRatio(right,imageSize.width) - result.origin.x;
+
+	return result;
 }

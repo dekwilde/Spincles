@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_CONTACTS
 
@@ -31,7 +29,10 @@ static NSDictionary* multiValueLabels;
 	
 	if (record == NULL) {
 		if (recordId != kABRecordInvalidID) {
-			record = ABAddressBookGetPersonWithRecordID([module addressBook], recordId);
+			ABAddressBookRef ourAddressBook = [module addressBook];
+			if (ourAddressBook != NULL) {
+				record = ABAddressBookGetPersonWithRecordID(ourAddressBook, recordId);
+			}
 		}
 	}
 	return record;
@@ -43,15 +44,18 @@ static NSDictionary* multiValueLabels;
 		recordId = id_;
 		record = NULL;
 		module = module_;
-		returnCache = [[NSMutableDictionary alloc] init];
 	}
 	return self;
 }
 
 -(void)dealloc
 {
-	RELEASE_TO_NIL(returnCache)
 	[super dealloc];
+}
+
+-(NSString*)apiName
+{
+    return @"Ti.Contacts.Person";
 }
 
 #pragma mark Property dictionaries
@@ -93,7 +97,7 @@ static NSDictionary* multiValueLabels;
 			 NUMINT(kABPersonInstantMessageProperty),@"instantMessage",
 			 NUMINT(kABPersonRelatedNamesProperty),@"relatedNames",
 			 NUMINT(kABPersonDateProperty),@"date",
-			 NUMINT(kABPersonURLProperty),@"URL",
+			 NUMINT(kABPersonURLProperty),@"url",
 			 nil];
 	}
 	return multiValueProperties;
@@ -153,7 +157,7 @@ static NSDictionary* multiValueLabels;
 
 #pragma mark Multi-value property management
 
--(NSDictionary*)dictionaryFromMultiValue:(ABMultiValueRef)multiValue
+-(NSDictionary*)dictionaryFromMultiValue:(ABMultiValueRef)multiValue defaultKey:(NSString*)defaultKey
 {
 	NSMutableDictionary* dict = [NSMutableDictionary dictionary];
 
@@ -168,7 +172,12 @@ static NSDictionary* multiValueLabels;
 			readableLabel = [labelKeys objectAtIndex:0];
 		}
 		else {
-			readableLabel = (NSString*)label;
+            if (label == NULL) {
+                readableLabel = defaultKey;
+            }
+            else {
+                readableLabel = (NSString*)label;
+            }
 		}
 
 		if ([dict valueForKey:readableLabel] == nil) {
@@ -184,7 +193,9 @@ static NSDictionary* multiValueLabels;
 			[[dict valueForKey:readableLabel] addObject:(id)value];
 		}
 		
-		CFRelease(label);
+        if (label != NULL) {
+            CFRelease(label);
+        }
 		CFRelease(value);
 	}
 	
@@ -215,8 +226,9 @@ static NSDictionary* multiValueLabels;
 -(NSString*)fullName
 {
 	if (![NSThread isMainThread]) {
-		[self performSelectorOnMainThread:@selector(fullName) withObject:nil waitUntilDone:YES];
-		return [returnCache objectForKey:@"fullName"];
+		__block id result;
+		TiThreadPerformOnMainThread(^{result = [[self fullName] retain];}, YES);
+		return [result autorelease];
 	}
 	
 	CFStringRef name = ABRecordCopyCompositeName([self record]);
@@ -226,7 +238,6 @@ static NSDictionary* multiValueLabels;
 		CFRelease(name);
 	}
 	
-	[returnCache setObject:nameStr forKey:@"fullName"];
 	return nameStr;
 }
 
@@ -264,8 +275,9 @@ static NSDictionary* multiValueLabels;
 -(TiBlob*)image
 {
 	if (![NSThread isMainThread]) {
-		[self performSelectorOnMainThread:@selector(image) withObject:nil waitUntilDone:YES];
-		return [returnCache objectForKey:@"image"];
+		__block id result;
+		TiThreadPerformOnMainThread(^{result = [[self image] retain];}, YES);
+		return [result autorelease];
 	}
 	CFDataRef imageData = ABPersonCopyImageData([self record]);
 	if (imageData != NULL)
@@ -273,11 +285,9 @@ static NSDictionary* multiValueLabels;
 		TiBlob* imageBlob = [[[TiBlob alloc] initWithImage:[UIImage imageWithData:(NSData*)imageData]] autorelease];
 		CFRelease(imageData);
 		
-		[returnCache setObject:imageBlob forKey:@"image"];
 		return imageBlob;
 	}
 	else {
-		[returnCache setObject:[NSNull null] forKey:@"image"];
 		return nil;
 	}
 }
@@ -292,8 +302,9 @@ static NSDictionary* multiValueLabels;
 -(id)valueForUndefinedKey:(NSString *)key
 {
 	if (![NSThread isMainThread]) {
-		[self performSelectorOnMainThread:@selector(valueForUndefinedKey:) withObject:key waitUntilDone:YES];
-		return [returnCache objectForKey:key];
+		__block id result;
+		TiThreadPerformOnMainThread(^{result = [[self valueForUndefinedKey:key] retain];}, YES);
+		return [result autorelease];
 	}
 	
 	id property = nil;
@@ -313,7 +324,6 @@ static NSDictionary* multiValueLabels;
 			CFRelease(CFresult);
 		}
 		
-		[returnCache setObject:result forKey:key];
 		return result;
 	}
 	// Multi-value property
@@ -322,33 +332,30 @@ static NSDictionary* multiValueLabels;
 		ABMultiValueRef multiVal = ABRecordCopyValue([self record], propertyID);
 		id value = [NSNull null];
 		if (multiVal != NULL) {
-			value = [self dictionaryFromMultiValue:multiVal];
+			value = [self dictionaryFromMultiValue:multiVal defaultKey:key];
 			CFRelease(multiVal);
 		}
-		[returnCache setObject:value forKey:key];
 		return value;
 	}
 	// Something else
 	else {
 		id result = [super valueForUndefinedKey:key];
-		[returnCache setObject:result forKey:key];
 		return result;
 	}
 }
 
--(void)setValueImpl:(NSArray*)pair
+-(void)setValue:(id)value forUndefinedKey:(NSString*)key
 {
-	id value = [pair objectAtIndex:0];
-	NSString* key = [pair objectAtIndex:1];
-	
+	if (![NSThread isMainThread]) {
+		TiThreadPerformOnMainThread(^{[self setValue:value forUndefinedKey:key];}, YES);
+		return;
+	}
+
 	id property = nil;
 	// Single-value property
 	if (property = [[TiContactsPerson contactProperties] valueForKey:key]) {
-		// Again, taking advantage of the fact we only work with CFStringRefs; this could get
-		// more complicated if contacts is expanded.
-		NSString* stringVal = [TiUtils stringValue:value];
 		CFErrorRef error;
-		if(!ABRecordSetValue([self record], [property intValue], (CFStringRef)stringVal, &error)) {
+		if(!ABRecordSetValue([self record], [property intValue], (CFTypeRef)value, &error)) {
 			CFStringRef reason = CFErrorCopyDescription(error);
 			NSString* str = [NSString stringWithString:(NSString*)reason];
 			CFRelease(reason);
@@ -381,15 +388,6 @@ static NSDictionary* multiValueLabels;
 	else {
 		[super setValue:value forUndefinedKey:key];
 	}
-}
-
--(void)setValue:(id)value forUndefinedKey:(NSString*)key
-{
-	if (![NSThread isMainThread]) {
-		[self performSelectorOnMainThread:@selector(setValueImpl:) withObject:[NSArray arrayWithObjects:value,key,nil] waitUntilDone:YES];
-		return;
-	}
-	[self setValueImpl:[NSArray arrayWithObjects:value,key,nil]];
 }
 
 @end

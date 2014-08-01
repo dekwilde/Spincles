@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_CONTACTS
 #import "TiContactsGroup.h"
@@ -21,7 +19,10 @@
 	
 	if (record == NULL) {
 		if (recordId != kABRecordInvalidID) {
-			record = ABAddressBookGetGroupWithRecordID([module addressBook], recordId);
+			ABAddressBookRef ourAddressBook = [module addressBook];
+			if (ourAddressBook != NULL) {
+				record = ABAddressBookGetGroupWithRecordID(ourAddressBook, recordId);
+			}
 		}
 	}
 	return record;
@@ -38,15 +39,18 @@
 		recordId = id_;
 		record = NULL;
 		module = module_;
-		returnCache = [[NSMutableDictionary alloc] init];
 	}
 	return self;
 }
 
 -(void)dealloc
 {
-	RELEASE_TO_NIL(returnCache)
 	[super dealloc];
+}
+
+-(NSString*)apiName
+{
+    return @"Ti.Contacts.Group";
 }
 
 #pragma mark Public API
@@ -54,15 +58,18 @@
 -(NSString*)name
 {
 	if (![NSThread isMainThread]) {
-		[self performSelectorOnMainThread:@selector(name) withObject:nil waitUntilDone:YES];
-		return [returnCache objectForKey:@"name"];
+		__block id result;
+		TiThreadPerformOnMainThread(^{result = [[self name] retain];}, YES);
+		return [result autorelease];
 	}
 	
 	CFStringRef nameRef = ABRecordCopyValue([self record], kABGroupNameProperty);
-	NSString* name = [NSString stringWithString:(NSString*)nameRef];
-	CFRelease(nameRef);
+    NSString* name = @"<unnamed group>";
+    if (nameRef != NULL) {
+        name = [NSString stringWithString:(NSString*)nameRef];
+        CFRelease(nameRef);
+    }
 	
-	[returnCache setObject:name forKey:@"name"];
 	return name;
 }
 
@@ -85,13 +92,13 @@
 -(NSArray*)members:(id)unused
 {
 	if (![NSThread isMainThread]) {
-		[self performSelectorOnMainThread:@selector(members:) withObject:unused waitUntilDone:YES];
-		return [returnCache objectForKey:@"members"];
+		__block id result;
+		TiThreadPerformOnMainThread(^{result = [[self members:unused] retain];}, YES);
+		return [result autorelease];
 	}
 	
 	CFArrayRef arrayRef = ABGroupCopyArrayOfAllMembers([self record]);
 	if (arrayRef == NULL) {
-		[returnCache setObject:[NSNull null] forKey:@"members"];
 		return nil;
 	}
 	CFIndex count = CFArrayGetCount(arrayRef);
@@ -104,7 +111,6 @@
 	}
 	CFRelease(arrayRef);
 	
-	[returnCache setObject:members forKey:@"members"];
 	return members;
 }
 
@@ -112,8 +118,9 @@
 {
 	ENSURE_SINGLE_ARG(value,NSNumber)
 	if (![NSThread isMainThread]) {
-		[self performSelectorOnMainThread:@selector(sortedMembers:) withObject:value waitUntilDone:YES];
-		return [returnCache objectForKey:@"members"];
+		__block id result;
+		TiThreadPerformOnMainThread(^{result = [[self sortedMembers:value] retain];}, YES);
+		return [result autorelease];
 	}
 
 	int sortType = [value intValue];
@@ -122,15 +129,14 @@
 		case kABPersonSortByLastName:
 			break;
 		default:
-			[returnCache setObject:[NSNull null] forKey:@"members"];
 			[self throwException:[NSString stringWithFormat:@"Invalid sort value: %d",sortType]
 					   subreason:nil
 						location:CODELOCATION];
+			return nil;
 	}
 	
 	CFArrayRef arrayRef = ABGroupCopyArrayOfAllMembersWithSortOrdering([self record], sortType);
 	if (arrayRef == NULL) {
-		[returnCache setObject:[NSNull null] forKey:@"members"];
 		return nil;
 	}
 	CFIndex count = CFArrayGetCount(arrayRef);
@@ -143,7 +149,6 @@
 	}
 	CFRelease(arrayRef);
 	
-	[returnCache setObject:members forKey:@"members"];
 	return members;
 }
 

@@ -3,15 +3,13 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_DATABASE
 
 #import "TiDatabaseProxy.h"
 #import "TiDatabaseResultSetProxy.h"
 #import "TiUtils.h"
-
+#import "TiFilesystemFileProxy.h"
 
 @implementation TiDatabaseProxy
 
@@ -34,6 +32,7 @@
  
 -(void)_destroy
 {
+	WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kTiShutdownNotification object:nil];
 	[self shutdown:nil];
 	[super _destroy];
@@ -41,26 +40,57 @@
 
 -(void)_configure
 {
+	WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shutdown:) name:kTiShutdownNotification object:nil];
 	[super _configure];
 }
 
+-(NSString*)apiName
+{
+    return @"Ti.Database.DB";
+}
+
 -(NSString*)dbDir
 {
-	NSString *rootDir = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-	NSString *dbPath = [[rootDir stringByAppendingPathComponent:@"database"] retain];
+    // See this apple tech note for why this changed: https://developer.apple.com/library/ios/#qa/qa1719/_index.html
+    // Apparently following these guidelines is now required for app submission
+    
+	NSString *rootDir = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+	NSString *dbPath = [rootDir stringByAppendingPathComponent:@"Private Documents"];
 	NSFileManager *fm = [NSFileManager defaultManager];
 	
 	BOOL isDirectory;
 	BOOL exists = [fm fileExistsAtPath:dbPath isDirectory:&isDirectory];
 	
-	// create folder
+    // Because of sandboxing, this should never happen, but we still need to handle it.
+    if (exists && !isDirectory) {
+        NSLog(@"[WARN] Recreating file %@... should be a directory and isn't.", dbPath);
+        [fm removeItemAtPath:dbPath error:nil];
+        exists = NO;
+    }
+
+	// create folder, and migrate the old one if necessary    
 	if (!exists) 
 	{
-		[fm createDirectoryAtPath:dbPath withIntermediateDirectories:YES attributes:nil error:nil];
-	}
+        [fm createDirectoryAtPath:dbPath withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    // Migrate any old data if available
+    NSString* oldRoot = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString* oldPath = [oldRoot stringByAppendingPathComponent:@"database"];
+    BOOL oldCopyExists = [fm fileExistsAtPath:oldPath isDirectory:&isDirectory];
+    if (oldCopyExists && isDirectory) {
+        NSDirectoryEnumerator* contents = [fm enumeratorAtPath:oldPath];
+        //This gives relative paths. So create full path before moving
+        for (NSString* oldFile in contents) {
+            [fm moveItemAtPath:[oldPath stringByAppendingPathComponent:oldFile] toPath:[dbPath stringByAppendingPathComponent:oldFile] error:nil];
+        }
+        
+        // Remove the old copy after migrating everything
+        [fm removeItemAtPath:oldPath error:nil];
+    }
 	
-	return [dbPath autorelease];
+	return dbPath;
 }
 
 -(NSString*)dbPath:(NSString*)name_
@@ -77,7 +107,7 @@
 	database = [[PLSqliteDatabase alloc] initWithPath:path];
 	if (![database open])
 	{
-		[self throwException:@"couldn't open database" subreason:nil location:CODELOCATION];
+		[self throwException:@"couldn't open database" subreason:name_ location:CODELOCATION];
 	}
 }
 
@@ -87,6 +117,31 @@
 	NSFileManager *fm = [NSFileManager defaultManager];
 	NSURL *url = [TiUtils toURL:path proxy:self];
 	path = [url path];
+	
+#if TARGET_IPHONE_SIMULATOR
+	//TIMOB-6081. Resources are right now symbolic links when running in simulator) so the copy method
+	//of filemanager just creates a link to the original resource.
+	//Resolve the symbolic link if running in simulator
+	NSError *pathError = nil;
+	NSDictionary *attributes = [fm attributesOfItemAtPath:path error:&pathError];
+	if (pathError != nil) 
+	{
+		[self throwException:@"Could not retrieve attributes" subreason:[pathError description] location:CODELOCATION];
+	}
+	NSString *fileType = [attributes valueForKey:NSFileType];
+	if ([fileType isEqual:NSFileTypeSymbolicLink])
+	{
+		pathError = nil;
+		path = [fm destinationOfSymbolicLinkAtPath:path error:&pathError];
+		
+		if (pathError != nil) 
+		{
+			[self throwException:@"Could not resolve symbolic link" subreason:[pathError description] location:CODELOCATION];
+		}		
+	}
+	
+#endif
+	
 	BOOL exists = [fm fileExistsAtPath:path isDirectory:&isDirectory];
 	if (!exists)
 	{
@@ -121,12 +176,12 @@
 	}
 }
 
-#pragma mark Public APIs
-
 -(id)execute:(id)args
 {
-	NSString *sql = [[args objectAtIndex:0] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	ENSURE_TYPE(args, NSArray);
 
+	NSString *sql = [[args objectAtIndex:0] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	
 	NSError *error = nil;
 	PLSqlitePreparedStatement * statement = (PLSqlitePreparedStatement *) [database prepareStatement:sql error:&error];
 	if (error!=nil)
@@ -134,10 +189,14 @@
 		[self throwException:@"invalid SQL statement" subreason:[error description] location:CODELOCATION];
 	}
 	
-	if ([args count]>1)
-	{
-		NSArray *params = [args subarrayWithRange:NSMakeRange(1, [args count]-1)];
-		[statement bindParameters:params];				   
+	if([args count] > 1) {
+		NSArray *params = [args objectAtIndex:1];
+
+		if(![params isKindOfClass:[NSArray class]]) {
+		   params = [args subarrayWithRange:NSMakeRange(1, [args count]-1)];
+		}
+
+		[statement bindParameters:params];
 	}
 	
 	PLSqliteResultSet *result = (PLSqliteResultSet*) [statement executeQuery];
@@ -146,7 +205,7 @@
 	{
 		[result next]; // we need to do this to make sure lastInsertRowId and rowsAffected work
 		[result close];
-		return nil;
+		return [NSNull null];
 	}
 	
 	if (statements==nil)
@@ -215,6 +274,10 @@
 -(NSString*)name
 {
 	return name;
+}
+-(TiFilesystemFileProxy*)file
+{
+	return [[TiFilesystemFileProxy alloc] initWithFile:[self dbPath:name]];
 }
 
 #pragma mark Internal

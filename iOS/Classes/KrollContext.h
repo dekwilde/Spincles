@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #import <Foundation/Foundation.h>
 #import "TiCore.h"
@@ -18,7 +16,8 @@
 
 @required
 -(id)require:(KrollContext*)kroll path:(NSString*)path;
-
+-(BOOL)shouldDebugContext;
+-(BOOL)shouldProfileContext;
 @optional
 
 -(void)willStartNewContext:(KrollContext*)kroll;
@@ -37,15 +36,18 @@
 	NSCondition *condition;
 	NSMutableArray *queue;
 	BOOL stopped;
+
+//Garbage collection variables.
 	BOOL gcrequest;
+	unsigned int loopCount;
+
 	BOOL destroyed;
 	BOOL suspended;
 	TiGlobalContextRef context;
 	NSMutableDictionary *timers;
 	NSRecursiveLock *timerLock;
-#ifdef DEBUGGER_ENABLED	
 	void *debugger;
-#endif
+	id cachedThreadId;
 }
 
 @property(nonatomic,readwrite,assign) id<KrollDelegate> delegate;
@@ -56,9 +58,8 @@
 -(BOOL)running;
 -(void)gc;
 -(TiGlobalContextRef)context;
-#ifdef DEBUGGER_ENABLED
 -(void*)debugger;
-#endif
+-(BOOL)isKJSThread;
 
 #ifdef DEBUG
 // used during debugging only
@@ -67,15 +68,36 @@
 
 -(void)invokeOnThread:(id)callback_ method:(SEL)method_ withObject:(id)obj condition:(NSCondition*)condition_;
 -(void)invokeOnThread:(id)callback_ method:(SEL)method_ withObject:(id)obj callback:(id)callback selector:(SEL)selector_;
+-(void)invokeBlockOnThread:(void(^)())block;
++(void)invokeBlock:(void (^)())block;
+
 -(void)evalJS:(NSString*)code;
 -(id)evalJSAndWait:(NSString*)code;
--(void)invokeEvent:(KrollCallback*)callback_ args:(NSArray*)args_ thisObject:(id)thisObject_;
+
+-(void)enqueue:(id)obj;
+
 -(void)registerTimer:(id)timer timerId:(double)timerId;
 -(void)unregisterTimer:(double)timerId;
+
+-(int)forceGarbageCollectNow;
+-(NSString*)threadName;
 
 @end
 
 //====================================================================================================================
+
+@interface KrollUnprotectOperation : NSOperation
+{
+	TiContextRef jsContext;
+	TiObjectRef firstObject;
+	TiObjectRef secondObject;
+}
+
+-(id)initWithContext: (TiContextRef)newContext withJsobject: (TiObjectRef) newFirst;
+-(id)initWithContext: (TiContextRef)newContext withJsobject: (TiObjectRef) newFirst andJsobject: (TiObjectRef) newSecond;
+
+@end
+
 
 @interface KrollInvocation : NSObject {
 @private
@@ -94,39 +116,62 @@
 @interface KrollEval : NSObject {
 @private
 	NSString *code;
+	NSURL *sourceURL;
+	NSInteger startingLineNo;
 }
 -(id)initWithCode:(NSString*)code;
+-(id)initWithCode:(NSString*)code sourceURL:(NSURL *)sourceURL;
+-(id)initWithCode:(NSString*)code sourceURL:(NSURL *)sourceURL startingLineNo:(NSInteger)startingLineNo;
+-(TiValueRef) jsInvokeInContext: (KrollContext*)context exception: (TiValueRef *)exceptionPointer;
 -(void)invoke:(KrollContext*)context;
 -(id)invokeWithResult:(KrollContext*)context;
 @end
 
+@class KrollObject;
 @interface KrollEvent : NSObject {
 @private
-	KrollCallback *callback;
-	NSArray *args;
+	KrollCallback * callback;
+
+	NSString * type;
+	KrollObject * callbackObject;
+
+	NSDictionary *eventObject;
 	id thisObject;
 }
--(id)initWithCallback:(KrollCallback*)callback_ args:(NSArray*)args_ thisObject:(id)thisObject_;
+-(id)initWithType:(NSString *)newType ForKrollObject:(KrollObject*)newCallbackObject eventObject:(NSDictionary*)newEventObject thisObject:(id)newThisObject;
+-(id)initWithCallback:(KrollCallback*)newCallback eventObject:(NSDictionary*)newEventObject thisObject:(id)newThisObject;
 -(void)invoke:(KrollContext*)context;
 @end
-
 
 @protocol KrollTargetable
 @required
 -(void)setExecutionContext:(id<KrollDelegate>)delegate;
 @end
 
-TI_INLINE KrollContext* GetKrollContext(TiContextRef context)
-{
-	static const char *krollNS = "Kroll";
-	TiGlobalContextRef globalContext = TiContextGetGlobalContext(context);
-	TiObjectRef global = TiContextGetGlobalObject(globalContext); 
-	TiStringRef string = TiStringCreateWithUTF8CString(krollNS);
-	TiValueRef value = TiObjectGetProperty(globalContext, global, string, NULL);
-	KrollContext *ctx = (KrollContext*)TiObjectGetPrivate(TiValueToObject(globalContext, value, NULL));
-	TiStringRelease(string);
-	return ctx;
+KrollContext* GetKrollContext(TiContextRef context);
+
+//TODO: After 1.7, move to individual file and convert KrollInvocation and Callbacks to ExpandedInvocationOperation.
+@interface ExpandedInvocationOperation : NSOperation {
+@private
+	id invocationTarget;
+	SEL invocationSelector;
+	id invocationArg1;
+	id invocationArg2;
+	id invocationArg3;
+	id invocationArg4;
 }
+- (id)initWithTarget:(id)target selector:(SEL)sel object:(id)arg1 object:(id)arg2;
+- (id)initWithTarget:(id)target selector:(SEL)sel object:(id)arg1 object:(id)arg2 object:(id)arg3;
+- (id)initWithTarget:(id)target selector:(SEL)sel object:(id)arg1 object:(id)arg2 object:(id)arg3 object:(id)arg4;
+
+@property(nonatomic,readwrite,retain)	id invocationTarget;
+@property(nonatomic,readwrite,assign)	SEL invocationSelector;
+@property(nonatomic,readwrite,retain)	id invocationArg1;
+@property(nonatomic,readwrite,retain)	id invocationArg2;
+@property(nonatomic,readwrite,retain)	id invocationArg3;
+@property(nonatomic,readwrite,retain)	id invocationArg4;
+
+@end
 
 
 

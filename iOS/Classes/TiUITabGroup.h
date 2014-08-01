@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UITAB
 
@@ -15,22 +13,26 @@
 @interface TiUITabGroup : TiUIView<UITabBarControllerDelegate,UINavigationControllerDelegate> {
 @private
 	UITabBarController *controller;
-	TiUITabProxy *focused;
+	TiUITabProxy *focusedTabProxy;
 	BOOL allowConfiguration;
 	NSString* editTitle;
 	
 	TiColor *barColor;
+	TiColor *navTintColor;
+	NSMutableDictionary *theAttributes;
 }
+
+-(UITabBarController*)tabController;
 
 -(void)open:(id)args;
 -(void)close:(id)args;
 
 -(UITabBar*)tabbar;
 
--(void)focusVisibleWindow;
--(void)blurVisibleWindow;
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration;
 
+-(void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration;
+-(void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration;
+-(void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
 @end
 
 #endif

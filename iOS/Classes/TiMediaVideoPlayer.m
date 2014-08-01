@@ -3,23 +3,22 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_MEDIA
 
 #import "TiMediaVideoPlayer.h"
+#import "TiViewProxy.h"
 #import "TiUtils.h"
 #import "Webcolor.h"
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_3_2
 
 @implementation TiMediaVideoPlayer
 
--(id)initWithPlayer:(MPMoviePlayerController*)controller_ proxy:(TiProxy*)proxy_
+-(id)initWithPlayer:(MPMoviePlayerController*)controller_ proxy:(TiProxy*)proxy_ loaded:(BOOL)loaded_
 {
-	if (self = [super initWithFrame:CGRectZero])
+	if (self = [super init])
 	{
+        loaded = loaded_;
 		[self setProxy:proxy_];
 		[self setMovie:controller_];
 	}
@@ -53,17 +52,19 @@
 
 -(void)setMovie:(MPMoviePlayerController*)controller_
 {
-	if (controller!=nil)
-	{
-		if ([controller_ isEqual:controller])
-		{
-			// don't add the movie more than once if the same
-			return;
-		}
-		[[controller view] removeFromSuperview];
-	}
-	RELEASE_TO_NIL(controller);
-	controller = [controller_ retain];
+	if (controller_ == controller) {
+        // don't add the movie more than once if the same
+        return;
+    }
+	[[controller view] removeFromSuperview];
+    [spinner removeFromSuperview];
+    RELEASE_TO_NIL(spinner);
+    RELEASE_TO_NIL(controller);
+
+    if (controller_ == nil) {
+        return;
+    }
+    controller = [controller_ retain];
 	
 	[TiUtils setView:[controller view] positionRect:self.bounds];
 	[self addSubview:[controller view]];
@@ -104,12 +105,20 @@
 	}
 }
 
+-(BOOL)touchedContentViewWithEvent:(UIEvent *)event
+{
+    // The view hierarchy of the movie player controller's view is subject to change,
+    // and traversing it is dangerous. If we received a touch which isn't on a TiUIView,
+    // assume it falls into the movie player view hiearchy; this matches previous
+    // behavior as well.
+    
+    UITouch* touch = [[event allTouches] anyObject];
+    return (![[touch view] isKindOfClass:[TiUIView class]]);
+}
+
 -(void)dealloc
 {
-	if (controller!=nil)
-	{
-		[[controller view] removeFromSuperview];
-	}
+	[[controller view] removeFromSuperview];
 	RELEASE_TO_NIL(controller);
 	RELEASE_TO_NIL(spinner);
 	[super dealloc];
@@ -119,10 +128,9 @@
 {
 	self.frame = CGRectIntegral(self.frame);
 	[TiUtils setView:[controller view] positionRect:bounds];
+    [super frameSizeChanged:frame bounds:bounds];
 }
 
 @end
-
-#endif
 
 #endif

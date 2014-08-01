@@ -87,11 +87,16 @@ const NSString* socketKey = @"socket";
     [super _destroy];
 }
 
+-(NSString*)apiName
+{
+    return @"Ti.Network.BounjourService";
+}
+
 -(BOOL)isEqual:(id)obj
 {
     if ([obj isKindOfClass:[TiNetworkBonjourServiceProxy class]]) {
         if ([[obj name] isEqual:[self name]] &&
-            [[obj type] isEqual:[self type]] &&
+            [[(TiNetworkBonjourServiceProxy*)obj type] isEqual:[self type]] &&
             [[obj domain] isEqual:[self domain]]) {
             return true;
         }
@@ -402,14 +407,20 @@ const NSString* socketKey = @"socket";
 
 #pragma mark Domain management
 
+-(void)fireDomainUpdateEvent
+{
+	NSDictionary * eventObject = [NSDictionary dictionaryWithObject:
+								  [[domains copy] autorelease] forKey:@"domains"];
+	[self fireEvent:@"updatedDomains" withObject:eventObject];	//TODO: Deprecate old event.
+	[self fireEvent:@"updateddomains" withObject:eventObject];	
+}
+
 -(void)netServiceBrowser:(NSNetServiceBrowser*)browser didFindDomain:(NSString*)domain moreComing:(BOOL)more
 {
     [domains addObject:domain];
     
     if (!more) {
-        [self fireEvent:@"updatedDomains"
-             withObject:[NSDictionary dictionaryWithObject:[[domains copy] autorelease]
-                                                    forKey:@"domains"]];
+		[self fireDomainUpdateEvent];
     }
 }
 
@@ -418,9 +429,7 @@ const NSString* socketKey = @"socket";
     [domains removeObject:domain];
     
     if (!more) {
-        [self fireEvent:@"updatedDomains"
-             withObject:[NSDictionary dictionaryWithObject:[[domains copy] autorelease]
-                                                    forKey:@"domains"]];
+		[self fireDomainUpdateEvent];
     }
 }
 

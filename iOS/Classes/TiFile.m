@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
 #import "TiFile.h"
@@ -46,17 +44,26 @@
 	return path;
 }
 
--(NSInteger)size
+-(unsigned long long)size
 {
 	NSFileManager *fm = [NSFileManager defaultManager];
 	NSError *error = nil; 
 	NSDictionary * resultDict = [fm attributesOfItemAtPath:path error:&error];
-	id result = [resultDict objectForKey:NSFileSize];
-	if (error!=NULL)
+	id resultType = [resultDict objectForKey:NSFileType];
+	if ([resultType isEqualToString:NSFileTypeSymbolicLink])
+	{
+        // TODO: We should be translating all symlinks into their actual paths always
+        NSString* realPath = [fm destinationOfSymbolicLinkAtPath:path error:nil];
+        if (realPath != nil) {
+            resultDict = [fm attributesOfItemAtPath:realPath error:&error];
+        }
+	}
+	if (error != nil)
 	{
 		return 0;
 	}
-	return [result intValue];
+	id result = [resultDict objectForKey:NSFileSize];
+	return [result unsignedLongLongValue];
 }
 
 -(id)blob
@@ -94,7 +101,7 @@
 	} while ([fm fileExistsAtPath:resultPath]);
 	
 	// create empty file
-	[[NSData data] writeToFile:resultPath options:0 error:&error];
+	[[NSData data] writeToFile:resultPath options:NSDataWritingFileProtectionComplete error:&error];
 	
 	if (error != nil)
 	{

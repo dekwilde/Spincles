@@ -1,21 +1,28 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2014 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_NETWORK
 
+#import "TiNetworkCookieProxy.h"
 #import "NetworkModule.h"
 #import "Reachability.h"
 #import "TiApp.h"
 #import "SBJSON.h"
+#import "TiBlob.h"
+#import "TiNetworkSocketProxy.h"
+#import "TiUtils.h"
 
 NSString* const INADDR_ANY_token = @"INADDR_ANY";
-
+static NSOperationQueue *_operationQueue = nil;
 @implementation NetworkModule
+
+-(NSString*)apiName
+{
+    return @"Ti.Network";
+}
 
 -(NSString*)INADDR_ANY
 {
@@ -37,20 +44,25 @@ NSString* const INADDR_ANY_token = @"INADDR_ANY";
     return [NSNumber numberWithInt:READ_WRITE_MODE];
 }
 
+-(void)shutdown:(id)sender
+{
+    RELEASE_TO_NIL(_operationQueue);
+    [super shutdown:sender];
+}
 -(void)startReachability
 {
 	NSAssert([NSThread currentThread],@"not on the main thread for startReachability");
 	// reachability runs on the current run loop so we need to make sure we're
 	// on the main UI thread
 	reachability = [[Reachability reachabilityForInternetConnection] retain];
-	[reachability startNotifer];
+    [reachability startNotifier];
 	[self updateReachabilityStatus];
 }
 
 -(void)stopReachability
 {
 	NSAssert([NSThread currentThread],@"not on the main thread for stopReachability");
-	[reachability stopNotifer];
+	[reachability stopNotifier];
 	RELEASE_TO_NIL(reachability);
 }
 
@@ -59,18 +71,22 @@ NSString* const INADDR_ANY_token = @"INADDR_ANY";
 	[super _configure];
 	// default to unknown network type on startup until reachability has figured it out
 	state = TiNetworkConnectionStateUnknown; 
+	WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
 	// wait until done is important to get the right state
-	[self performSelectorOnMainThread:@selector(startReachability) withObject:nil waitUntilDone:YES];
+	TiThreadPerformOnMainThread(^{[self startReachability];}, YES);
 }
 
 -(void)_destroy
 {
-	[self performSelectorOnMainThread:@selector(stopReachability) withObject:nil waitUntilDone:NO];
+	TiThreadPerformOnMainThread(^{[self stopReachability];}, YES);
+	WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:nil];
 	RELEASE_TO_NIL(pushNotificationCallback);
 	RELEASE_TO_NIL(pushNotificationError);
 	RELEASE_TO_NIL(pushNotificationSuccess);
+    [self forgetProxy:socketProxy];
+    RELEASE_TO_NIL(socketProxy);
 	[super _destroy];
 }
 
@@ -134,21 +150,17 @@ NSString* const INADDR_ANY_token = @"INADDR_ANY";
 	return [(NSString *)CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL, (CFStringRef)encodedString, CFSTR(""), kCFStringEncodingUTF8) autorelease];
 }
 
--(void)addConnectivityListener:(id)args
+// Socket submodule
+#ifdef USE_TI_NETWORKSOCKET
+-(TiProxy*)Socket
 {
-	id arg = [args objectAtIndex:0];
-	ENSURE_TYPE(arg,KrollCallback);
-	NSArray *newargs = [NSArray arrayWithObjects:@"change",arg,nil];
-	[self addEventListener:newargs];
+    if (socketProxy == nil) {
+        socketProxy = [[TiNetworkSocketProxy alloc] _initWithPageContext:[self pageContext]];
+        [self rememberProxy:socketProxy];
+    }
+    return socketProxy;
 }
-
--(void)removeConnectivityListener:(id)args
-{
-	id arg = [args objectAtIndex:0];
-	ENSURE_TYPE(arg,KrollCallback);
-	NSArray *newargs = [NSArray arrayWithObjects:@"change",arg,nil];
-	[self removeEventListener:newargs];
-}
+#endif
 
 - (NSNumber*)online
 {
@@ -171,6 +183,9 @@ NSString* const INADDR_ANY_token = @"INADDR_ANY";
 			return @"LAN";
 		case TiNetworkConnectionStateMobile:
 			return @"MOBILE";
+		default: {
+			break;
+		}
 	}
 	return @"UNKNOWN";
 }
@@ -189,6 +204,11 @@ MAKE_SYSTEM_PROP(NETWORK_UNKNOWN,TiNetworkConnectionStateUnknown);
 MAKE_SYSTEM_PROP(NOTIFICATION_TYPE_BADGE,1);
 MAKE_SYSTEM_PROP(NOTIFICATION_TYPE_ALERT,2);
 MAKE_SYSTEM_PROP(NOTIFICATION_TYPE_SOUND,3);
+MAKE_SYSTEM_PROP(NOTIFICATION_TYPE_NEWSSTAND, 4);
+
+MAKE_SYSTEM_PROP(TLS_VERSION_1_0, TLS_VERSION_1_0);
+MAKE_SYSTEM_PROP(TLS_VERSION_1_1, TLS_VERSION_1_1);
+MAKE_SYSTEM_PROP(TLS_VERSION_1_2, TLS_VERSION_1_2);
 
 #pragma mark Push Notifications 
 
@@ -218,6 +238,10 @@ MAKE_SYSTEM_PROP(NOTIFICATION_TYPE_SOUND,3);
 	if ((types & UIRemoteNotificationTypeSound)!=0)
 	{
 		[result addObject:NUMINT(3)];
+	}
+	if ((types & UIRemoteNotificationTypeNewsstandContentAvailability)!=0)
+	{
+		[result addObject:NUMINT(4)];
 	}
 	return result;
 }
@@ -261,6 +285,11 @@ MAKE_SYSTEM_PROP(NOTIFICATION_TYPE_SOUND,3);
 					ourNotifications |= UIRemoteNotificationTypeSound;
 					break;
 				}
+				case 4: // NOTIFICATION_TYPE_NEWSSTAND
+				{
+					ourNotifications |= UIRemoteNotificationTypeNewsstandContentAvailability;
+					break;
+				}
 			}
 		}
 	}
@@ -273,7 +302,9 @@ MAKE_SYSTEM_PROP(NOTIFICATION_TYPE_SOUND,3);
 	id currentNotification = [[TiApp app] remoteNotification];
 	if (currentNotification!=nil && pushNotificationCallback!=nil)
 	{
-		id event = [NSDictionary dictionaryWithObject:currentNotification forKey:@"data"];
+		NSMutableDictionary * event = [TiUtils dictionaryWithCode:0 message:nil];
+		[event setObject:currentNotification forKey:@"data"];
+		[event setObject:NUMBOOL(YES) forKey:@"inBackground"];
 		[self _fireEventToListener:@"remote" withObject:event listener:pushNotificationCallback thisObject:nil];
 	}
 }
@@ -286,13 +317,18 @@ MAKE_SYSTEM_PROP(NOTIFICATION_TYPE_SOUND,3);
 
 #pragma mark Push Notification Delegates
 
+#ifdef USE_TI_NETWORKREGISTERFORPUSHNOTIFICATIONS
+
 -(void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
 	// called by TiApp
 	if (pushNotificationSuccess!=nil)
 	{
-		NSString *token = [[TiApp app] remoteDeviceUUID];
-		NSDictionary *event = [NSDictionary dictionaryWithObject:token forKey:@"deviceToken"];
+		NSString *token = [[[[deviceToken description] stringByReplacingOccurrencesOfString:@"<"withString:@""]
+							stringByReplacingOccurrencesOfString:@">" withString:@""] 
+						   stringByReplacingOccurrencesOfString: @" " withString: @""];
+		NSMutableDictionary * event = [TiUtils dictionaryWithCode:0 message:nil];
+		[event setObject:token forKey:@"deviceToken"];
 		[self _fireEventToListener:@"remote" withObject:event listener:pushNotificationSuccess thisObject:nil];
 	}
 }
@@ -302,7 +338,10 @@ MAKE_SYSTEM_PROP(NOTIFICATION_TYPE_SOUND,3);
 	// called by TiApp
 	if (pushNotificationCallback!=nil)
 	{
-		id event = [NSDictionary dictionaryWithObject:userInfo forKey:@"data"];
+		NSMutableDictionary * event = [TiUtils dictionaryWithCode:0 message:nil];
+		[event setObject:userInfo forKey:@"data"];
+		BOOL inBackground = (application.applicationState != UIApplicationStateActive);
+		[event setObject:NUMBOOL(inBackground) forKey:@"inBackground"];
 		[self _fireEventToListener:@"remote" withObject:event listener:pushNotificationCallback thisObject:nil];
 	}
 }
@@ -312,11 +351,125 @@ MAKE_SYSTEM_PROP(NOTIFICATION_TYPE_SOUND,3);
 	// called by TiApp
 	if (pushNotificationError!=nil)
 	{
-		NSDictionary *event = [NSDictionary dictionaryWithObject:[error description] forKey:@"error"];
+		NSString * message = [TiUtils messageFromError:error];
+		NSMutableDictionary * event = [TiUtils dictionaryWithCode:[error code] message:message];
 		[self _fireEventToListener:@"remote" withObject:event listener:pushNotificationError thisObject:nil];
 	}
 }
 
+#endif
+
+#pragma mark Cookies
+
+-(id<TiEvaluator>)evaluationContext
+{
+	id<TiEvaluator> context = [self executionContext];
+	if(context == nil) {
+		context = [self pageContext];
+	}
+	return context;
+}
+
+-(NSArray*)getHTTPCookiesForDomain:(id)args
+{
+    ENSURE_SINGLE_ARG(args, NSString);
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    NSMutableArray *allCookies = [NSMutableArray array];
+    for(NSHTTPCookie* cookie in [storage cookies])
+    {
+        if([[cookie domain] isEqualToString: args])
+        {
+            [allCookies addObject:cookie];
+        }
+    }
+    NSMutableArray *returnArray = [NSMutableArray array];
+    for(NSHTTPCookie *cookie in allCookies)
+    {
+        [returnArray addObject:[[[TiNetworkCookieProxy alloc] initWithCookie:cookie andPageContext:[self evaluationContext]] autorelease]];
+    }
+    return returnArray;
+}
+
+-(void)addHTTPCookie:(id)args;
+{
+    ENSURE_SINGLE_ARG(args, TiNetworkCookieProxy);
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    NSHTTPCookie* cookie = [args newCookie];
+    if(cookie != nil)
+    {
+        [storage setCookie:cookie];
+    }
+}
+
+-(NSArray*)getHTTPCookies:(id)args
+{
+    NSString* domain = [TiUtils stringValue:[args objectAtIndex:0]];
+    NSString*   path = [TiUtils stringValue:[args objectAtIndex:1]];
+    NSString*   name = [TiUtils stringValue:[args objectAtIndex:2]];
+    if (path == nil || [path isEqual:@""]) {
+        path = @"/";
+    }
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    
+    NSArray *allCookies = [storage cookies];
+    NSMutableArray *returnArray = [NSMutableArray array];
+    NSHTTPCookie *c = [[NSHTTPCookie alloc] initWithProperties:@{}];
+    for(NSHTTPCookie *cookie in allCookies)
+    {
+        if([[cookie domain] isEqualToString:domain] &&
+           [[cookie path] isEqualToString:path] &&
+           ([[cookie name] isEqualToString:name] || name == nil)) {
+            [returnArray addObject:[[[TiNetworkCookieProxy alloc] initWithCookie:cookie andPageContext:[self evaluationContext]] autorelease]];
+        }
+    }
+    return returnArray;
+}
+
+-(void)removeAllHTTPCookies:(id)args
+{
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    while ([[storage cookies] count] > 0) {
+        [storage deleteCookie: [[storage cookies] objectAtIndex:0]];
+    }
+}
+
+-(void)removeHTTPCookie:(id)args
+{
+    NSArray* cookies = [self getHTTPCookies:args];
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for(TiNetworkCookieProxy* cookie in cookies) {
+        [storage deleteCookie: [cookie newCookie]];
+    }
+}
+
+-(void)removeHTTPCookiesForDomain:(id)args
+{
+    NSArray* cookies = [self getHTTPCookiesForDomain:args];
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for(TiNetworkCookieProxy* cookie in cookies) {
+        [storage deleteCookie: [cookie newCookie]];
+    }
+}
+
+-(NSArray*)allHTTPCookies
+{
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    NSMutableArray *array = [NSMutableArray array];
+    for(NSHTTPCookie* cookie in [storage cookies])
+    {
+        [array addObject:[[[TiNetworkCookieProxy alloc] initWithCookie:cookie andPageContext:[self evaluationContext]] autorelease]];
+    }
+    return array;
+}
+
++(NSOperationQueue*)operationQueue;
+{
+    if(_operationQueue == nil) {
+        _operationQueue = [[NSOperationQueue alloc] init];
+        [_operationQueue setMaxConcurrentOperationCount:4];
+    }
+    return _operationQueue;
+}
 @end
 
 

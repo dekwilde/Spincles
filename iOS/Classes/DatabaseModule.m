@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_DATABASE
 
@@ -18,6 +16,11 @@
 {
 	// enable multi-threading
 	sqlite3_enable_shared_cache(TRUE);
+}
+
+-(NSString*)apiName
+{
+    return @"Ti.Database";
 }
 
 -(id)open:(id)path
@@ -35,6 +38,17 @@
 	[db install:[args objectAtIndex:0] name:[args objectAtIndex:1]];
 	return db;
 }
+
+#define DB_CONSTANT(name, num) \
+-(id)name {\
+return NUMINT(num);\
+}
+
+DB_CONSTANT(FIELD_TYPE_UNKNOWN, FieldTypeUnknown)
+DB_CONSTANT(FIELD_TYPE_STRING, FieldTypeString)
+DB_CONSTANT(FIELD_TYPE_INT, FieldTypeInt)
+DB_CONSTANT(FIELD_TYPE_FLOAT, FieldTypeFloat)
+DB_CONSTANT(FIELD_TYPE_DOUBLE, FieldTypeDouble);
 
 @end
 

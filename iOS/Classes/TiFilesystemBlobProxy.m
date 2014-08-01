@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #import "TiFilesystemBlobProxy.h"
 
@@ -34,9 +32,15 @@
 	[super dealloc];
 }
 
+-(NSString*)apiName
+{
+    //Should we return Ti.FileSystem.Blob? 
+    return @"Ti.Filesystem.File";
+}
+
 -(id)nativePath
 {
-	return path;
+	return [[NSURL fileURLWithPath:path] absoluteString];
 }
 
 -(id)exists:(id)args
@@ -54,17 +58,18 @@
 	return NUMBOOL(NO);
 }
 
--(id)writeable
+-(id)writable
 {
 	return NUMBOOL(NO);
 }
 
--(id)writable
+-(id)writeable
 {
-	NSLog(@"[WARN] The File.writable method is deprecated and should no longer be used. Use writeable instead.");
-	return [self writeable];
+	// Note: Despite previous incarnations claiming writeable is the proper API,
+	// writable is the correct spelling.
+	DEPRECATED_REPLACED(@"Filesystem.FileProxy.writeable",@"1.8.1",@"Ti.Filesystem.FileProxy.writable");
+	return [self writable];
 }
-
 
 #define FILENOOP(name) \
 -(id)name\
@@ -161,7 +166,7 @@ FILENOOP(setHidden:(id)x);
 
 -(id)resolve:(id)args
 {
-	return path;
+	return [self nativePath];
 }
 
 -(id)description

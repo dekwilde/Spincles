@@ -1,15 +1,14 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2011 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
 #import "TiProxy.h"
 #import "Bridge.h"
 #import "TiEvaluator.h"
+#import "TiStylesheet.h"
 
 @interface TiHost : NSObject 
 {
@@ -17,11 +16,18 @@
 	NSMutableDictionary *contexts;
 	NSURL *startURL;
 	NSURL *baseURL;
+	TiStylesheet *stylesheet;
+    BOOL debugMode;
 }
+@property (nonatomic,assign) BOOL debugMode;
+@property (nonatomic,assign) BOOL profileMode;
 
 -(NSString*)appID;
 -(NSURL*)baseURL;
 -(NSURL*)startURL;
++(NSString *)resourcePath;
+
+-(TiStylesheet*)stylesheet;
 
 +(NSURL*)resourceBasedURL:(NSString*)fn baseURL:(NSString**)base;
 

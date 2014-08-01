@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #import "TiModule.h"
 
@@ -20,15 +18,12 @@
 @private
 	ABAddressBookRef addressBook;
 	ABPeoplePickerNavigationController* picker;
-	
+	BOOL reloadAddressBook;
+	BOOL iOS6API;
 	BOOL animated;
 	KrollCallback* cancelCallback;
 	KrollCallback* selectedPersonCallback;
 	KrollCallback* selectedPropertyCallback;
-	
-	// Everything has to happen on the main thread for memory access reasons, so
-	// for functions which return a value we need a cache.
-	NSMutableDictionary* returnCache;
 }
 
 -(ABAddressBookRef)addressBook;
@@ -42,12 +37,21 @@
 -(TiContactsPerson*)createPerson:(id)arg;
 -(void)removePerson:(id)arg;
 
+
+
+@property (nonatomic,readonly) NSNumber* contactsAuthorization;
+-(void) requestAuthorization:(id)args;
+
 @property (nonatomic,readonly) NSNumber* CONTACTS_KIND_PERSON;
 @property (nonatomic,readonly) NSNumber* CONTACTS_KIND_ORGANIZATION;
 
 @property (nonatomic,readonly) NSNumber* CONTACTS_SORT_FIRST_NAME;
 @property (nonatomic,readonly) NSNumber* CONTACTS_SORT_LAST_NAME;
 
+@property(nonatomic,readonly) NSNumber* AUTHORIZATION_AUTHORIZED;
+@property(nonatomic,readonly) NSNumber* AUTHORIZATION_DENIED;
+@property(nonatomic,readonly) NSNumber* AUTHORIZATION_RESTRICTED;
+@property(nonatomic,readonly) NSNumber* AUTHORIZATION_UNKNOWN; // We still need the 'authorization unknown' constant, though.
 
 @end
 

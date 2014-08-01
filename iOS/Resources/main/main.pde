@@ -71,7 +71,6 @@ void setup()
         size(screenWidth, screenHeight);
         ctx = externals.context;
         frameRate(30);
-        //background(0);
         
         infoImg= loadImage("infos.jpg");
   
@@ -84,13 +83,7 @@ void setup()
         PFont fontA = loadFont("SansSerif-10.vlw");
         textFont(fontA, 20);
         
-        //drawGradient();
         
-        //noFill();
-        //noStroke();
-        //smooth();
-        //rectMode(CENTER_RADIUS);
-  
         for(int i=0; i<numOfArms; i++) {
           rotation[i] = random(0, 360);
           angleRadius[i] = random(0.3, 1.9);
@@ -114,9 +107,10 @@ void setup()
         sound1.play();
         sound1.loop();
         
+        
         /*
-        sound2 = iphone.loadSound("soprar.wav");
-        sound2.play();
+        sound2 = iphone.loadSound("background.wav");
+        sound2.play(5000);
         sound2.loop();
         */
         

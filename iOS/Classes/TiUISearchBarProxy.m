@@ -3,10 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
-#ifdef USE_TI_UITABLEVIEW
+#if defined(USE_TI_UITABLEVIEW) || defined(USE_TI_UILISTVIEW)
 #ifndef USE_TI_UISEARCHBAR
 #define USE_TI_UISEARCHBAR
 #endif
@@ -18,22 +16,46 @@
 #import "TiUISearchBar.h"
 
 @implementation TiUISearchBarProxy
+@synthesize showsCancelButton;
 
 #pragma mark Method forwarding
 
+-(NSString*)apiName
+{
+    return @"Ti.UI.SearchBar";
+}
+
 -(void)blur:(id)args
 {
-	[[self view] performSelectorOnMainThread:@selector(blur:) withObject:args waitUntilDone:NO];
+	[self makeViewPerformSelector:@selector(blur:) withObject:args createIfNeeded:YES waitUntilDone:NO];
 }
 
 -(void)focus:(id)args
 {
-	[[self view] performSelectorOnMainThread:@selector(focus:) withObject:args waitUntilDone:NO];
+	[self makeViewPerformSelector:@selector(focus:) withObject:args createIfNeeded:YES waitUntilDone:NO];
 }
+
+-(void)setShowCancel:(id)value withObject:(id)object
+{
+	BOOL boolValue = [TiUtils boolValue:value];
+	BOOL animated = [TiUtils boolValue:@"animated" properties:object def:NO];
+	//TODO: Value checking and exception generation, if necessary.
+
+	[self replaceValue:value forKey:@"showCancel" notification:NO];
+	showsCancelButton = boolValue;
+
+	//ViewAttached gives a false negative when not attached to a window.
+	TiThreadPerformOnMainThread(^{
+		UISearchBar *search = [self searchBar];
+		[search setShowsCancelButton:showsCancelButton animated:animated];
+		[search sizeToFit];
+	}, NO);
+}
+
 
 -(void)setDelegate:(id<UISearchBarDelegate>)delegate
 {
-	[[self view] performSelector:@selector(setDelegate:) withObject:delegate];
+    [self makeViewPerformSelector:@selector(setDelegate:) withObject:delegate createIfNeeded:(delegate!=nil) waitUntilDone:YES];
 }
 
 -(UISearchBar*)searchBar
@@ -41,6 +63,31 @@
 	return [(TiUISearchBar*)[self view] searchBar];
 }
 
+-(void)ensureSearchBarHeirarchy
+{
+    WARN_IF_BACKGROUND_THREAD;
+    if ([self viewAttached]) {
+        UISearchBar* searchBar = [self searchBar];
+        if ([searchBar superview] != view) {
+            [view addSubview:searchBar];
+            [searchBar setFrame:[view bounds]];
+        }
+    }
+    
+}
+
+
+-(NSMutableDictionary*)langConversionTable
+{
+    return [NSMutableDictionary dictionaryWithObjectsAndKeys:@"prompt",@"promptid",@"hintText",@"hinttextid",nil];
+}
+
+-(TiDimension)defaultAutoHeightBehavior:(id)unused
+{
+    return TiDimensionAutoSize;
+}
+
+USE_VIEW_FOR_CONTENT_HEIGHT
 @end
 
 #endif

@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UIEMAILDIALOG
 
@@ -29,6 +27,11 @@
 {
 	RELEASE_TO_NIL(attachments);
 	[super _destroy];
+}
+
+-(NSString*)apiName
+{
+    return @"Ti.UI.EmailDialog";
 }
 
 -(NSArray *)attachments
@@ -57,7 +60,9 @@
 
 - (void)open:(id)args
 {
-	ENSURE_TYPE_OR_NIL(args,NSDictionary);
+	[self rememberSelf];
+	NSDictionary* properties = nil;
+	ENSURE_ARG_OR_NIL_AT_INDEX(properties, args, 0, NSDictionary);
 	Class arrayClass = [NSArray class];
 	NSArray * toArray = [self valueForUndefinedKey:@"toRecipients"];
 	ENSURE_CLASS_OR_NIL(toArray,arrayClass);
@@ -73,11 +78,8 @@
 
 	if (![MFMailComposeViewController canSendMail])
 	{
-		NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:NUMINT(MFMailComposeResultFailed),@"result",
-							   NUMBOOL(NO),@"success",
-							   @"system can't send email",@"error",
-							   nil];
-		[self fireEvent:@"complete" withObject:event];
+		NSDictionary *event = [NSDictionary dictionaryWithObject:NUMINT(MFMailComposeResultFailed) forKey:@"result"];
+		[self fireEvent:@"complete" withObject:event errorCode:MFMailComposeResultFailed message:@"system can't send email"];
 		return;
 	}
 
@@ -87,7 +89,11 @@
 	[composer setMailComposeDelegate:self];
 	if (barColor != nil)
 	{
-		[[composer navigationBar] setTintColor:barColor];
+		if([TiUtils isIOS7OrGreater]) {
+			[[composer navigationBar] performSelector:@selector(setBarTintColor:) withObject:barColor];
+		} else {
+			[[composer navigationBar] setTintColor:barColor];
+		}
 	}
 
 	[composer setSubject:subject];
@@ -111,8 +117,12 @@
 				{
 					path = [path lastPathComponent];
 				}
+                NSString *mimetype = [attachment mimeType];
+                if (mimetype == nil) {
+                    mimetype = [Mimetypes mimeTypeForExtension:path];
+                }
 				[composer addAttachmentData:[attachment data]
-										mimeType:[attachment mimeType]
+										mimeType:mimetype
 										fileName:path];
 			}
 			else if ([attachment isKindOfClass:[TiFile class]])
@@ -126,7 +136,7 @@
 		}
 	}
 	
-	BOOL animated = [TiUtils boolValue:@"animated" properties:args def:YES];
+	BOOL animated = [TiUtils boolValue:@"animated" properties:properties def:YES];
 	[self retain];
 	[[TiApp app] showModalController:composer animated:animated];
 }
@@ -152,12 +162,10 @@ MAKE_SYSTEM_PROP(FAILED,MFMailComposeResultFailed);
 	composer = nil;
 	if ([self _hasListeners:@"complete"])
 	{
-		NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:NUMINT(result),@"result",
-							   NUMBOOL(result==MFMailComposeResultSent),@"success",
-							   error,@"error",
-							   nil];
-		[self fireEvent:@"complete" withObject:event];
+		NSDictionary *event = [NSDictionary dictionaryWithObject:NUMINT(result) forKey:@"result"];
+		[self fireEvent:@"complete" withObject:event errorCode:[error code] message:[TiUtils messageFromError:error]];
 	}
+	[self forgetSelf];
 	[self autorelease];
 }
 

@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_NETWORK
 
@@ -23,6 +21,7 @@
     
     NSCondition* configureCondition;
 	
+    BOOL stripTerminator;
 	SocketMode mode;
 	CFRunLoopSourceRef socketRunLoop;
 }
@@ -37,6 +36,8 @@
 @property(readonly, nonatomic) NSNumber* port;
 @property(readonly, nonatomic) NSNumber* mode;
 @property(readonly, nonatomic, getter=isValid) NSNumber* valid;
+
+@property(nonatomic, assign) NSNumber* stripTerminator;
 
 @end
 

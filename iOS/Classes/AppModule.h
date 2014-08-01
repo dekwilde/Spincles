@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #import "TiModule.h"
 
@@ -16,11 +14,15 @@
 @private
 	NSMutableDictionary *appListeners;
 	TiAppPropertiesProxy *properties;
+#ifdef USE_TI_APPIOS
+	TiProxy *iOS;
+#endif
 }
 
 -(void)addEventListener:(NSArray*)args;
 -(void)removeEventListener:(NSArray*)args;
 -(void)fireEvent:(NSArray*)args;
+-(int)garbageCollect:(NSArray*)args;
 
 @property(nonatomic,readonly) NSString *id;
 @property(nonatomic,readonly) NSString *url;
@@ -39,6 +41,16 @@
 @property(nonatomic,readwrite,assign) NSNumber *idleTimerDisabled;
 @property(nonatomic,readonly) NSNumber *proximityState;
 @property(nonatomic,readwrite,assign) NSNumber *proximityDetection;
+
+@property(nonatomic,readonly) NSNumber* keyboardVisible;
+@property(nonatomic,readwrite,assign) NSNumber* disableNetworkActivityIndicator;
+
+@property (nonatomic, readonly) NSString *EVENT_ACCESSIBILITY_ANNOUNCEMENT;
+@property (nonatomic, readonly) NSString *EVENT_ACCESSIBILITY_CHANGED;
+
+#ifdef USE_TI_APPIOS
+@property(nonatomic,readonly)			TiProxy* iOS;
+#endif
 
 @end
 
