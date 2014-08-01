@@ -3,13 +3,27 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
 #import "TiGradient.h"
 
 #import "TiUtils.h"
+
+@implementation TiGradientLayer
+@synthesize gradient;
+
+- (void) dealloc
+{
+	[gradient release];
+	[super dealloc];
+}
+
+-(void)drawInContext:(CGContextRef)ctx
+{
+	[gradient paintContext:ctx bounds:[self bounds]];
+}
+
+@end
 
 @implementation TiGradient
 @synthesize backfillStart, backfillEnd;
@@ -87,6 +101,9 @@
 	{
 		case TiGradientTypeRadial:
 			return @"radial";
+		default: {
+			break;
+		}
 	}
 	return @"linear";
 }
@@ -171,10 +188,21 @@
 		}
 
 		UIColor * thisColor = [[TiUtils colorValue:thisEntry] _color];
+
 		if (thisColor == nil)
 		{
 			[self throwException:TiExceptionInvalidType subreason:
-					@"Colors must be an array of colors or objects with a color property" location:CODELOCATION];
+					@"Colors must be an array of colors or objects with a color property"
+					location:CODELOCATION];
+		}	   
+
+
+		CGColorSpaceRef colorspace = CGColorGetColorSpace([thisColor CGColor]);
+		if(CGColorSpaceGetModel(colorspace) == kCGColorSpaceModelMonochrome) //Colorize this! Where's Ted Turner?
+		{
+			const CGFloat *components = CGColorGetComponents([thisColor CGColor]);
+			thisColor = [UIColor colorWithRed:components[0] green:components[0]
+					blue:components[0] alpha:components[1]];
 		}
 
 		colorOffsets[currentIndex] = thisOffset;
@@ -184,7 +212,7 @@
 		}
 
 		CFArrayAppendValue(colorValues, [thisColor CGColor]);
-		currentIndex ++;
+	    currentIndex ++;
 	}
 	[self clearCache];
 }
@@ -217,7 +245,7 @@
 			CGFloat endRadiusPixels;
 			switch (startRadius.type)
 			{
-				case TiDimensionTypePixels:
+				case TiDimensionTypeDip:
 					startRadiusPixels = startRadius.value;
 					break;
 				case TiDimensionTypePercent:
@@ -229,7 +257,7 @@
 			
 			switch (endRadius.type)
 			{
-				case TiDimensionTypePixels:
+				case TiDimensionTypeDip:
 					endRadiusPixels = endRadius.value;
 					break;
 				case TiDimensionTypePercent:
@@ -246,6 +274,22 @@
 			}
 			break;
 	}
+}
+
++(TiGradient *)gradientFromObject:(id)value proxy:(TiProxy *)proxy
+{
+	if ([value isKindOfClass:[NSDictionary class]])
+	{
+        id<TiEvaluator> context = ([proxy executionContext] == nil) ? [proxy pageContext] : [proxy executionContext];
+		TiGradient * newGradient = [[[TiGradient alloc] _initWithPageContext:context] autorelease];
+		[newGradient _initWithProperties:value];
+		return newGradient;
+	}
+	else if([value isKindOfClass:[TiGradient class]])
+	{
+		return value;
+	}
+	return nil;
 }
 
 @end

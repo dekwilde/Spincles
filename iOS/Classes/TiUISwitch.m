@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
 #import "TiUISwitch.h"
@@ -31,6 +29,11 @@
 	return switchView;
 }
 
+- (id)accessibilityElement
+{
+	return [self switchView];
+}
+
 -(BOOL)hasTouchableListener
 {
 	// since this guy only works with touch events, we always want them
@@ -39,6 +42,34 @@
 }
 
 #pragma mark View controller stuff
+
+-(void)setTintColor_:(id)color
+{
+    [[self proxy] replaceValue:color forKey:@"tintColor" notification:NO];
+    TiColor *ticolor = [TiUtils colorValue:color];
+    if (ticolor != nil) {
+        [[self switchView] setTintColor:[ticolor color]];
+    }
+}
+
+-(void)setOnTintColor_:(id)color
+{
+    [[self proxy] replaceValue:color forKey:@"onTintColor" notification:NO];
+    TiColor *ticolor = [TiUtils colorValue:color];
+    if (ticolor != nil) {
+        [[self switchView] setOnTintColor:[ticolor color]];
+    }
+}
+
+-(void)setThumbTintColor_:(id)color
+{
+    [[self proxy] replaceValue:color forKey:@"thumbTintColor" notification:NO];
+    TiColor *ticolor = [TiUtils colorValue:color];
+    if (ticolor != nil) {
+        [[self switchView] setThumbTintColor:[ticolor color]];
+    }
+}
+
 
 -(void)setEnabled_:(id)value
 {
@@ -55,20 +86,46 @@
 	BOOL newValue = [TiUtils boolValue:value];
 	BOOL animated = !reproxying;
 	UISwitch * ourSwitch = [self switchView];
+    if ([ourSwitch isOn] == newValue) {
+        return;
+    }
 	[ourSwitch setOn:newValue animated:animated];
-	if (reproxying==NO)
+	
+	// Don't rely on switchChanged: - isOn can report erroneous values immediately after the value is changed!  
+	// This only seems to happen in 4.2+ - could be an Apple bug.
+	if ((reproxying == NO) && configurationSet && [self.proxy _hasListeners:@"change"])
 	{
-		[self switchChanged:ourSwitch];
+		[self.proxy fireEvent:@"change" withObject:[NSDictionary dictionaryWithObject:value forKey:@"value"]];
 	}
+}
+
+-(void)frameSizeChanged:(CGRect)frame bounds:(CGRect)bounds
+{
+	[super frameSizeChanged:frame bounds:bounds];
+	[self setCenter:[self center]];
+}
+
+-(void)setCenter:(CGPoint)center
+{
+	CGSize ourSize = [self bounds].size;
+	CGPoint ourAnchor = [[self layer] anchorPoint];
+	CGFloat originx = center.x - (ourSize.width * ourAnchor.x);
+	CGFloat originy = center.y - (ourSize.height * ourAnchor.y);
+	
+	center.x -= originx - floorf(originx);
+	center.y -= originy	- floorf(originy);
+	
+	[super setCenter:center];
 }
 
 - (IBAction)switchChanged:(id)sender
 {
 	NSNumber * newValue = [NSNumber numberWithBool:[(UISwitch *)sender isOn]];
-	[self.proxy replaceValue:newValue forKey:@"value" notification:NO];
+	id current = [self.proxy valueForUndefinedKey:@"value"];
+    [self.proxy replaceValue:newValue forKey:@"value" notification:NO];
 	
 	//No need to setValue, because it's already been set.
-	if ([self.proxy _hasListeners:@"change"])
+	if ([self.proxy _hasListeners:@"change"] && (current != newValue) && ![current isEqual:newValue])
 	{
 		[self.proxy fireEvent:@"change" withObject:[NSDictionary dictionaryWithObject:newValue forKey:@"value"]];
 	}
@@ -76,12 +133,12 @@
 
 -(CGFloat)verifyWidth:(CGFloat)suggestedWidth
 {
-	return [switchView sizeThatFits:CGSizeZero].width;
+	return [[self switchView] sizeThatFits:CGSizeZero].width;
 }
 
 -(CGFloat)verifyHeight:(CGFloat)suggestedHeight
 {
-	return [switchView sizeThatFits:CGSizeZero].height;
+	return [[self switchView] sizeThatFits:CGSizeZero].height;
 }
 
 USE_PROXY_FOR_VERIFY_AUTORESIZING

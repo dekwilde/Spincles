@@ -3,12 +3,10 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #import "Ti3DMatrix.h"
 
-#ifdef USE_TI_UI3DMATRIX
+#if defined(USE_TI_UIIOS3DMATRIX) || defined(USE_TI_UI3DMATRIX)
 
 @implementation Ti3DMatrix
 
@@ -41,6 +39,11 @@
 		}
 	}
 	return self;
+}
+
+-(NSString*)apiName
+{
+    return @"Ti.UI.3DMatrix";
 }
 
 -(CATransform3D)matrix

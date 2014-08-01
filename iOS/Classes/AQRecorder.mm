@@ -185,9 +185,19 @@ void AQRecorder::SetupAudioFormat(UInt32 inFormatID)
 										  &mRecordFormat.mSampleRate), "couldn't get hardware sample rate");
 	
 	size = sizeof(mRecordFormat.mChannelsPerFrame);
-	XThrowIfError(AudioSessionGetProperty(	kAudioSessionProperty_CurrentHardwareInputNumberChannels, 
-										  &size, 
-										  &mRecordFormat.mChannelsPerFrame), "couldn't get input channel count");
+	
+	// WORKAROUND FOR APPLE BUG #8933998
+	// Catch the exceptions thrown by XThrowIfError, and put our faith in Mighty Apple that there will be an appropriate
+	// hardware check somewhere down the line...
+	try {
+		XThrowIfError(AudioSessionGetProperty(kAudioSessionProperty_CurrentHardwareInputNumberChannels, 
+											  &size, 
+											  &mRecordFormat.mChannelsPerFrame), "couldn't get input channel count");
+	}
+	catch (CAXException& e) {
+		char buf[256];
+		fprintf(stderr, "Error: %s (%s)\n", e.mOperation, e.FormatError(buf));		
+	}
 	
 	mRecordFormat.mFormatID = inFormatID;
 	
@@ -253,12 +263,18 @@ void AQRecorder::SetupAudioFormat(UInt32 inFormatID)
 
 void AQRecorder::PauseRecord()
 {
-	mIsPaused = true;
+	if (!mIsPaused && mIsRunning) {
+		XThrowIfError(AudioQueuePause(mQueue),"unable to pause audio queue");
+		mIsPaused = true;
+	}
 }
 
 void AQRecorder::ResumeRecord()
 {
-	mIsPaused = false;
+	if (mIsPaused && mIsRunning) {
+		mIsPaused = false;
+		XThrowIfError(AudioQueueStart(mQueue,NULL),"unable to resume audio queue");
+	}
 }
 
 void AQRecorder::StartRecord(CFStringRef inRecordFile, UInt32 fileFormatID)

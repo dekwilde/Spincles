@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UIIMAGEVIEW
 
@@ -31,22 +29,21 @@
 	BOOL ready;
 	BOOL stopped;
 	BOOL reverse;
-	BOOL paused;
 	BOOL placeholderLoading;
-	CGFloat width;
-	CGFloat height;
+	TiDimension width;
+	TiDimension height;
 	CGFloat autoHeight;
 	CGFloat autoWidth;
 	NSInteger loadCount;
 	NSInteger readyCount;
 	NSInteger loadTotal;
-	ImageLoaderRequest *urlRequest;
 	UIImageView * imageView;
 }
 
 -(void)start;
 -(void)stop;
 -(void)pause;
+-(void)resume;
 
 -(void)setImage_:(id)arg;
 

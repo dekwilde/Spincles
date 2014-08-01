@@ -3,15 +3,13 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
 
 // A good bit of this code was derived from the Three20 project
-// and was customized to work inside test3
+// and was customized to work inside Titanium
 //
-// All modifications by test3 are licensed under 
+// All modifications by Appcelerator are licensed under 
 // the Apache License, Version 2.0
 //
 //
@@ -56,6 +54,8 @@
 	CGPoint touchOrigin;
 	BOOL editing;
 	BOOL springing;	
+    BOOL editable;
+    BOOL renderingButtons;
 }
 
 @property(nonatomic) NSInteger columnCount;
@@ -63,14 +63,20 @@
 @property(nonatomic) NSInteger currentPageIndex;
 @property(nonatomic,assign) id<LauncherViewDelegate> delegate;
 @property(nonatomic,readonly) BOOL editing;
+@property(nonatomic,assign) BOOL editable;
+
+- (id)initWithFrame:(CGRect)frame withRowCount:(int)newRowCount withColumnCount:(int)newColumnCount;
 
 - (void)addItem:(LauncherItem*)item animated:(BOOL)animated;
 - (void)removeItem:(LauncherItem*)item animated:(BOOL)animated;
 
 - (void)beginEditing;
 - (void)endEditing;
+- (void)recreateButtons;
+- (void)layoutButtons;
 
 - (LauncherItem*)itemForIndex:(NSInteger)index;
+- (NSArray*)launcheritems_;
 - (NSArray*)items;
 
 @end
@@ -84,6 +90,10 @@
 
 - (void)launcherView:(LauncherView*)launcher didRemoveItem:(LauncherItem*)item;
 
+- (void)launcherView:(LauncherView*)launcher willDragItem:(LauncherItem*)item;
+
+- (void)launcherView:(LauncherView*)launcher didDragItem:(LauncherItem*)item;
+
 - (void)launcherView:(LauncherView*)launcher didMoveItem:(LauncherItem*)item;
 
 - (void)launcherView:(LauncherView*)launcher didSelectItem:(LauncherItem*)item;
@@ -93,6 +103,8 @@
 - (void)launcherViewDidEndEditing:(LauncherView*)launcher;
 
 - (BOOL)launcherViewShouldWobble:(LauncherView*)launcher;
+
+- (void)launcherView:(LauncherView*)launcher didChangePage:(NSNumber*)pageNo;
 
 @end
 

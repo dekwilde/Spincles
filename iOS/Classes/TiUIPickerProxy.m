@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UIPICKER
 
@@ -22,7 +20,7 @@ NSArray* pickerKeySequence;
 {
 	if (pickerKeySequence == nil)
 	{
-		pickerKeySequence = [[NSArray arrayWithObjects:@"type",@"minDate",@"maxDate",nil] retain];
+		pickerKeySequence = [[NSArray arrayWithObjects:@"type",@"minDate",@"maxDate",@"minuteInterval",nil] retain];
 	}
 	return pickerKeySequence;
 }
@@ -34,6 +32,11 @@ NSArray* pickerKeySequence;
 	[super _configure];
 }
 
+-(NSString*)apiName
+{
+    return @"Ti.UI.Picker";
+}
+
 -(void)_destroy
 {
 	RELEASE_TO_NIL(selectOnLoad);
@@ -42,10 +45,21 @@ NSArray* pickerKeySequence;
 
 -(void)viewDidAttach
 {
-	if (selectOnLoad != nil) {
-		[self setSelectedRow:selectOnLoad];
-		RELEASE_TO_NIL(selectOnLoad);
-	}
+    //Window might not have opened yet, so delay till we get windowDidOpen
+    if (selectOnLoad != nil && windowOpened) {
+        [self setSelectedRow:selectOnLoad];
+        RELEASE_TO_NIL(selectOnLoad);
+    }
+    [super viewDidAttach];
+}
+
+-(void)windowDidOpen
+{
+    [super windowDidOpen];
+    if (selectOnLoad != nil) {
+        [self setSelectedRow:selectOnLoad];
+        RELEASE_TO_NIL(selectOnLoad);
+    }
 }
 
 -(BOOL)supportsNavBarPositioning
@@ -96,43 +110,50 @@ NSArray* pickerKeySequence;
 	return column;
 }
 
-#pragma mark Public APIs 
+#pragma mark support methods for add: 
 
--(void)add:(id)args
-{
-	// TODO: Probably take advantage of Jeff's performance improvements in ordinary views.
-	// But DO NOT do this until after release!
-	ENSURE_UI_THREAD(add,args);
+-(void)addPickerRow:(NSDictionary*)params {
+	ENSURE_UI_THREAD(addPickerRow,params);
+	TiUIPickerRowProxy *row = [params objectForKey:@"row"];
+	TiUIPickerColumnProxy *column = [params objectForKey:@"column"];
+	NSNumber* rowIndex = [column addRow:row];
 	
-	id data = [args objectAtIndex:0];
-		
-	if ([data isKindOfClass:[TiUIPickerRowProxy class]])
+	if (windowOpened) {
+		[row windowWillOpen];
+		[row windowDidOpen];
+	}
+	
+	[self reloadColumn:column];
+	if ([TiUtils boolValue:[row valueForUndefinedKey:@"selected"] def:NO])
 	{
-		TiUIPickerRowProxy *row = (TiUIPickerRowProxy*)data;
-		TiUIPickerColumnProxy *column = [self columnAt:0];
-		NSNumber* rowIndex = [column addRow:row];
-		
-		if (windowOpened) {
+		TiThreadPerformOnMainThread(^{[[self picker] selectRow:
+				[NSArray arrayWithObjects:NUMINT(0),rowIndex,nil]];}, NO);
+	}
+}
+
+-(void)addPickerColumn:(NSDictionary*)params {
+	ENSURE_UI_THREAD_1_ARG(params);
+	NSMutableArray *columns = [params objectForKey:@"columns"];
+	TiUIPickerColumnProxy *column = [params objectForKey:@"column"];
+	if (windowOpened) {
+		for (NSInteger i=0; i < [column rowCount]; i++) {
+			TiUIPickerRowProxy* row = [column rowAt:i];
+			
 			[row windowWillOpen];
 			[row windowDidOpen];
 		}
-		
-		if ([self viewAttached])
-		{
-			TiUIPicker *picker = [self picker];
-			[picker performSelectorOnMainThread:@selector(reloadColumn:) withObject:column waitUntilDone:NO];
-		}
-		if ([TiUtils boolValue:[row valueForUndefinedKey:@"selected"] def:NO])
-		{
-			TiUIPicker *picker = [self picker];
-			[picker performSelectorOnMainThread:@selector(selectRow:) withObject:[NSArray arrayWithObjects:NUMINT(0),rowIndex,nil] waitUntilDone:NO];
-		}
 	}
-	else if ([data isKindOfClass:[TiUIPickerColumnProxy class]])
+	
+	[columns addObject:column];
+	[self reloadColumn:column];
+}
+
+-(void)addRowOfColumns:(NSDictionary*)params {
+	ENSURE_UI_THREAD_1_ARG(params);
+	NSMutableArray *columns = [params objectForKey:@"columns"];
+	NSArray *data = [params objectForKey:@"data"];
+	for (id column in data)
 	{
-		NSMutableArray *columns = [self columns];
-		TiUIPickerColumnProxy* column = (TiUIPickerColumnProxy*)data;
-		
 		if (windowOpened) {
 			for (NSInteger i=0; i < [column rowCount]; i++) {
 				TiUIPickerRowProxy* row = [column rowAt:i];
@@ -143,11 +164,74 @@ NSArray* pickerKeySequence;
 		}
 		
 		[columns addObject:column];
-		if ([self viewAttached])
-		{
-			TiUIPicker *picker = [self picker];
-			[picker performSelectorOnMainThread:@selector(reloadColumn:) withObject:data waitUntilDone:NO];
+	}
+}
+
+-(void)addRowOfDicts:(NSDictionary*)params {
+	ENSURE_UI_THREAD_1_ARG(params);
+	TiUIPickerRowProxy *row = [params objectForKey:@"row"];
+	TiUIPickerColumnProxy *column = [params objectForKey:@"column"];
+	NSNumber* rowIndex = [params objectForKey:@"rowIndex"];
+	if (windowOpened) {
+		[row windowWillOpen];
+		[row windowDidOpen];
+	}
+	[self reloadColumn:column];
+	if ([TiUtils boolValue:[row valueForUndefinedKey:@"selected"] def:NO])
+	{
+		[self setSelectedRow:[NSArray arrayWithObjects:NUMINT(0),rowIndex,NUMBOOL(NO),nil]];
+	}
+}
+
+-(void)addDefault:(NSDictionary*)params {
+	ENSURE_UI_THREAD_1_ARG(params);
+	TiUIPickerColumnProxy *column = [params objectForKey:@"column"];
+	NSArray *data = [params objectForKey:@"data"];
+	for (id item in data)
+	{
+		ENSURE_TYPE(item,TiUIPickerRowProxy);
+		
+		if (windowOpened) {
+			[item windowWillOpen];
+			[item windowDidOpen];
 		}
+		
+		[column addRow:item];
+	}
+	[self reloadColumn:column];
+}
+
+#pragma mark Public APIs 
+
+- (id)value
+{
+    if (![NSThread isMainThread]) {
+		__block id result = nil;
+		TiThreadPerformOnMainThread(^{result = [[[self picker] value_] retain];}, YES);
+		return [result autorelease];
+	}
+	return [[self picker] value_];
+}
+
+-(void)add:(id)args
+{
+	// TODO: Probably take advantage of Jeff's performance improvements in ordinary views.
+	// But DO NOT do this until after release!
+	id data = [args objectAtIndex:0];
+	
+	if ([data isKindOfClass:[TiUIPickerRowProxy class]])
+	{
+		TiUIPickerRowProxy *row = (TiUIPickerRowProxy*)data;
+		TiUIPickerColumnProxy *column = [self columnAt:0];
+		NSDictionary* params = [NSDictionary dictionaryWithObjectsAndKeys:row, @"row", column, @"column", nil];
+		[self addPickerRow:params];
+	}
+	else if ([data isKindOfClass:[TiUIPickerColumnProxy class]])
+	{
+		NSMutableArray *columns = [self columns];
+		TiUIPickerColumnProxy* column = (TiUIPickerColumnProxy*)data;
+		NSDictionary* params = [NSDictionary dictionaryWithObjectsAndKeys:columns, @"columns", column, @"column", nil];
+		[self addPickerColumn:params];
 	}
 	else if ([data isKindOfClass:[NSArray class]])
 	{
@@ -158,66 +242,27 @@ NSArray* pickerKeySequence;
 		if ([firstRow isKindOfClass:[TiUIPickerColumnProxy class]])
 		{
 			NSMutableArray *columns = [self columns];
-			for (id column in data)
-			{
-				if (windowOpened) {
-					for (NSInteger i=0; i < [column rowCount]; i++) {
-						TiUIPickerRowProxy* row = [column rowAt:i];
-						
-						[row windowWillOpen];
-						[row windowDidOpen];
-					}
-				}
-				
-				[columns addObject:column];
-			}
+			NSDictionary* params = [NSDictionary dictionaryWithObjectsAndKeys:columns, @"columns", data, @"data", nil];
+			[self addRowOfColumns:params];
 		}
 		else if ([firstRow isKindOfClass:[NSDictionary class]])
 		{
 			for (id rowdata in data)
 			{
 				TiUIPickerRowProxy *row = [[TiUIPickerRowProxy alloc] _initWithPageContext:[self executionContext] args:[NSArray arrayWithObject:rowdata]];
-								
 				TiUIPickerColumnProxy *column = [self columnAt:0];
 				NSNumber* rowIndex = [column addRow:row];
-				
-				if (windowOpened) {
-					[row windowWillOpen];
-					[row windowDidOpen];
-				}
-				
 				[row release];
-				
-				if ([self viewAttached])
-				{
-					TiUIPicker *picker = [self picker];
-					[picker performSelectorOnMainThread:@selector(reloadColumn:) withObject:column waitUntilDone:NO];
-				}
-				if ([TiUtils boolValue:[row valueForUndefinedKey:@"selected"] def:NO])
-				{
-					[[self view] performSelectorOnMainThread:@selector(selectRow:) withObject:[NSArray arrayWithObjects:NUMINT(0),rowIndex,nil] waitUntilDone:NO];
-				}
+
+				NSDictionary* params = [NSDictionary dictionaryWithObjectsAndKeys:row, @"row", column, @"column", rowIndex, @"rowIndex", nil];
+				[self addRowOfDicts:params];
 			}
 		}
 		else
 		{
 			TiUIPickerColumnProxy *column = [self columnAt:0];
-			for (id item in data)
-			{
-				ENSURE_TYPE(item,TiUIPickerRowProxy);
-				
-				if (windowOpened) {
-					[item windowWillOpen];
-					[item windowDidOpen];
-				}
-				
-				[column addRow:item];
-			}
-			if ([self viewAttached])
-			{
-				TiUIPicker *picker = [self picker];
-				[picker performSelectorOnMainThread:@selector(reloadColumn:) withObject:column waitUntilDone:NO];
-			}
+			NSDictionary* params = [NSDictionary dictionaryWithObjectsAndKeys:column, @"column", data, @"data", nil];
+			[self addDefault:params];
 		}
 	}
 }
@@ -251,7 +296,16 @@ NSArray* pickerKeySequence;
 	else {
 		if (selectOnLoad != args) {
 			RELEASE_TO_NIL(selectOnLoad);
-			selectOnLoad = [args retain];
+			// Hilarious!  selectOnLoad CAN'T be animated - otherwise the picker doesn't actually set the row.
+			// This is a tasty classic of an Apple bug.  So, we manually set the 'animated' value to NO, 100 of the time.
+			NSMutableArray* mutableArgs = [NSMutableArray arrayWithArray:args];
+			if ([mutableArgs count] > 2) {
+				[mutableArgs replaceObjectAtIndex:2 withObject:NUMBOOL(NO)];
+			}
+			else {
+				[mutableArgs addObject:NUMBOOL(NO)];
+			}
+			selectOnLoad = [mutableArgs retain];
 		}
 	}
 }
@@ -262,7 +316,43 @@ NSArray* pickerKeySequence;
 }
 
 USE_VIEW_FOR_VERIFY_HEIGHT
+USE_VIEW_FOR_VERIFY_WIDTH
 
+
+-(void)reloadColumn:(id)column
+{
+	ENSURE_SINGLE_ARG(column,NSObject);
+
+	if (![self viewAttached])
+	{
+		return;
+	}
+	
+	//TODO: This is playing with fire here.
+	NSArray * columnArray = [self columns];
+
+	int columnIndex = NSNotFound;
+	if([column isKindOfClass:[TiUIPickerColumnProxy class]])
+	{
+		columnIndex = [columnArray indexOfObject:column];
+	}
+	else
+	{
+		columnIndex = [TiUtils intValue:column def:NSNotFound];
+	}
+
+	ENSURE_VALUE_RANGE(columnIndex,0,[columnArray count]-1);
+	[self makeViewPerformSelector:@selector(reloadColumn:) withObject:NUMINT(columnIndex) createIfNeeded:YES waitUntilDone:NO];
+}
+
+-(TiDimension)defaultAutoWidthBehavior:(id)unused
+{
+    return TiDimensionAutoSize;
+}
+-(TiDimension)defaultAutoHeightBehavior:(id)unused
+{
+    return TiDimensionAutoSize;
+}
 
 @end
 

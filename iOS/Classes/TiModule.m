@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #import <objc/runtime.h>
 
@@ -12,15 +10,25 @@
 #import "TiProxy.h"
 #import "TiUtils.h"
 #import "TiHost.h"
+#import "KrollBridge.h"
 
 @implementation TiModule
 
--(void)dealloc
+-(void)unregisterForNotifications
 {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kTiShutdownNotification object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kTiSuspendNotification object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kTiResumeNotification object:nil];
-	
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+-(void)dealloc
+{	
+    // Have to jump through a hoop here to keep the dealloc block from
+    // retaining 'self' by creating a __block access ref. Note that
+    // this is only safe as long as the block until completion is YES.
+    __block id bself = self;
+	TiThreadPerformOnMainThread(^{
+        [bself unregisterForNotifications];
+    }, YES);
+    
 	RELEASE_TO_NIL(host);
 	if (classNameLookup != NULL)
 	{
@@ -31,9 +39,22 @@
 	[super dealloc];
 }
 
+-(void)contextShutdown:(id)sender
+{
+	id<TiEvaluator> context = (id<TiEvaluator>)sender;
+
+	[self contextWasShutdown:context];
+	if(pageContext == context){
+		pageContext = nil;
+		pageKrollObject = nil;
+	}
+	//DO NOT run super shutdown here, as we want to change the behavior that TiProxy does.
+}
+
 -(void)setPageContext:(id<TiEvaluator>)evaluator
 {
 	pageContext = evaluator; // don't retain
+	pageKrollObject = nil;
 }
 
 -(void)setHost:(TiHost*)host_
@@ -51,12 +72,31 @@
 {
 }
 
+-(void)paused:(id)sender
+{
+}
+
 -(void)suspend:(id)sender
 {
 }
 
 -(void)resume:(id)sender
 {
+}
+
+// Different from resume - there's some information we can only update AFTER the app has popped to the foreground.
+-(void)resumed:(id)sender
+{
+}
+
+-(void)registerForNotifications
+{
+	WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shutdown:) name:kTiShutdownNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(suspend:) name:kTiSuspendNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(paused:) name:kTiPausedNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resume:) name:kTiResumeNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resumed:) name:kTiResumedNotification object:nil];
 }
 
 -(void)startup
@@ -66,10 +106,7 @@
 		classNameLookup = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, NULL);
 		//We do not retain the Class, but simply assign them.
 	}
-
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shutdown:) name:kTiShutdownNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(suspend:) name:kTiSuspendNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resume:) name:kTiResumeNotification object:nil];
+	TiThreadPerformOnMainThread(^{[self registerForNotifications];}, NO);
 }
 
 -(void)_configure
@@ -117,16 +154,15 @@
 		resultClass = NSClassFromString(className);
 		if (resultClass==nil)
 		{
-			NSLog(@"[WARN] attempted to load: %@",className);
-			@throw [NSException exceptionWithName:@"org.test3.module" 
+			DebugLog(@"[WARN] Attempted to load %@: Could not find class definition.",className);
+			@throw [NSException exceptionWithName:@"org.appcelerator.module" 
 										   reason:[NSString stringWithFormat:@"invalid method (%@) passed to %@",name,[self class]] 
 										 userInfo:nil];
 		}
 		CFDictionarySetValue(classNameLookup, name, resultClass);		
 	}
 
-	TiProxy *proxy = [resultClass alloc];
-	return [[proxy _initWithPageContext:context args:args] autorelease];
+	return [[[resultClass alloc] _initWithPageContext:context args:args] autorelease];
 }
 
 
@@ -136,27 +172,38 @@
 	return nil;
 }
 
+-(void)loadAssets
+{
+    if (moduleAssets == nil) {
+        NSString *moduleName_ = [NSString stringWithCString:class_getName([self class]) encoding:NSUTF8StringEncoding];
+        NSString *moduleAsset = [NSString stringWithFormat:@"%@Assets",moduleName_];
+        id cls = NSClassFromString(moduleAsset);
+        if (cls!=nil)
+        {
+            moduleAssets = [[cls alloc] init];
+        }
+    }    
+}
+
 -(NSData*)moduleJS
 {
-	NSString *moduleId = [self moduleId];
-	if (moduleId!=nil)
-	{
-		if (moduleAssets==nil)
-		{
-			NSString *moduleName_ = [NSString stringWithCString:class_getName([self class]) encoding:NSUTF8StringEncoding];
-			NSString *moduleAsset = [NSString stringWithFormat:@"%@Assets",moduleName_];
-			id cls = NSClassFromString(moduleAsset);
-			if (cls!=nil)
-			{
-				moduleAssets = [[cls alloc] init];
-			}
-		}
-		if (moduleAssets!=nil)
-		{
-			return [moduleAssets performSelector:@selector(moduleAsset)];
-		}
-	}
+    [self loadAssets];
+    
+    if (moduleAssets!=nil)
+    {
+        return [moduleAssets performSelector:@selector(moduleAsset)];
+    }
 	return nil;
+}
+
+-(NSData*)loadModuleAsset:(NSString*)fromPath
+{
+    [self loadAssets];
+    if ([moduleAssets respondsToSelector:@selector(resolveModuleAsset:)]) {
+        NSString* assetID = [fromPath stringByReplacingOccurrencesOfString:@"." withString:@"_"];
+        return [moduleAssets performSelector:@selector(resolveModuleAsset:) withObject:assetID];
+    }
+    return nil;
 }
 
 -(BOOL)isJSModule
@@ -172,21 +219,17 @@
 
 -(NSURL*)moduleResourceURL:(NSString*)name
 {
-	NSString *resourceurl = [[NSBundle mainBundle] resourcePath];
+	NSString *resourceurl = [TiHost resourcePath];
 	NSURL *path = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/modules/%@/%@",resourceurl,[self moduleId],name]];
 	return path;
 }
 
 -(id)bindCommonJSModule:(NSString*)code
 {
-	NSMutableString *js = [NSMutableString string];
-	
-	[js appendString:@"(function(exports){"];
-	[js appendString:code];
-	[js appendString:@"return exports;"];
-	[js appendString:@"})({})"];
+	NSString *js = [[NSString alloc] initWithFormat:TitaniumModuleRequireFormat,code];
 	
 	id result = [[self pageContext] evalJSAndWait:js];
+	[js release];
 	if ([result isKindOfClass:[NSDictionary class]])
 	{
 		for (id key in result)

@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_MEDIA
 
@@ -12,24 +10,31 @@
 #import "AudioStreamer/AudioStreamer.h"
 #import "TiProxy.h"
 
-@interface TiMediaAudioPlayerProxy : TiProxy {
+@interface TiMediaAudioPlayerProxy : TiProxy<AudioStreamerDelegate> {
 @private
 	NSURL *url;
+    NSUInteger bufferSize;
+	double volume;
+    double duration;
 	AudioStreamer *player;
 	BOOL progress;
 	NSTimer *timer;
-    UInt32 sessionMode;
 }
 
 @property (nonatomic,readonly) NSURL *url;
-@property (nonatomic,readwrite,assign,getter=isPaused)  NSNumber *paused;
-@property (nonatomic,readonly,getter=isPlaying) NSNumber *playing;
-@property (nonatomic,readonly,getter=isWaiting) NSNumber *waiting;
-@property (nonatomic,readonly,getter=isIdle) NSNumber *idle;
+@property (nonatomic,readwrite,assign)  NSNumber *paused;
+@property (nonatomic,readonly) NSNumber *playing;
+@property (nonatomic,readonly) NSNumber *waiting;
+@property (nonatomic,readonly) NSNumber *idle;
 @property (nonatomic,readonly) NSNumber *bitRate;
 @property (nonatomic,readonly) NSNumber *progress;
 @property (nonatomic,readonly) NSNumber *state;
+@property (nonatomic,readonly) NSNumber *duration;
+
+@property (nonatomic,copy)	NSNumber *volume;
+
 @property (nonatomic,readwrite,assign) NSNumber* audioSessionMode;
+@property (nonatomic,readwrite,assign) NSNumber* bufferSize;
 
 @property (nonatomic,readonly) NSNumber *STATE_INITIALIZED;
 @property (nonatomic,readonly) NSNumber *STATE_STARTING;

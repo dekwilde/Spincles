@@ -3,8 +3,6 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- * 
- * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
 #import "TiBlob.h"
@@ -13,6 +11,12 @@
 #import "UIImage+Alpha.h"
 #import "UIImage+Resize.h"
 #import "UIImage+RoundedCorner.h"
+
+//NOTE:FilesystemFile is conditionally compiled based on the filesystem module.
+#import "TiFilesystemFileProxy.h"
+
+static NSString *const MIMETYPE_PNG = @"image/png";
+static NSString *const MIMETYPE_JPEG = @"image/jpeg";
 
 @implementation TiBlob
 
@@ -27,20 +31,38 @@
 
 -(id)description
 {
-	return @"[object TiBlob]";
+	NSString* text = [self text];
+	if (text == nil || [text isEqualToString:@""]) {
+		return @"[object TiBlob]";
+	}
+	return text;
 }
 
--(BOOL)isImageMimeType
+-(NSString*)apiName
 {
-	return [mimetype hasPrefix:@"image/"];
+    return @"Ti.Blob";
 }
+
 
 -(void)ensureImageLoaded
 {
-	if (image == nil && [self isImageMimeType])
-	{
-		image = [[self image] retain];
-	}
+    if (image == nil && !imageLoadAttempted) {
+        imageLoadAttempted = YES;
+        switch(type)
+        {
+            case TiBlobTypeFile:
+            {
+                image = [[UIImage imageWithContentsOfFile:path] retain];
+            }
+            case TiBlobTypeData:
+            {
+                image = [[UIImage imageWithData:data] retain];
+            }
+            default: {
+                break;
+            }
+        }
+    }
 }
 
 -(NSInteger)width
@@ -88,6 +110,9 @@
 			}
 			return [result intValue];
 		}
+		default: {
+			break;
+		}
 	}
 	return 0;
 }
@@ -98,7 +123,7 @@
 	{
 		image = [image_ retain];
 		type = TiBlobTypeImage;
-		mimetype = [@"image/jpeg" retain];
+		mimetype = [([UIImageAlpha hasAlpha:image_] ? MIMETYPE_PNG : MIMETYPE_JPEG) copy];
 	}
 	return self;
 }
@@ -109,7 +134,7 @@
 	{
 		data = [data_ retain];
 		type = TiBlobTypeData;
-		mimetype = [mimetype_ retain];
+		mimetype = [mimetype_ copy];
 	}
 	return self;
 }
@@ -120,7 +145,7 @@
 	{
 		type = TiBlobTypeFile;
 		path = [path_ retain];
-		mimetype = [Mimetypes mimeTypeForExtension:path];
+		mimetype = [[Mimetypes mimeTypeForExtension:path] copy];
 	}
 	return self;
 }
@@ -148,6 +173,9 @@
 		{
 			return [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
 		}
+		default: {
+			break;
+		}
 	}
 	// anything else we refuse to write out
 	return nil;
@@ -164,7 +192,13 @@
 		}
 		case TiBlobTypeImage:
 		{
-			return UIImageJPEGRepresentation(image,1.0);
+            if ([mimetype isEqualToString:MIMETYPE_PNG]) {
+                return UIImagePNGRepresentation(image);
+            }
+            return UIImageJPEGRepresentation(image,1.0);
+		}
+		default: {
+			break;
 		}
 	}
 	return data;
@@ -172,32 +206,24 @@
 
 -(UIImage*)image
 {
-	switch(type)
-	{
-		case TiBlobTypeFile:
-		{
-			return [UIImage imageWithContentsOfFile:path];
-		}
-		case TiBlobTypeData:
-		{
-			return [UIImage imageWithData:data];
-		}
-	}
+	[self ensureImageLoaded];
 	return image;
 }
 
 -(void)setData:(NSData*)data_
 {
 	RELEASE_TO_NIL(data);
+	RELEASE_TO_NIL(image);
 	type = TiBlobTypeData;
 	data = [data_ retain];
+	imageLoadAttempted = NO;
 }
 
 -(void)setImage:(UIImage *)image_
 {
 	RELEASE_TO_NIL(image);
-	type = TiBlobTypeImage;
 	image = [image_ retain];
+    [self setMimeType:([UIImageAlpha hasAlpha:image_] ? MIMETYPE_PNG : MIMETYPE_JPEG) type:TiBlobTypeImage];
 }
 
 -(NSString*)path
@@ -205,10 +231,45 @@
 	return path;
 }
 
+// For Android compatibility
+-(TiFile *)file
+{	/**
+	 *	Having such a conditional compile deep in TiBlob may have implications
+	 *	later on if we restructure platform. This may also mean we should
+	 *	require filesystem to always be compiled in, but that seems overkill
+	 *	for now. There may be some issues with parity with Android's
+	 *	implementation in behavior when filesystem module is missing or when the
+	 *	path does not point to a valid file.
+	 *	TODO: What is expected behavior when path is valid but there's no file?
+	 *	TODO: Should file property require explicit use of filesystem module?
+	 */
+#ifdef USE_TI_FILESYSTEM
+	if (path != nil) {
+		return [[[TiFilesystemFileProxy alloc] initWithFile:path] autorelease];	
+	}
+#else
+	NSLog(@"[FATAL] Blob.file property requested but the Filesystem module was never requested.")
+#endif
+	return nil;
+}
+
+-(id)nativePath
+{
+    if (path != nil) {
+	    return [[NSURL fileURLWithPath:path] absoluteString];
+    }
+    return [NSNull null];
+}
+
+-(NSNumber*)length
+{
+    return NUMLONGLONG([[self data] length]);
+}
+
 -(void)setMimeType:(NSString*)mime type:(TiBlobType)type_
 {
 	RELEASE_TO_NIL(mimetype);
-	mimetype = [mime retain];
+	mimetype = [mime copy];
 	type = type_;
 }
 
@@ -235,7 +296,7 @@
 	}
 	if (writeData!=nil)
 	{
-		[writeData writeToFile:destination atomically:YES];
+		return [writeData writeToFile:destination atomically:YES];
 	}
 	return NO;
 }
@@ -247,7 +308,8 @@
 	[self ensureImageLoaded];
 	if (image!=nil)
 	{
-		return [[[TiBlob alloc] initWithImage:[UIImageAlpha imageWithAlpha:image]] autorelease];
+		TiBlob *blob = [[TiBlob alloc] initWithImage:[UIImageAlpha imageWithAlpha:image]];
+		return [blob autorelease];
 	}
 	return nil;
 }
@@ -259,7 +321,8 @@
 	{
 		ENSURE_SINGLE_ARG(args,NSObject);
 		NSUInteger size = [TiUtils intValue:args];
-		return [[[TiBlob alloc] initWithImage:[UIImageAlpha transparentBorderImage:size image:image]] autorelease];
+		TiBlob *blob = [[TiBlob alloc] initWithImage:[UIImageAlpha transparentBorderImage:size image:image]];
+		return [blob autorelease];
 	}
 	return nil;
 }
@@ -271,7 +334,8 @@
 	{
 		NSUInteger cornerSize = [TiUtils intValue:[args objectAtIndex:0]];
 		NSUInteger borderSize = [args count] > 1 ? [TiUtils intValue:[args objectAtIndex:1]] : 1;
-		return [[[TiBlob alloc] initWithImage:[UIImageRoundedCorner roundedCornerImage:cornerSize borderSize:borderSize image:image]] autorelease];
+		TiBlob *blob =  [[TiBlob alloc] initWithImage:[UIImageRoundedCorner roundedCornerImage:cornerSize borderSize:borderSize image:image]];
+		return [blob autorelease];
 	}
 	return nil;
 }
@@ -284,12 +348,12 @@
 		NSUInteger size = [TiUtils intValue:[args objectAtIndex:0]];
 		NSUInteger borderSize = [args count] > 1 ? [TiUtils intValue:[args objectAtIndex:1]] : 1;
 		NSUInteger cornerRadius = [args count] > 2 ? [TiUtils intValue:[args objectAtIndex:2]] : 0;
-		return [[[TiBlob alloc] initWithImage:[UIImageResize thumbnailImage:size 
+		TiBlob *blob = [[TiBlob alloc] initWithImage:[UIImageResize thumbnailImage:size
 												  transparentBorder:borderSize
 													   cornerRadius:cornerRadius
 											   interpolationQuality:kCGInterpolationHigh
-															  image:image]] 
-				autorelease];
+															  image:image]];
+		return [blob autorelease];		
 	}
 	return nil;
 }
@@ -302,7 +366,26 @@
 		ENSURE_ARG_COUNT(args,2);
 		NSUInteger width = [TiUtils intValue:[args objectAtIndex:0]];
 		NSUInteger height = [TiUtils intValue:[args objectAtIndex:1]];
-		return [[[TiBlob alloc] initWithImage:[UIImageResize resizedImage:CGSizeMake(width, height) interpolationQuality:kCGInterpolationHigh image:image]] autorelease];
+		TiBlob *blob =  [[TiBlob alloc] initWithImage:[UIImageResize resizedImage:CGSizeMake(width, height) interpolationQuality:kCGInterpolationHigh image:image hires:NO]];
+		return [blob autorelease];
+	}
+	return nil;
+}
+
+- (id)imageAsCropped:(id)args
+{
+	[self ensureImageLoaded];
+	if (image!=nil)
+	{
+		ENSURE_SINGLE_ARG(args,NSDictionary);
+		CGRect bounds;
+		CGSize imageSize = [image size];
+		bounds.size.width = [TiUtils floatValue:@"width" properties:args def:imageSize.width];
+		bounds.size.height = [TiUtils floatValue:@"height" properties:args def:imageSize.height];
+		bounds.origin.x = [TiUtils floatValue:@"x" properties:args def:(imageSize.width - bounds.size.width) / 2.0];
+		bounds.origin.y = [TiUtils floatValue:@"y" properties:args def:(imageSize.height - bounds.size.height) / 2.0];
+		TiBlob *blob = [[TiBlob alloc] initWithImage:[UIImageResize croppedImage:bounds image:image]];
+		return [blob autorelease];
 	}
 	return nil;
 }
