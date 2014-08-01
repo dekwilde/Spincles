@@ -39,34 +39,12 @@
 	{
 		return child;
 	}
+
 	
-	switch([child kind])
-	{
-		case GDataXMLElementKind:
-		{
-			TiDOMElementProxy *element = [[[TiDOMElementProxy alloc] _initWithPageContext:context] autorelease];
-			[element setElement:(GDataXMLElement*)child];
-			return element;
-		}
-		case GDataXMLAttributeKind:
-		{
-			//FIXME:
-			TiDOMAttrProxy *proxy = [[[TiDOMAttrProxy alloc] _initWithPageContext:context] autorelease];
-			return proxy;
-		}
-		case GDataXMLTextKind:
-		{
-			TiDOMTextNodeProxy *proxy = [[[TiDOMTextNodeProxy alloc] _initWithPageContext:context] autorelease];
-			[proxy setNode:child];
-			return proxy;
-		}
-		default:
-		{
-			TiDOMNodeProxy *element = [[[TiDOMNodeProxy alloc] _initWithPageContext:context] autorelease];
-			[element setNode:child];
-			return element;
-		}
-	}
+    TiDOMNodeProxy *element = [[[TiDOMNodeProxy alloc] _initWithPageContext:context] autorelease];
+    [element setNode:child];
+    return element;
+    
 }
 
 #pragma mark Public APIs 
