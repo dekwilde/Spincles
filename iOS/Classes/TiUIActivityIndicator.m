@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UIACTIVITYINDICATOR
 
@@ -108,15 +110,9 @@
 	return messageLabel;
 }
 
-- (id)accessibilityElement
-{
-	return [self messageLabel];
-}
-
 -(void)frameSizeChanged:(CGRect)frame bounds:(CGRect)bounds
 {
 	[self setNeedsLayout];
-    [super frameSizeChanged:frame bounds:bounds];
 }
 
 #pragma mark View controller stuff
@@ -216,24 +212,12 @@
 
 }
 
-- (void)didMoveToWindow
-{
-    //TIMOB-15293
-    if ( ([self window] != nil) && (indicatorView != nil) && (![indicatorView isAnimating]) ) {
-        BOOL visible = [TiUtils boolValue:[[self proxy] valueForKey:@"visible"] def:NO];
-        if (visible) {
-            [indicatorView startAnimating];
-        }
-    }
-    [super didMoveToWindow];
-}
-
--(CGFloat)contentWidthForWidth:(CGFloat)suggestedWidth
+-(CGFloat)autoWidthForWidth:(CGFloat)suggestedWidth
 {
 	return [self sizeThatFits:CGSizeZero].width;
 }
 
--(CGFloat)contentHeightForWidth:(CGFloat)width
+-(CGFloat)autoHeightForWidth:(CGFloat)width
 {
 	return [self sizeThatFits:CGSizeZero].height;
 }

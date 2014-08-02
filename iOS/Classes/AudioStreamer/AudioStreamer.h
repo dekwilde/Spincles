@@ -11,18 +11,16 @@
 //  this copyright and permission notice. Attribution in compiled projects is
 //  appreciated but not required.
 //
-
-// This file is meant to be a repository for common defintions between AudioStreamerBC (backcompat, 3.1.x)
-// and AudioStreamerCUR (iOS 3.2+), as well as a proxy which shunts messages to the appropriate AudioStreamer.
-// - SPT
-
-// Also note that we've had to change enumeration and class names here - this is because
-// some modules may require the use of AudioStreamer in external libraries and the
-// symbols cannot be changed on that end.  The use of common symbols in Titanium without
-// namespaces is a recurring problem, and we can thank Objective-C for it.
-// - SPT
-
 #ifdef USE_TI_MEDIA
+
+#ifdef TARGET_OS_IPHONE			
+#import <UIKit/UIKit.h>
+#else
+#import <Cocoa/Cocoa.h>
+#endif 			
+
+#include <pthread.h>
+#include <AudioToolbox/AudioToolbox.h>
 
 #define LOG_QUEUED_BUFFERS 0
 
@@ -36,18 +34,18 @@
 								// buffers are queued at any time -- if it drops
 								// to zero too often, this value may need to
 								// increase. Min 3, typical 8-24.
+								
+#define kAQBufSize 2048			// Number of bytes in each audio queue buffer
+								// Needs to be big enough to hold a packet of
+								// audio from the audio file. If number is too
+								// large, queuing of audio before playback starts
+								// will take too long.
+								// Highly compressed files can use smaller
+								// numbers (512 or less). 2048 should hold all
+								// but the largest packets. A buffer size error
+								// will occur if this number is too small.
 
 #define kAQMaxPacketDescs 512	// Number of packet descriptions in our array
-#define kAQDefaultBufSize 2048	// Number of bytes in each audio queue buffer
-                                // Needs to be big enough to hold a packet of
-                                // audio from the audio file. If number is too
-                                // large, queuing of audio before playback starts
-                                // will take too long.
-                                // Highly compressed files can use smaller
-                                // numbers (512 or less). 2048 should hold all
-                                // but the largest packets. A buffer size error
-                                // will occur if this number is too small.
-
 
 typedef enum
 {
@@ -59,8 +57,7 @@ typedef enum
 	AS_BUFFERING,
 	AS_STOPPING,
 	AS_STOPPED,
-	AS_PAUSED,
-	AS_FLUSHING_EOF
+	AS_PAUSED
 } AudioStreamerState;
 
 typedef enum
@@ -100,21 +97,54 @@ typedef enum
 
 extern NSString * const ASStatusChangedNotification;
 
-@protocol AudioStreamerDelegate<NSObject>
--(void)playbackStateChanged:(id)sender;
-@end
+@interface AudioStreamer : NSObject
+{
+	NSURL *url;
 
+	//
+	// Special threading consideration:
+	//	The audioQueue property should only ever be accessed inside a
+	//	synchronized(self) block and only *after* checking that ![self isFinishing]
+	//
+	AudioQueueRef audioQueue;
+	AudioFileStreamID audioFileStream;	// the audio file stream parser
+	
+	AudioQueueBufferRef audioQueueBuffer[kNumAQBufs];		// audio queue buffers
+	AudioStreamPacketDescription packetDescs[kAQMaxPacketDescs];	// packet descriptions for enqueuing audio
+	unsigned int fillBufferIndex;	// the index of the audioQueueBuffer that is being filled
+	size_t bytesFilled;				// how many bytes have been filled
+	size_t packetsFilled;			// how many packets have been filled
+	bool inuse[kNumAQBufs];			// flags to indicate that a buffer is still in use
+	NSInteger buffersUsed;
+	
+	AudioStreamerState state;
+	AudioStreamerStopReason stopReason;
+	AudioStreamerErrorCode errorCode;
+	OSStatus err;
+	
+	bool discontinuous;			// flag to indicate middle of the stream
+	
+	pthread_mutex_t queueBuffersMutex;			// a mutex to protect the inuse flags
+	pthread_cond_t queueBufferReadyCondition;	// a condition varable for handling the inuse flags
 
-@protocol AudioStreamerProtocol<NSObject>
+	CFReadStreamRef stream;
+	NSNotificationCenter *notificationCenter;
+	
+	NSUInteger dataOffset;
+	UInt32 bitRate;
+
+	bool seekNeeded;
+	double seekTime;
+	double sampleRate;
+	double lastProgress;
+}
+
 @property AudioStreamerErrorCode errorCode;
-@property (nonatomic, readonly) AudioStreamerState state;
+@property (readonly) AudioStreamerState state;
 @property (readonly) double progress;
-@property (readonly) double duration; 
 @property (readwrite) UInt32 bitRate;
-@property (readwrite) double volume;
-@property (readwrite,assign) id<AudioStreamerDelegate> delegate;
-@property (nonatomic,readwrite,assign) NSUInteger bufferSize;
 
+- (id)initWithURL:(NSURL *)aURL;
 - (void)start;
 - (void)stop;
 - (void)pause;
@@ -122,17 +152,8 @@ extern NSString * const ASStatusChangedNotification;
 - (BOOL)isPaused;
 - (BOOL)isWaiting;
 - (BOOL)isIdle;
-@end
-
-@interface AudioStreamer : NSObject<AudioStreamerProtocol,AudioStreamerDelegate>
-{
-	id<AudioStreamerProtocol> streamer;
-	id<AudioStreamerDelegate> delegate;
-}
-
-- (id)initWithURL:(NSURL *)aURL;
-+ (NSString*)stringForErrorCode:(AudioStreamerErrorCode)code;
 
 @end
+
 
 #endif

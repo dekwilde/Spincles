@@ -3,89 +3,67 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
-#import <MobileCoreServices/UTType.h>
 #import "Mimetypes.h"
 
+const NSString * htmlMimeType = @"text/html";
+const NSString * textMimeType = @"text/plain";
+const NSString * jpegMimeType = @"image/jpeg";
 const NSString * svgMimeType = @"image/svg+xml";
 
 static NSDictionary * mimeTypeFromExtensionDict = nil;
-
 
 @implementation Mimetypes
 
 + (void)initialize
 {
-	//This dictionary contains info on mimetypes surrently missing on IOS platform.
-	//This should be updated on a case by case basis.
 	if (mimeTypeFromExtensionDict == nil)
 	{
 		mimeTypeFromExtensionDict = [[NSDictionary alloc] initWithObjectsAndKeys:
+									 @"image/png",@"png",@"image/gif",@"gif",
+									 jpegMimeType,@"jpg",jpegMimeType,@"jpeg",
+									 @"image/x-icon",@"ico",
+									 htmlMimeType,@"html",htmlMimeType,@"htm",
+									 textMimeType,@"text",textMimeType,@"txt",
+									 svgMimeType,@"svgz",svgMimeType,@"svg",
+									 @"text/json",@"json",
+									 @"text/javascript",@"js",
+									 @"text/x-javascript",@"js",
+									 @"application/x-javascript",@"js",
 									 @"text/css",@"css",
-									 @"video/x-m4v",@"m4v",
+									 @"text/xml",@"xml",
+									 @"audio/x-wav",@"wav",
+									 @"video/mpeg",@"mov",
+									 @"video/mpeg",@"m4v",
 									 nil];
 	}
 }
 
-
 + (NSString *)extensionForMimeType:(NSString *)mimetype
 {
-	//Get info from the system
-	CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (CFStringRef)mimetype, NULL);
-	CFStringRef extension = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension);
-	
-	//Release the UTI
-    //CFRelease should not be used on a NULL object.
-    if (uti != NULL) {
-        CFRelease(uti);
-    }
-	
-	if (extension == NULL) {
-		//Missing info is retrieved from dictionary
-		[Mimetypes initialize];
-		for (NSString *key in mimeTypeFromExtensionDict)
+	[Mimetypes initialize];
+	for (NSString *key in mimeTypeFromExtensionDict)
+	{
+		NSString *value = [mimeTypeFromExtensionDict objectForKey:key];
+		if ([value isEqualToString:mimetype])
 		{
-			NSString *value = [mimeTypeFromExtensionDict objectForKey:key];
-			if ([value isEqualToString:mimetype])
-			{
-				return key;
-			}
-		}		
-		return @"bin";
+			return key;
+		}
 	}
-	else {
-		return [(NSString*)extension autorelease];
-	}
-	
-	
+	return @"bin";
 }
 
 + (NSString *)mimeTypeForExtension:(NSString *)ext
 {
-	//Get info from the system
-	CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)[ext pathExtension], NULL);
-	CFStringRef mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
-
-	//Release the UTI
-    //CFRelease should not be used on a NULL object.
-    if (uti != NULL) {
-        CFRelease(uti);
-    }
-		
-	if (mimetype == NULL) {
-		//Missing info is retrieved from dictionary
-		[Mimetypes initialize];
-		NSString *result=[mimeTypeFromExtensionDict objectForKey:[ext pathExtension]];
-		
-		if (result == nil)
-			result = @"application/octet-stream";
-		
-		return result;
+	[Mimetypes initialize];
+	NSString *result=[mimeTypeFromExtensionDict objectForKey:[ext pathExtension]];
+	if (result == nil){
+		result = @"application/octet-stream";
 	}
-	else {
-		return [(NSString*)mimetype autorelease];
-	}
-	
+	return result;
 }
+
 @end

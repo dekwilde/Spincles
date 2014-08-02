@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
 #import <UIKit/UIKit.h>
@@ -13,23 +15,17 @@
 
 @optional
 
--(CGFloat)minimumParentWidthForSize:(CGSize)size;
--(CGFloat)minimumParentHeightForSize:(CGSize)size;
+-(CGFloat)minimumParentWidthForWidth:(CGFloat)suggestedWidth;
+-(CGFloat)minimumParentHeightForWidth:(CGFloat)suggestedWidth;
 
--(CGFloat)autoWidthForSize:(CGSize)size;
--(CGFloat)autoHeightForSize:(CGSize)size;
-
--(CGFloat)contentWidthForWidth:(CGFloat)suggestedWidth;
--(CGFloat)contentHeightForWidth:(CGFloat)width;
+-(CGFloat)autoWidthForWidth:(CGFloat)suggestedWidth;
+-(CGFloat)autoHeightForWidth:(CGFloat)width;
 
 
 -(CGFloat)verifyWidth:(CGFloat)suggestedWidth;
 -(CGFloat)verifyHeight:(CGFloat)suggestedHeight;
 
 -(UIViewAutoresizing)verifyAutoresizing:(UIViewAutoresizing)suggestedResizing;
-
--(TiDimension)defaultAutoWidthBehavior:(id)unused;
--(TiDimension)defaultAutoHeightBehavior:(id)unused;
 
 @end
 
@@ -75,6 +71,7 @@ TI_INLINE BOOL TiLayoutRuleIsHorizontal(TiLayoutRule rule)
 	return rule==TiLayoutRuleHorizontal;
 }
 
+
 typedef struct LayoutConstraint {
 
 	TiDimension centerX;
@@ -86,26 +83,16 @@ typedef struct LayoutConstraint {
 	TiDimension top;
 	TiDimension bottom;
 	TiDimension height;
-
-	TiLayoutRule layoutStyle;
-	struct {
-		unsigned int horizontalWrap:1;
-	} layoutFlags;
+	
+	TiLayoutRule layout;
 	
 	CGFloat minimumHeight;
 	CGFloat minimumWidth;
 	
 } LayoutConstraint;
 
-TI_INLINE BOOL TiLayoutFlagsHasHorizontalWrap(LayoutConstraint *constraint)
-{
-	return constraint->layoutFlags.horizontalWrap;
-}
-
 @class TiUIView;
-@class TiViewProxy;
-void ApplyConstraintToViewWithBounds(LayoutConstraint * constraint, TiUIView * subView, CGRect viewBounds);
+void ApplyConstraintToViewWithinViewWithBounds(LayoutConstraint * constraint, TiUIView * subView, UIView * superView, CGRect viewBounds, BOOL addToSuperView);
 CGFloat WidthFromConstraintGivenWidth(LayoutConstraint * constraint,CGFloat viewWidth);
-CGSize SizeConstraintViewWithSizeAddingResizing(LayoutConstraint * constraint, NSObject<LayoutAutosizing> * autoSizer, CGSize referenceSize, UIViewAutoresizing * resultResizing);
-CGPoint PositionConstraintGivenSizeBoundsAddingResizing(LayoutConstraint * constraint, TiViewProxy* viewProxy, CGSize viewSize, CGPoint anchorPoint, CGSize referenceSize, CGSize sandboxSize, UIViewAutoresizing * resultResizing);
+CGSize SizeConstraintViewWithSizeAddingResizing(LayoutConstraint * constraint, NSObject<LayoutAutosizing> * autoSizer, CGSize boundSize, UIViewAutoresizing * resultResizing);
 BOOL IsLayoutUndefined(LayoutConstraint *constraint);

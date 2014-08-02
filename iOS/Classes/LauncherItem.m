@@ -3,13 +3,15 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
 
 // A good bit of this code was derived from the Three20 project
-// and was customized to work inside Titanium
+// and was customized to work inside test3
 //
-// All modifications by Appcelerator are licensed under 
+// All modifications by test3 are licensed under 
 // the Apache License, Version 2.0
 //
 //
@@ -54,6 +56,7 @@
 	[title release];
 	[image release];
 	[selectedImage release];
+	[userData release];
 	[view release];
 	[super dealloc];
 }
@@ -62,7 +65,7 @@
 {
 	if (button!=nil)
 	{
-		TiThreadPerformOnMainThread(^{[button setNeedsLayout];}, NO);
+		[button performSelectorOnMainThread:@selector(setNeedsLayout) withObject:nil waitUntilDone:NO];
 	}
 }
 
@@ -94,11 +97,9 @@
 
 -(void)setView:(UIView*)view_
 {
-	if (view != view_) {
-		[view release];
-		view = [view_ retain];
-		[self repaint];
-	}
+	[view release];
+	view = [view_ retain];
+	[self repaint];
 }
 
 

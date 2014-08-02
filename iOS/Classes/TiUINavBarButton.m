@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UIBUTTON
 
@@ -18,20 +20,19 @@
 #define NAVBAR_MEMORY_DEBUG 0
 
 @implementation TiUINavBarButton
-@synthesize proxy;
 
 DEFINE_EXCEPTIONS
 
 #if NAVBAR_MEMORY_DEBUG==1
 -(id)retain
 {
-	NSLog(@"[DEBUG] Retaining %X (%d)",self,[self retainCount]);
+	NSLog(@"Retaining %X (%d)",self,[self retainCount]);
 	return [super retain];
 }
 
 -(void)release
 {
-	NSLog(@"[DEBUG] Releasing %X (%d)",self,[self retainCount]);
+	NSLog(@"Releasing %X (%d)",self,[self retainCount]);
 	[super release];
 }
 #endif
@@ -39,7 +40,7 @@ DEFINE_EXCEPTIONS
 -(void)dealloc
 {
 #if NAVBAR_MEMORY_DEBUG==1
-	NSLog(@"[DEBUG] Deallocing %X (%d)",self,[self retainCount]);
+	NSLog(@"Deallocing %X (%d)",self,[self retainCount]);
 #endif
 	RELEASE_TO_NIL(activityDelegate);
 	[super dealloc];
@@ -62,7 +63,7 @@ DEFINE_EXCEPTIONS
 
 -(NSString*)title:(TiUIButtonProxy*)proxy_
 {
-	NSString *title = [TiUtils stringValue:[proxy_ valueForKey:@"title"]];
+	NSString *title = [proxy_ valueForKey:@"title"];
 	return title == nil ? @"" : title;
 }
 
@@ -97,56 +98,46 @@ DEFINE_EXCEPTIONS
 			self = [super initWithBarButtonSystemItem:type target:self action:@selector(clicked:)];
 		}
 	}
-    else 
-    {
-        id image = [proxy_ valueForKey:@"image"];
-        id background = [proxy_ valueForKey:@"backgroundImage"];
-        if (background != nil) {
-            self = [super initWithCustomView:[proxy_ view]];
-            self.target = self;
-            self.action = @selector(clicked:);
+	else 
+	{
+		id image = [proxy_ valueForKey:@"image"];
+       id background = [proxy_ valueForKey:@"backgroundImage"];
+       if (background != nil) {
+           self = [super initWithCustomView:[proxy_ view]];
+           self.target = self;
+           self.action = @selector(clicked:);
 
-            if ([[proxy_ view] isKindOfClass:[UIControl class]])
-            { 
-                [(UIControl*)[proxy_ view] addTarget:self action:@selector(clicked:) forControlEvents:UIControlEventTouchUpInside];
-            }
-            //Sanity check. If the view bounds are zero set the bounds to auto dimensions
-            CGRect bounds = [[proxy_ view] bounds];
-            if (bounds.size.width == 0) {
-                CGFloat desiredWidth = [proxy_ autoWidthForSize:CGSizeMake(1000, 1000)];
-                bounds.size.width = desiredWidth;                        
-            }
-            if (bounds.size.height == 0) {
-                CGFloat desiredHeight = [proxy_ autoHeightForSize:CGSizeMake(bounds.size.width, 1000)];
-                bounds.size.height = desiredHeight;
-            }
-            [[proxy_ view] setBounds:bounds];
-        }
-        else if (image!=nil) {
-            NSURL *url = [TiUtils toURL:image proxy:proxy_];
-            UIImage *theimage = [[ImageLoader sharedLoader] loadImmediateStretchableImage:url];
-            self = [super initWithImage:theimage style:[self style:proxy_] target:self action:@selector(clicked:)];
-        }
-        else {
-            self = [super initWithTitle:[self title:proxy_] style:[self style:proxy_] target:self action:@selector(clicked:)];
-        }
-    }
-    proxy = proxy_; // Don't retain
+           if ([[proxy_ view] isKindOfClass:[UIControl class]])
+           { 
+               [(UIControl*)[proxy_ view] addTarget:self action:@selector(clicked:) forControlEvents:UIControlEventTouchUpInside];
+           }            
+       }
+       else if (image!=nil) {
+           NSURL *url = [TiUtils toURL:image proxy:proxy_];
+           UIImage *theimage = [[ImageLoader sharedLoader] loadImmediateStretchableImage:url];
+           self = [super initWithImage:theimage style:[self style:proxy_] target:self action:@selector(clicked:)];
+       }
+		else {
+           self = [super initWithTitle:[self title:proxy_] style:[self style:proxy_] target:self action:@selector(clicked:)];
+		}
+	}
+	proxy = proxy_; // Don't retain
 
-    self.width = [TiUtils floatValue:[proxy_ valueForKey:@"width"] def:0.0];
-    //A width of 0 is treated as Auto by the iPhone OS, so this is safe.
-    // we need to listen manually to proxy change events if we want to be
-    // able to change them dynamically
-    proxy.modelDelegate = self;
+	self.width = [TiUtils floatValue:[proxy_ valueForKey:@"width"]];
+	//A width of 0 is treated as Auto by the iPhone OS, so this is safe.
+
+	// we need to listen manually to proxy change events if we want to be
+	// able to change them dynamically
+	proxy.modelDelegate = self;
 	
-    // we need to manually check for this property on init
-    id enabled = [proxy valueForKey:@"enabled"];
-    if (enabled!=nil)
-    {
-        [self performSelector:@selector(setEnabled_:) withObject:enabled];
-    }
+	// we need to manually check for this property on init
+	id enabled = [proxy valueForKey:@"enabled"];
+	if (enabled!=nil)
+	{
+		[self performSelector:@selector(setEnabled_:) withObject:enabled];
+	}
 	
-    return self;
+	return self;
 }
 
 -(void)clicked:(id)event
@@ -215,23 +206,19 @@ DEFINE_EXCEPTIONS
 	
 	if ([key isEqualToString:@"title"])
 	{
-		TiThreadPerformOnMainThread(^{[changeView setTitle_:newValue];}, NO);
-		return;
+		[changeView performSelectorOnMainThread:@selector(setTitle_:) withObject:newValue waitUntilDone:NO];
 	}
-	if ([key isEqualToString:@"image"])
+	else if ([key isEqualToString:@"image"])
 	{
-		TiThreadPerformOnMainThread(^{[changeView setImage_:newValue];}, NO);
-		return;
+		[changeView performSelectorOnMainThread:@selector(setImage_:) withObject:newValue waitUntilDone:NO];
 	}
-	if ([key isEqualToString:@"width"])
+	else if ([key isEqualToString:@"width"])
 	{
-		TiThreadPerformOnMainThread(^{[changeView setWidth_:newValue];}, NO);
-		return;
+		[changeView performSelectorOnMainThread:@selector(setWidth_:) withObject:newValue waitUntilDone:NO];
 	}
-	if ([key isEqualToString:@"enabled"])
+	else if ([key isEqualToString:@"enabled"])
 	{
-		TiThreadPerformOnMainThread(^{[self	setEnabled_:newValue];}, NO);
-		return;
+		[self performSelectorOnMainThread:@selector(setEnabled_:) withObject:newValue waitUntilDone:NO];
 	}
 }
 

@@ -3,28 +3,22 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- */
-
-/**
- * This supports the NamedNodeMap for the property "attributes"
- * defined by Interface Node.
- * The support for NamedNodeMap for the properties "entites" and "notations" 
- * defined by Interface DocumentType is not yet implemented.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #if defined(USE_TI_XML) || defined(USE_TI_NETWORK)
 
 #import "TiProxy.h"
 #import "GDataXMLNode.h"
-#import "TiDOMElementProxy.h"
 
 @interface TiDOMNamedNodeMapProxy : TiProxy {
 @private
-	TiDOMElementProxy* element;
+	GDataXMLElement *element;
 }
 
 @property(nonatomic,readonly) NSNumber* length;
 
--(void)setElement:(TiDOMElementProxy*)element;
+-(void)setElement:(GDataXMLElement*)element;
 
 @end
 

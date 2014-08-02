@@ -3,7 +3,7 @@
 // Free for personal or commercial use, with or without modification.
 // No warranty is expressed or implied.
 
-// NOTE: Appcelerator modified to convert from Category to 
+// NOTE: test3 modified to convert from Category to 
 // new Class name since iPhone seems to have some issues with Categories
 // of built in Classes
 
@@ -20,8 +20,7 @@
 
 + (UIImage *)resizedImage:(CGSize)newSize
      interpolationQuality:(CGInterpolationQuality)quality
-					image:(UIImage*)image
-					hires:(BOOL)hires;
+					image:(UIImage*)image;
 
 + (UIImage *)resizedImageWithContentMode:(UIViewContentMode)contentMode
                                   bounds:(CGSize)bounds

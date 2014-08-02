@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
 #import "TiBase.h"
@@ -52,28 +54,57 @@ OperationQueue *sharedQueue = nil;
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	
 	@try {
-		//The nice thing about performSelector is that providing extra arguments is quite safe.
-		id result = [target performSelector:selector withObject:arg];
+		NSMethodSignature * methodSignature = [target methodSignatureForSelector:selector];
+		NSInvocation * invoker = [NSInvocation invocationWithMethodSignature:methodSignature];
+		
+		[invoker setSelector:selector]; 
+		[invoker setTarget:target];
+		if (arg!=nil)
+		{
+			[invoker setArgument:&arg atIndex:2];
+		}
+		[invoker invoke];
+		id result = nil;
+		
+
+		if ([methodSignature methodReturnLength] == sizeof(id)) 
+		{
+			[invoker getReturnValue:&result];
+		}
 
 		if (afterTarget!=nil && after!=nil)
 		{
+			NSMethodSignature * methodSignature2 = [afterTarget methodSignatureForSelector:after];
 			if (ui)
 			{
-				NSMethodSignature * methodSignature2 = [afterTarget methodSignatureForSelector:after];
 				// if UI thread, just use perform
-				BOOL useResult = [methodSignature2 numberOfArguments]==3;
-				TiThreadPerformOnMainThread(^{[afterTarget performSelector:after withObject:useResult?result:nil];}, useResult);
+				if ([methodSignature2 numberOfArguments]==3)
+				{
+					[afterTarget performSelectorOnMainThread:after withObject:result waitUntilDone:YES modes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+				}
+				else 
+				{
+					[afterTarget performSelectorOnMainThread:after withObject:nil waitUntilDone:NO modes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+				}
 			}
-			else
+			else 
 			{
-				[afterTarget performSelector:after withObject:result];
+				// not on UI, just dynamically invoke
+				NSInvocation * invoker2 = [NSInvocation invocationWithMethodSignature:methodSignature2];
+				[invoker2 setSelector:after];
+				[invoker2 setTarget:afterTarget];
+				if ([methodSignature2 numberOfArguments]==3)
+				{
+					[invoker2 setArgument:&result atIndex:2];
+				}
+				[invoker2 invoke];
 			}
 			
 		}
 	}
 	@catch (NSException * e) 
 	{
-		DeveloperLog(@"[ERROR] Unhandled exception raised in OperationQueue. Exception was %@",[e description]);
+		NSLog(@"[ERROR] unhandled exception raised in OperationQueue. Exception was %@",[e description]);
 	}
 	[pool release];
 }

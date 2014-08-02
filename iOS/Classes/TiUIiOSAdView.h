@@ -1,14 +1,17 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2010 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2010 by test3, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
-#import "TiUIView.h"
+//#import "TiUIView.h"
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
 
 #ifdef USE_TI_UIIOSADVIEW
 
-#import "TiUIiOSAdViewProxy.h"
 #import <iAd/iAd.h>
 
 @interface TiUIiOSAdView : TiUIView<ADBannerViewDelegate> {
@@ -17,8 +20,9 @@
 	ADBannerView *adview;
 }
 
-@property (nonatomic, readonly) ADBannerView* adview;
-
 @end
+
+
+#endif
 
 #endif

@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #import "TiBase.h"
 
@@ -12,36 +14,25 @@
 #endif
 
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_3_2
+
 #import "TiUIiPadSplitWindow.h"
 #import "TiUtils.h"
 #import "TiViewController.h"
 #import "TiApp.h"
 #import "TiUIiPadPopoverProxy.h"
-#import "TiWindowProxy.h"
+#import "TiSplitViewController.h"
 
 #ifdef USE_TI_UIIPADSPLITWINDOWBUTTON
 #import "TiUIiPadSplitWindowButtonProxy.h"
 #endif
-
-UIViewController * ControllerForProxy(TiViewProxy * proxy);
-
-UIViewController * ControllerForProxy(TiViewProxy * proxy)
-{
-    if ([proxy isKindOfClass:[TiWindowProxy class]]) {
-        [(TiWindowProxy*)proxy setIsManaged:YES];
-        return [(TiWindowProxy*)proxy hostingController];
-    }
-
-	[[proxy view] setAutoresizingMask:UIViewAutoresizingNone];
-
-	return [[[TiViewController alloc] initWithViewProxy:proxy] autorelease];
-}
 
 
 @implementation TiUIiPadSplitWindow
 
 -(void)dealloc
 {
+	[[[TiApp app] controller] windowClosed:controller];
 	RELEASE_TO_NIL(controller);
 	[super dealloc];
 }
@@ -52,45 +43,37 @@ UIViewController * ControllerForProxy(TiViewProxy * proxy)
 	{
 		TiViewProxy* masterProxy = [self.proxy valueForUndefinedKey:@"masterView"];
 		TiViewProxy* detailProxy = [self.proxy valueForUndefinedKey:@"detailView"];
-        
-		controller = [[MGSplitViewController alloc] init];		
-		[controller setViewControllers:[NSArray arrayWithObjects:
-				ControllerForProxy(masterProxy),ControllerForProxy(detailProxy),nil]];
-		[TiUtils configureController:controller withObject:nil];
+		
+		controller = [[TiSplitViewController alloc] initWithRootController:(TiRootViewController*)[[TiApp app] controller] 
+															   masterProxy:masterProxy 
+															   detailProxy:detailProxy
+																splitProxy:(TiUIiPadSplitWindowProxy*)self.proxy];
 		controller.delegate = self;
-        
-		UIView * controllerView = [controller view];
 		
-		[controllerView setFrame:[self bounds]];
-		[self addSubview:controllerView];
-
-		[controller viewWillAppear:NO];
-
-		[controller willAnimateRotationToInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation] duration:0.0];
-
-		if ([masterProxy isKindOfClass:[TiWindowProxy class]]) {
-			[(TiWindowProxy*)masterProxy open:nil];
-		} else {
-			[masterProxy windowWillOpen];
-			[masterProxy windowDidOpen];
-		}
+		UIWindow *window = [TiApp app].window;
+		UIViewController<TiRootController> *viewController = [[TiApp app] controller];
+		[[viewController view] removeFromSuperview];
+		[[TiApp app] setController:controller];
+		[window addSubview:[controller view]];
+		[window bringSubviewToFront:[controller view]];
 		
-		if ([detailProxy isKindOfClass:[TiWindowProxy class]]) {
-			[(TiWindowProxy*)detailProxy open:nil];
-		} else {
-			[detailProxy windowWillOpen];
-			[detailProxy windowDidOpen];
-		}
-		[controller viewDidAppear:NO];
+		[controller resizeView];
+		[controller repositionSubviews];
+		
+		[masterProxy windowWillOpen];
+		[masterProxy windowDidOpen];
+		
+		[detailProxy windowWillOpen];
+		[detailProxy windowDidOpen];
 	}
 	return controller;
 }
 
 -(void)frameSizeChanged:(CGRect)frame bounds:(CGRect)bounds
 {
+	self.frame = CGRectIntegral(self.frame);
 	[[[self controller] view] setFrame:bounds];
-    [super frameSizeChanged:frame bounds:bounds];
-}
+}	
 
 //FIXME - probably should remove this ... not sure...
 
@@ -127,44 +110,10 @@ UIViewController * ControllerForProxy(TiViewProxy * proxy)
 	}
 }
 
-#pragma mark Split Window properties
-
--(void)setMasterPopupVisible_:(id)value
-{
-	BOOL showPopover = [TiUtils boolValue:value def:NO];
-	MGSplitViewController * splitController = (MGSplitViewController *)[self controller];
-	BOOL masterInSplit = [splitController isShowingMaster];
-
-	if (masterInSplit)
-	{
-		[(TiUIiPadSplitWindowProxy*) [self proxy] popupVisibilityChanged:NO];
-		return;
-	}
-
-	if (showPopover)
-	{
-		[splitController showMasterPopover:self];
-	}
-	else
-	{
-		[splitController hideMasterPopover:self];
-	}
-}
-
--(void)setShowMasterInPortrait_:(id)value
-{
-    BOOL showMaster = [TiUtils boolValue:value def:NO];
-    MGSplitViewController* splitController = (MGSplitViewController*)[self controller];
-    [splitController setShowsMasterInPortrait:showMaster];
-    
-    [[self proxy] replaceValue:value forKey:@"showMasterInPortrait" notification:NO];
-}
-
 #pragma mark Delegate 
 
 - (void)splitViewController:(UISplitViewController*)svc willHideViewController:(UIViewController *)aViewController withBarButtonItem:(UIBarButtonItem*)barButtonItem forPopoverController:(UIPopoverController*)pc
 {
-	[(TiUIiPadSplitWindowProxy*) [self proxy] popupVisibilityChanged:NO];
 	if ([self.proxy _hasListeners:@"visible"])
 	{
 		NSMutableDictionary *event = [NSMutableDictionary dictionaryWithObject:@"detail" forKey:@"view"];
@@ -179,7 +128,6 @@ UIViewController * ControllerForProxy(TiViewProxy * proxy)
 
 - (void)splitViewController:(UISplitViewController*)svc willShowViewController:(UIViewController *)aViewController invalidatingBarButtonItem:(UIBarButtonItem *)button
 {
-	[(TiUIiPadSplitWindowProxy*) [self proxy] popupVisibilityChanged:NO];
 	if ([self.proxy _hasListeners:@"visible"])
 	{
 		NSDictionary *event = [NSDictionary dictionaryWithObject:@"master" forKey:@"view"];
@@ -189,7 +137,6 @@ UIViewController * ControllerForProxy(TiViewProxy * proxy)
 
 - (void)splitViewController:(UISplitViewController*)svc popoverController:(UIPopoverController*)pc willPresentViewController:(UIViewController *)aViewController
 {
-	[(TiUIiPadSplitWindowProxy*) [self proxy] popupVisibilityChanged:YES];
 	if ([self.proxy _hasListeners:@"visible"])
 	{
 		NSMutableDictionary *event = [NSMutableDictionary dictionaryWithObject:@"popover" forKey:@"view"];
@@ -199,5 +146,7 @@ UIViewController * ControllerForProxy(TiViewProxy * proxy)
 
 
 @end
+
+#endif
 
 #endif

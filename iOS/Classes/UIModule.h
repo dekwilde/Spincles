@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #import "TiModule.h"
 
@@ -24,9 +26,6 @@
 #endif
 #ifdef USE_TI_UIIOS
 	TiProxy *ios;
-#endif
-#ifdef USE_TI_UICLIPBOARD	
-	TiProxy *clipboard;
 #endif
 }
 
@@ -62,7 +61,6 @@
 @property(nonatomic,readonly) NSNumber *KEYBOARD_NUMBERS_PUNCTUATION;
 @property(nonatomic,readonly) NSNumber *KEYBOARD_URL;
 @property(nonatomic,readonly) NSNumber *KEYBOARD_NUMBER_PAD;
-@property(nonatomic,readonly) NSNumber *KEYBOARD_DECIMAL_PAD;
 @property(nonatomic,readonly) NSNumber *KEYBOARD_PHONE_PAD;
 @property(nonatomic,readonly) NSNumber *KEYBOARD_NAMEPHONE_PAD;
 @property(nonatomic,readonly) NSNumber *KEYBOARD_EMAIL;
@@ -132,61 +130,8 @@
 @property(nonatomic,readonly) NSNumber *AUTODETECT_ALL;
 @property(nonatomic,readonly) NSNumber *AUTODETECT_PHONE;
 @property(nonatomic,readonly) NSNumber *AUTODETECT_LINK;
-@property(nonatomic,readonly) NSNumber *AUTODETECT_ADDRESS;
-@property(nonatomic,readonly) NSNumber *AUTODETECT_CALENDAR;
 
-@property(nonatomic,readonly) NSNumber *AUTOLINK_NONE;
-@property(nonatomic,readonly) NSNumber *AUTOLINK_ALL;
-@property(nonatomic,readonly) NSNumber *AUTOLINK_PHONE_NUMBERS;
-@property(nonatomic,readonly) NSNumber *AUTOLINK_URLS;
-@property(nonatomic,readonly) NSNumber *AUTOLINK_EMAIL_ADDRESSES;
-@property(nonatomic,readonly) NSNumber *AUTOLINK_MAP_ADDRESSES;
-@property(nonatomic,readonly) NSNumber *AUTOLINK_CALENDAR;
 
-@property(nonatomic,readonly) NSString *SIZE;
-@property(nonatomic,readonly) NSString *FILL;
-@property(nonatomic,readonly) NSString *UNIT_PX;
-@property(nonatomic,readonly) NSString *UNIT_CM;
-@property(nonatomic,readonly) NSString *UNIT_MM;
-@property(nonatomic,readonly) NSString *UNIT_IN;
-@property(nonatomic,readonly) NSString *UNIT_DIP;
-
-@property(nonatomic,readonly) NSNumber *URL_ERROR_AUTHENTICATION;
-@property(nonatomic,readonly) NSNumber *URL_ERROR_BAD_URL;
-@property(nonatomic,readonly) NSNumber *URL_ERROR_CONNECT;
-@property(nonatomic,readonly) NSNumber *URL_ERROR_SSL_FAILED;
-@property(nonatomic,readonly) NSNumber *URL_ERROR_FILE;
-@property(nonatomic,readonly) NSNumber *URL_ERROR_FILE_NOT_FOUND;
-@property(nonatomic,readonly) NSNumber *URL_ERROR_HOST_LOOKUP;
-@property(nonatomic,readonly) NSNumber *URL_ERROR_REDIRECT_LOOP;
-@property(nonatomic,readonly) NSNumber *URL_ERROR_TIMEOUT;
-@property(nonatomic,readonly) NSNumber *URL_ERROR_UNKNOWN;
-@property(nonatomic,readonly) NSNumber *URL_ERROR_UNSUPPORTED_SCHEME;
-
-@property(nonatomic,readonly) NSNumber *LIST_ITEM_TEMPLATE_DEFAULT;
-@property(nonatomic,readonly) NSNumber *LIST_ITEM_TEMPLATE_SETTINGS;
-@property(nonatomic,readonly) NSNumber *LIST_ITEM_TEMPLATE_CONTACTS;
-@property(nonatomic,readonly) NSNumber *LIST_ITEM_TEMPLATE_SUBTITLE;
-
-@property(nonatomic,readonly) NSNumber *LIST_ACCESSORY_TYPE_NONE;
-@property(nonatomic,readonly) NSNumber *LIST_ACCESSORY_TYPE_CHECKMARK;
-@property(nonatomic,readonly) NSNumber *LIST_ACCESSORY_TYPE_DETAIL;
-@property(nonatomic,readonly) NSNumber *LIST_ACCESSORY_TYPE_DISCLOSURE;
-
-//IOS7 Constants
-@property(nonatomic,readonly) NSNumber *EXTEND_EDGE_LEFT;
-@property(nonatomic,readonly) NSNumber *EXTEND_EDGE_RIGHT;
-@property(nonatomic,readonly) NSNumber *EXTEND_EDGE_TOP;
-@property(nonatomic,readonly) NSNumber *EXTEND_EDGE_BOTTOM;
-@property(nonatomic,readonly) NSNumber *EXTEND_EDGE_NONE;
-@property(nonatomic,readonly) NSNumber *EXTEND_EDGE_ALL;
-//IOS7 TextStyle Constants
-@property(nonatomic,readonly) NSString *TEXT_STYLE_HEADLINE;
-@property(nonatomic,readonly) NSString *TEXT_STYLE_SUBHEADLINE;
-@property(nonatomic,readonly) NSString *TEXT_STYLE_BODY;
-@property(nonatomic,readonly) NSString *TEXT_STYLE_FOOTNOTE;
-@property(nonatomic,readonly) NSString *TEXT_STYLE_CAPTION1;
-@property(nonatomic,readonly) NSString *TEXT_STYLE_CAPTION2;
 
 #ifdef USE_TI_UI2DMATRIX
 -(id)create2DMatrix:(id)args;
@@ -210,10 +155,6 @@
 
 #ifdef USE_TI_UIIOS
 @property(nonatomic,readonly)			TiProxy* iOS;
-#endif
-
-#ifdef USE_TI_UICLIPBOARD
-@property(nonatomic,readonly)			TiProxy* Clipboard;
 #endif
 
 @end

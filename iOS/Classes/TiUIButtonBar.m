@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #import "TiUIButtonBar.h"
 #import "TiViewProxy.h"
@@ -20,12 +22,6 @@
 		isNullStyle = YES;
 	}
 	return self;
-}
-
--(void)dealloc
-{
-	RELEASE_TO_NIL(segmentedControl);
-	[super dealloc];
 }
 
 -(BOOL)hasTouchableListener
@@ -48,28 +44,6 @@
 	return segmentedControl;
 }
 
-- (id)accessibilityElement
-{
-	return [self segmentedControl];
-}
-
-// For regression #1880.  Because there are essentially TWO kinds of 'width' going on with tabbed/button bars
-// (width of all elements, width of the proxy) we assume that if the user has set the width of the bar completely,
-// AND the width of the proxy is undefined, they want magic!
--(void)frameSizeChanged:(CGRect)frame_ bounds:(CGRect)bounds_
-{
-    // Treat 'undefined' like 'auto' when we have an available width for ALL control segments
-    UISegmentedControl* ourControl = [self segmentedControl];
-    if (controlSpecifiedWidth && TiDimensionIsUndefined([(TiViewProxy*)[self proxy] layoutProperties]->width)) {
-        CGRect controlBounds = bounds_;
-        controlBounds.size = [ourControl sizeThatFits:CGSizeZero];
-        [ourControl setBounds:controlBounds];
-    }
-    else {
-        [ourControl setFrame:bounds_];
-    }
-    [super frameSizeChanged:frame_ bounds:bounds_];
-}
 
 - (void)setTabbedBar: (BOOL)newIsTabbed;
 {
@@ -159,14 +133,12 @@
 	ENSURE_ARRAY(value);
 
 	int thisSegmentIndex = 0;
-	controlSpecifiedWidth = YES;
 	for (id thisSegmentEntry in value)
 	{
 		NSString * thisSegmentTitle = [TiUtils stringValue:thisSegmentEntry];
 		UIImage * thisSegmentImage = nil;
 		CGFloat thisSegmentWidth = 0;
 		BOOL thisSegmentEnabled = YES;
-		NSString *thisSegmentAccessibilityLabel = nil;
 		
 		if ([thisSegmentEntry isKindOfClass:[NSDictionary class]])
 		{
@@ -174,18 +146,10 @@
 			thisSegmentImage = [TiUtils image:[thisSegmentEntry objectForKey:@"image"] proxy:[self proxy]];
 			thisSegmentWidth = [TiUtils floatValue:@"width" properties:thisSegmentEntry];
 			thisSegmentEnabled = [TiUtils boolValue:@"enabled" properties:thisSegmentEntry def:YES];
-			thisSegmentAccessibilityLabel = [TiUtils stringValue:@"accessibilityLabel" properties:thisSegmentEntry];
 		}
 
 		if (thisSegmentImage != nil)
 		{
-			if (thisSegmentAccessibilityLabel != nil) {
-				thisSegmentImage.accessibilityLabel = thisSegmentAccessibilityLabel;
-			}
-			//CLEANUP CODE WHEN WE UPGRADE MINIMUM XCODE VERSION TO XCODE5
-			if ([thisSegmentImage respondsToSelector:@selector(imageWithRenderingMode:)]) {
-				thisSegmentImage = [(id<UIImageIOS7Support>)thisSegmentImage imageWithRenderingMode:1];//UIImageRenderingModeAlwaysOriginal;
-			}
 			[segmentedControl insertSegmentWithImage:thisSegmentImage atIndex:thisSegmentIndex animated:NO];
 		}
 		else
@@ -194,16 +158,12 @@
 			{
 				thisSegmentTitle = @"";
 			}
-			if (thisSegmentAccessibilityLabel != nil) {
-				thisSegmentTitle.accessibilityLabel = thisSegmentAccessibilityLabel;
-			}
 			[segmentedControl insertSegmentWithTitle:thisSegmentTitle atIndex:thisSegmentIndex animated:NO];
 		}
 
 		[segmentedControl setWidth:thisSegmentWidth forSegmentAtIndex:thisSegmentIndex];
 		[segmentedControl setEnabled:thisSegmentEnabled forSegmentAtIndex:thisSegmentIndex];
 		thisSegmentIndex ++;
-		controlSpecifiedWidth &= (thisSegmentWidth != 0.0);
 	}
 
 	if (![segmentedControl isMomentary])
@@ -241,12 +201,12 @@
 	}
 }
 
--(CGFloat)contentWidthForWidth:(CGFloat)suggestedWidth
+-(CGFloat)autoWidthForWidth:(CGFloat)suggestedWidth
 {
 	return [[self segmentedControl] sizeThatFits:CGSizeZero].width;
 }
 
--(CGFloat)contentHeightForWidth:(CGFloat)width
+-(CGFloat)autoHeightForWidth:(CGFloat)width
 {
 	return [[self segmentedControl] sizeThatFits:CGSizeZero].height;
 }

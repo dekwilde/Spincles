@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_CONTACTS
 
@@ -13,25 +15,7 @@
 #import "TiApp.h"
 #import "TiBase.h"
 
-#pragma Backwards compatibility for pre-iOS 6.0
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_6_0
-//TODO: Should we warn that they need to update to the latest XCode is this is happening?
-#define kABAuthorizationStatusNotDetermined 0
-#define kABAuthorizationStatusRestricted 1
-#define kABAuthorizationStatusDenied 2
-#define kABAuthorizationStatusAuthorized 3
-#endif
-
 @implementation ContactsModule
-
-void CMExternalChangeCallback (ABAddressBookRef notifyAddressBook,CFDictionaryRef info,void *context)
-{
-    DebugLog(@"Got External Change Callback");
-    ContactsModule* theModule = (ContactsModule*) context;
-    theModule->reloadAddressBook = YES;
-    [theModule fireEvent:@"reload" withObject:nil];
-}
 
 // We'll force the address book to only be accessed on the main thread, for consistency.  Otherwise
 // we could run into cross-thread memory issues.
@@ -41,46 +25,26 @@ void CMExternalChangeCallback (ABAddressBookRef notifyAddressBook,CFDictionaryRe
 		return NULL;
 	}
 	
-    if (reloadAddressBook && (addressBook != NULL) ) {
-        [self releaseAddressBook];
-        addressBook = NULL;
-    }
-    reloadAddressBook = NO;
-    
 	if (addressBook == NULL) {
-		if (iOS6API) {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0
-			addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
-#endif
-		} else {
-			addressBook = ABAddressBookCreate();
-		}
-		if (addressBook == NULL) {
-			DebugLog(@"[WARN] Could not create an address book. Make sure you have gotten permission first.");
-		} else {
-			ABAddressBookRegisterExternalChangeCallback(addressBook, CMExternalChangeCallback, self);
-		}
+		addressBook = ABAddressBookCreate();
 	}
 	return addressBook;
 }
 
 -(void)releaseAddressBook
 {
-	TiThreadPerformOnMainThread(^{
-        ABAddressBookUnregisterExternalChangeCallback(addressBook, CMExternalChangeCallback, self);
-        CFRelease(addressBook);
-    }, YES);
+	if (![NSThread isMainThread]) {
+		[self performSelectorOnMainThread:@selector(releaseAddressBook) withObject:nil waitUntilDone:YES];
+		return;
+	}
+	CFRelease(addressBook);
 }
 
 -(void)startup
 {
 	[super startup];
 	addressBook = NULL;
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0
-    if (ABAddressBookGetAuthorizationStatus != NULL) {
-		iOS6API = YES;
-	}
-#endif
+	returnCache = [[NSMutableDictionary alloc] init];
 }
 
 -(void)dealloc
@@ -89,15 +53,10 @@ void CMExternalChangeCallback (ABAddressBookRef notifyAddressBook,CFDictionaryRe
 	RELEASE_TO_NIL(cancelCallback)
 	RELEASE_TO_NIL(selectedPersonCallback)
 	RELEASE_TO_NIL(selectedPropertyCallback)
-	if (addressBook != NULL) {
-		[self releaseAddressBook];
-	}
+	RELEASE_TO_NIL(returnCache);
+	
+	[self releaseAddressBook];
 	[super dealloc];
-}
-
--(NSString*)apiName
-{
-    return @"Ti.Contacts";
 }
 
 -(void)removeRecord:(ABRecordRef)record
@@ -118,78 +77,13 @@ void CMExternalChangeCallback (ABAddressBookRef notifyAddressBook,CFDictionaryRe
 
 #pragma mark Public API
 
--(void) requestAuthorization:(id)args
-{
-	ENSURE_SINGLE_ARG(args, KrollCallback);
-	KrollCallback * callback = args;
-	NSString * error = nil;
-	int code = 0;
-	bool doPrompt = NO;
-	
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0
-	if(iOS6API){
-		long int permissions = ABAddressBookGetAuthorizationStatus();
-		switch (permissions) {
-			case kABAuthorizationStatusNotDetermined:
-				doPrompt = YES;
-				break;
-			case kABAuthorizationStatusAuthorized:
-				break;
-			case kABAuthorizationStatusDenied:
-				code = kABAuthorizationStatusDenied;
-				error = @"The user has denied access to the address book";
-			case kABAuthorizationStatusRestricted:
-				code = kABAuthorizationStatusRestricted;
-				error = @"The user is unable to allow access to the address book";
-			default:
-				break;
-		}
-	}
-#endif
-	if (!doPrompt) {
-		NSDictionary * propertiesDict = [TiUtils dictionaryWithCode:code message:error];
-		NSArray * invocationArray = [[NSArray alloc] initWithObjects:&propertiesDict count:1];
-
-		[callback call:invocationArray thisObject:self];
-		[invocationArray release];
-		return;
-	}
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0
-	TiThreadPerformOnMainThread(^(){
-		ABAddressBookRef ourAddressBook = [self addressBook];
-		ABAddressBookRequestAccessWithCompletion(ourAddressBook, ^(bool granted, CFErrorRef error) {
-			NSError * errorObj = (NSError *)error;
-			NSDictionary * propertiesDict = [TiUtils dictionaryWithCode:[errorObj code] message:[TiUtils messageFromError:errorObj]];
-			
-			KrollEvent * invocationEvent = [[KrollEvent alloc] initWithCallback:callback eventObject:propertiesDict thisObject:self];
-			[[callback context] enqueue:invocationEvent];
-		});
-	}, NO);
-#endif
-}
-
-
-
--(NSNumber*) contactsAuthorization
-{
-	long int result = kABAuthorizationStatusAuthorized;
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0
-	if (iOS6API) { //5.1 and before: We always had permission.
-		result = ABAddressBookGetAuthorizationStatus();
-	}
-#endif
-	return [NSNumber numberWithLong:result];
-}
-
 -(void)save:(id)unused
 {
 	ENSURE_UI_THREAD(save, unused)
+	// ABAddressBookHasUnsavedChanges is broken in pre-3.2
+	//if (ABAddressBookHasUnsavedChanges([self addressBook])) {
 	CFErrorRef error;
-	ABAddressBookRef ourAddressBook = [self addressBook];
-	if (ourAddressBook == NULL) {
-		return;
-	}
-	if (!ABAddressBookSave(ourAddressBook, &error)) {
+	if (!ABAddressBookSave([self addressBook], &error)) {
 		CFStringRef errorStr = CFErrorCopyDescription(error);
 		NSString* str = [NSString stringWithString:(NSString*)errorStr];
 		CFRelease(errorStr);
@@ -198,22 +92,22 @@ void CMExternalChangeCallback (ABAddressBookRef notifyAddressBook,CFDictionaryRe
 				   subreason:nil
 					location:CODELOCATION];
 	}
+	//}
 }
 
 -(void)revert:(id)unused
 {
 	ENSURE_UI_THREAD(revert, unused)
-	ABAddressBookRef ourAddressBook = [self addressBook];
-	if (ourAddressBook == NULL) {
-		return;
-	}
-	ABAddressBookRevert(ourAddressBook);
+	// ABAddressBookHasUnsavedChanges is broken in pre-3.2
+	//if (ABAddressBookHasUnsavedChanges([self addressBook])) {
+	ABAddressBookRevert([self addressBook]);
+	//}
 }
 
 -(void)showContacts:(id)args
 {
-	ENSURE_SINGLE_ARG(args, NSDictionary)
 	ENSURE_UI_THREAD(showContacts, args);
+	ENSURE_SINGLE_ARG(args, NSDictionary)
 	
 	RELEASE_TO_NIL(cancelCallback)
 	RELEASE_TO_NIL(selectedPersonCallback)
@@ -250,68 +144,28 @@ void CMExternalChangeCallback (ABAddressBookRef notifyAddressBook,CFDictionaryRe
 // OK to do outside main thread
 -(TiContactsPerson*)getPersonByID:(id)arg
 {
-	ENSURE_SINGLE_ARG(arg, NSObject)
-	__block int idNum = [TiUtils intValue:arg];
-	__block BOOL validId = NO;	
-	dispatch_sync(dispatch_get_main_queue(),^{
-		ABAddressBookRef ourAddressBook = [self addressBook];
-		if (ourAddressBook == NULL) {
-			return;
-		}
-		ABRecordRef record = NULL;
-		record = ABAddressBookGetPersonWithRecordID(ourAddressBook, idNum);
-		if (record != NULL)
-		{
-			validId = YES;
-		}
-	});
-	if (validId == YES)
-	{
-		return [[[TiContactsPerson alloc] _initWithPageContext:[self executionContext] recordId:idNum module:self] autorelease];
-	}
-	return NULL;
+	ENSURE_SINGLE_ARG(arg,NSNumber)                    
+	return [[[TiContactsPerson alloc] _initWithPageContext:[self executionContext] recordId:[arg intValue] module:self] autorelease];
 }
 
 -(TiContactsGroup*)getGroupByID:(id)arg
 {
-	ENSURE_SINGLE_ARG(arg, NSObject)
-	__block int idNum = [TiUtils intValue:arg];
-	__block BOOL validId = NO;	
-	dispatch_sync(dispatch_get_main_queue(),^{
-		ABAddressBookRef ourAddressBook = [self addressBook];
-		if (ourAddressBook == NULL) {
-			return;
-		}
-		ABRecordRef record = NULL;
-		record = ABAddressBookGetGroupWithRecordID(ourAddressBook, idNum);
-		if (record != NULL) 
-		{
-			validId = YES;
-		}
-	});
-	if (validId == YES)
-	{	
-		return [[[TiContactsGroup alloc] _initWithPageContext:[self executionContext] recordId:idNum module:self] autorelease];
-	}
-	return NULL;
-	
+	ENSURE_SINGLE_ARG(arg,NSNumber)
+	return [[[TiContactsGroup alloc] _initWithPageContext:[self executionContext] recordId:[arg intValue] module:self] autorelease];
 }
 
 -(NSArray*)getPeopleWithName:(id)arg
 {
-	ENSURE_SINGLE_ARG(arg, NSString)
+	ENSURE_SINGLE_ARG(arg,NSString)
 	
 	if (![NSThread isMainThread]) {
-		__block id result;
-		TiThreadPerformOnMainThread(^{result = [[self getPeopleWithName:arg] retain];}, YES);
-		return [result autorelease];
+		[self performSelectorOnMainThread:@selector(getPeopleWithName:) withObject:arg waitUntilDone:YES];
+		return [returnCache objectForKey:@"peopleWithName"];
 	}
-	ABAddressBookRef ourAddressBook = [self addressBook];
-	if (ourAddressBook == NULL) {
-		return nil;
-	}
-	CFArrayRef peopleRefs = ABAddressBookCopyPeopleWithName(ourAddressBook, (CFStringRef)arg);
+	
+	CFArrayRef peopleRefs = ABAddressBookCopyPeopleWithName([self addressBook], (CFStringRef)arg);
 	if (peopleRefs == NULL) {
+		[returnCache setObject:[NSNull null] forKey:@"peopleWithName"];
 		return nil;
 	}
 	CFIndex count = CFArrayGetCount(peopleRefs);
@@ -324,22 +178,20 @@ void CMExternalChangeCallback (ABAddressBookRef notifyAddressBook,CFDictionaryRe
 	}	
 	CFRelease(peopleRefs);
 	
+	[returnCache setObject:people forKey:@"peopleWithName"];
 	return people;
 }
 
 -(NSArray*)getAllPeople:(id)unused
 {
 	if (![NSThread isMainThread]) {
-		__block id result = nil;
-		TiThreadPerformOnMainThread(^{result = [[self getAllPeople:unused] retain];}, YES);
-		return [result autorelease];
+		[self performSelectorOnMainThread:@selector(getAllPeople:) withObject:unused waitUntilDone:YES];
+		return [returnCache objectForKey:@"allPeople"];
 	}
-	ABAddressBookRef ourAddressBook = [self addressBook];
-	if (ourAddressBook == NULL) {
-		return nil;
-	}
-	CFArrayRef peopleRefs = ABAddressBookCopyArrayOfAllPeople(ourAddressBook);
+	
+	CFArrayRef peopleRefs = ABAddressBookCopyArrayOfAllPeople([self addressBook]);
 	if (peopleRefs == NULL) {
+		[returnCache setObject:[NSNull null] forKey:@"allPeople"];
 		return nil;
 	}
 	CFIndex count = CFArrayGetCount(peopleRefs);
@@ -352,22 +204,20 @@ void CMExternalChangeCallback (ABAddressBookRef notifyAddressBook,CFDictionaryRe
 	}	
 	CFRelease(peopleRefs);
 	
+	[returnCache setObject:people forKey:@"allPeople"];
 	return people;
 }
 
 -(NSArray*)getAllGroups:(id)unused
 {
 	if (![NSThread isMainThread]) {
-		__block id result = nil;
-		TiThreadPerformOnMainThread(^{result = [[self getAllGroups:unused] retain];}, YES);
-		return [result autorelease];
+		[self performSelectorOnMainThread:@selector(getAllGroups:) withObject:unused waitUntilDone:YES];
+		return [returnCache objectForKey:@"allGroups"];
 	}
-	ABAddressBookRef ourAddressBook = [self addressBook];
-	if (ourAddressBook == NULL) {
-		return nil;
-	}
-	CFArrayRef groupRefs = ABAddressBookCopyArrayOfAllGroups(ourAddressBook);
+	
+	CFArrayRef groupRefs = ABAddressBookCopyArrayOfAllGroups([self addressBook]);
 	if (groupRefs == NULL) {
+		[returnCache setObject:[NSNull null] forKey:@"allGroups"];
 		return nil;
 	}
 	CFIndex count = CFArrayGetCount(groupRefs);
@@ -380,35 +230,27 @@ void CMExternalChangeCallback (ABAddressBookRef notifyAddressBook,CFDictionaryRe
 	}
 	CFRelease(groupRefs);
 	
+	[returnCache setObject:groups forKey:@"allGroups"];
 	return groups;
 }
 
 -(TiContactsPerson*)createPerson:(id)arg
 {
-    ENSURE_SINGLE_ARG_OR_NIL(arg, NSDictionary)
-    
 	if (![NSThread isMainThread]) {
-		__block id result = nil;
-		TiThreadPerformOnMainThread(^{result = [[self createPerson:arg] retain];}, YES);
-		return [result autorelease];
+		[self performSelectorOnMainThread:@selector(createPerson:) withObject:arg waitUntilDone:YES];
+		return [returnCache objectForKey:@"newPerson"];
 	}
-	ABAddressBookRef ourAddressBook = [self addressBook];
-	if (ourAddressBook == NULL) {
-		[self throwException:@"Cannot access address book"
-				   subreason:nil
-					location:CODELOCATION];
-	}
-	if (ABAddressBookHasUnsavedChanges(ourAddressBook)) {
+	
+	if (ABAddressBookHasUnsavedChanges([self addressBook])) {
 		[self throwException:@"Cannot create a new entry with unsaved changes"
 				   subreason:nil
 					location:CODELOCATION];
-		return nil;
 	}
 	
 	ABRecordRef record = ABPersonCreate();
 	[(id)record autorelease];
 	CFErrorRef error;
-	if (!ABAddressBookAddRecord(ourAddressBook, record, &error)) {
+	if (!ABAddressBookAddRecord([self addressBook], record, &error)) {
 		CFStringRef errorStr = CFErrorCopyDescription(error);
 		NSString* str = [NSString stringWithString:(NSString*)errorStr];
 		CFRelease(errorStr);
@@ -416,48 +258,32 @@ void CMExternalChangeCallback (ABAddressBookRef notifyAddressBook,CFDictionaryRe
 		[self throwException:[NSString stringWithFormat:@"Failed to add person: %@",str]
 				   subreason:nil
 					location:CODELOCATION];
-		return nil;
 	}
 	[self save:nil];
 	
 	ABRecordID id_ = ABRecordGetRecordID(record);
 	TiContactsPerson* newPerson = [[[TiContactsPerson alloc] _initWithPageContext:[self executionContext] recordId:id_ module:self] autorelease];
 	
-    [newPerson setValuesForKeysWithDictionary:arg];
-    
-    if (arg != nil) {
-        // Have to save initially so properties can be set; have to save again to commit changes
-        [self save:nil];
-    }
-    
+	[returnCache setObject:newPerson forKey:@"newPerson"];
 	return newPerson;
 }
 
 -(void)removePerson:(id)arg
 {
-	ENSURE_SINGLE_ARG(arg,TiContactsPerson)
 	ENSURE_UI_THREAD(removePerson,arg)
+	ENSURE_SINGLE_ARG(arg,TiContactsPerson)
 	
 	[self removeRecord:[arg record]];
 }
 
 -(TiContactsGroup*)createGroup:(id)arg
 {
-    ENSURE_SINGLE_ARG_OR_NIL(arg, NSDictionary)
-    
 	if (![NSThread isMainThread]) {
-		__block id result = nil;
-		TiThreadPerformOnMainThread(^{result = [[self createGroup:arg] retain];}, YES);
-		return [result autorelease];
+		[self performSelectorOnMainThread:@selector(createGroup:) withObject:arg waitUntilDone:YES];
+		return [returnCache objectForKey:@"newGroup"];
 	}
 	
-	ABAddressBookRef ourAddressBook = [self addressBook];
-	if (ourAddressBook == NULL) {
-		[self throwException:@"Cannot access address book"
-				   subreason:nil
-					location:CODELOCATION];
-	}
-	if (ABAddressBookHasUnsavedChanges(ourAddressBook)) {
+	if (ABAddressBookHasUnsavedChanges([self addressBook])) {
 		[self throwException:@"Cannot create a new entry with unsaved changes"
 				   subreason:nil
 					location:CODELOCATION];
@@ -466,7 +292,7 @@ void CMExternalChangeCallback (ABAddressBookRef notifyAddressBook,CFDictionaryRe
 	ABRecordRef record = ABGroupCreate();
 	[(id)record autorelease];
 	CFErrorRef error;
-	if (!ABAddressBookAddRecord(ourAddressBook, record, &error)) {
+	if (!ABAddressBookAddRecord([self addressBook], record, &error)) {
 		CFStringRef errorStr = CFErrorCopyDescription(error);
 		NSString* str = [NSString stringWithString:(NSString*)errorStr];
 		CFRelease(errorStr);
@@ -480,36 +306,25 @@ void CMExternalChangeCallback (ABAddressBookRef notifyAddressBook,CFDictionaryRe
 	ABRecordID id_ = ABRecordGetRecordID(record);
 	TiContactsGroup* newGroup = [[[TiContactsGroup alloc] _initWithPageContext:[self executionContext] recordId:id_ module:self] autorelease];
 	
-    [newGroup setValuesForKeysWithDictionary:arg];
-    
-    if (arg != nil) {
-        // Have to save initially so properties can be set; have to save again to commit changes
-        [self save:nil];
-    }
-    
+	[returnCache setObject:newGroup forKey:@"newGroup"];
 	return newGroup;
 }
 
 -(void)removeGroup:(id)arg
 {
+	ENSURE_UI_THREAD(removePerson,arg)
 	ENSURE_SINGLE_ARG(arg,TiContactsGroup)
-	ENSURE_UI_THREAD(removeGroup,arg)
 	
 	[self removeRecord:[arg record]];
 }
 
 #pragma mark Properties
 
-MAKE_SYSTEM_NUMBER(CONTACTS_KIND_PERSON,[[(NSNumber*)kABPersonKindPerson retain] autorelease])
-MAKE_SYSTEM_NUMBER(CONTACTS_KIND_ORGANIZATION,[[(NSNumber*)kABPersonKindOrganization retain] autorelease])
+MAKE_SYSTEM_NUMBER(CONTACTS_KIND_PERSON,(NSNumber*)kABPersonKindPerson)
+MAKE_SYSTEM_NUMBER(CONTACTS_KIND_ORGANIZATION,(NSNumber*)kABPersonKindOrganization)
 
 MAKE_SYSTEM_PROP(CONTACTS_SORT_FIRST_NAME,kABPersonSortByFirstName);
 MAKE_SYSTEM_PROP(CONTACTS_SORT_LAST_NAME,kABPersonSortByLastName);
-
-MAKE_SYSTEM_PROP(AUTHORIZATION_UNKNOWN, kABAuthorizationStatusNotDetermined);
-MAKE_SYSTEM_PROP(AUTHORIZATION_RESTRICTED, kABAuthorizationStatusRestricted);
-MAKE_SYSTEM_PROP(AUTHORIZATION_DENIED, kABAuthorizationStatusDenied);
-MAKE_SYSTEM_PROP(AUTHORIZATION_AUTHORIZED, kABAuthorizationStatusAuthorized);
 
 #pragma mark Picker delegate functions
 
@@ -542,17 +357,13 @@ MAKE_SYSTEM_PROP(AUTHORIZATION_AUTHORIZED, kABAuthorizationStatusAuthorized);
 		ABRecordID id_ = ABRecordGetRecordID(person);
 		TiContactsPerson* personObject = [[[TiContactsPerson alloc] _initWithPageContext:[self executionContext] recordId:id_ module:self] autorelease];
 		NSString* propertyName = nil;
-		id value = [NSNull null];
+		id value = nil;
 		id label = [NSNull null];
 		if (identifier == kABMultiValueInvalidIdentifier) { 
 			propertyName = [[[TiContactsPerson contactProperties] allKeysForObject:[NSNumber numberWithInt:property]] objectAtIndex:0];
-            
-            // Contacts is poorly-designed enough that we should worry about receiving NULL values for properties which are actually assigned.
 			CFTypeRef val = ABRecordCopyValue(person, property);
-            if (val != NULL) {
-                value = [[(id)val retain] autorelease]; // Force toll-free bridging & autorelease
-                CFRelease(val);
-            }
+			value = [[(id)val retain] autorelease]; // Force toll-free bridging & autorelease
+			CFRelease(val);
 		}
 		else {
 			propertyName = [[[TiContactsPerson multiValueProperties] allKeysForObject:[NSNumber numberWithInt:property]] objectAtIndex:0];
@@ -560,30 +371,12 @@ MAKE_SYSTEM_PROP(AUTHORIZATION_AUTHORIZED, kABAuthorizationStatusAuthorized);
 			CFIndex index = ABMultiValueGetIndexForIdentifier(multival, identifier);
 
 			CFTypeRef val = ABMultiValueCopyValueAtIndex(multival, index);
-            if (val != NULL) {
-                value = [[(id)val retain] autorelease]; // Force toll-free bridging & autorelease
-                CFRelease(val);
-            }
+			value = [[(id)val retain] autorelease]; // Force toll-free bridging & autorelease
+			CFRelease(val);
 			
 			CFStringRef CFlabel = ABMultiValueCopyLabelAtIndex(multival, index);
-            NSArray* labelKeys = [[TiContactsPerson multiValueLabels] allKeysForObject:(NSString*)CFlabel];
-            if ([labelKeys count] > 0) {
-                label = [NSString stringWithString:[labelKeys objectAtIndex:0]];
-            }
-            else {
-                // Hack for Exchange and other 'cute' setups where there is no label associated with a multival property;
-                // in this case, force it to be the property name.
-                if (CFlabel != NULL) {
-                    label = [NSString stringWithString:(NSString*)CFlabel];
-                }
-                // There may also be cases where we get a property from the system that we can't handle, because it's undocumented or not in the map.
-                else if (propertyName != nil) {
-                    label = [NSString stringWithString:propertyName];
-                }
-            }
-            if (CFlabel != NULL) {
-                CFRelease(CFlabel);
-            }
+			label = [NSString stringWithString:[[[TiContactsPerson multiValueLabels] allKeysForObject:(NSString*)CFlabel] objectAtIndex:0]];
+			CFRelease(CFlabel);
 			
 			CFRelease(multival);
 		}

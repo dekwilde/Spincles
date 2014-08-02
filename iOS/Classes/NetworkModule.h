@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_NETWORK
 
@@ -17,13 +19,6 @@ typedef enum {
 	READ_WRITE_MODE = 3 // Alias for READ | WRITE
 } SocketMode;
 
-typedef enum {
-    // DEFAULT TLS is 0
-    TLS_VERSION_1_0 = 1,
-    TLS_VERSION_1_1,
-    TLS_VERSION_1_2
-} TLSVersion;
-
 @interface NetworkModule : TiModule {
 @private
 	TiNetworkConnectionState state;
@@ -31,8 +26,6 @@ typedef enum {
 	KrollCallback *pushNotificationError;
 	KrollCallback *pushNotificationSuccess;
 	Reachability *reachability;
-    
-    TiProxy* socketProxy;
 }
 
 @property(nonatomic,readonly) NSNumber* online;
@@ -57,17 +50,14 @@ typedef enum {
 @property(readonly, nonatomic) NSNumber* READ_WRITE_MODE;
 @property(readonly, nonatomic) NSString* INADDR_ANY;
 
-@property(nonatomic, readonly) NSNumber* TLS_VERSION_1_0;
-@property(nonatomic, readonly) NSNumber* TLS_VERSION_1_1;
-@property(nonatomic, readonly) NSNumber* TLS_VERSION_1_2;
 
 -(id)encodeURIComponent:(id)args;
 -(id)decodeURIComponent:(id)args;
+-(void)addConnectivityListener:(id)args;
+-(void)removeConnectivityListener:(id)args;
 
 #pragma mark Private
 -(void)updateReachabilityStatus;
-
-+(NSOperationQueue*)operationQueue;
 
 @end
 

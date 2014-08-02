@@ -3,11 +3,11 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #import "KrollCallback.h"
-#import "KrollBridge.h"
 #import "KrollObject.h"
-#import "TiExceptionHandler.h"
 
 static NSMutableArray * callbacks;
 static NSLock *callbackLock;
@@ -34,27 +34,21 @@ static NSLock *callbackLock;
 	[callbackLock unlock];
 }
 
-+(void)initialize
-{
-	if (callbacks==nil)
-	{
-		callbackLock = [[NSLock alloc] init];
-		callbacks = TiCreateNonRetainingArray();
-	}
-}
-
 -(id)initWithCallback:(TiValueRef)function_ thisObject:(TiObjectRef)thisObject_ context:(KrollContext*)context_
 {
 	if (self = [super init])
 	{
 		context = context_;
-		bridge = (KrollBridge *)[context_ delegate];
 		jsContext = [context context];
 		function = TiValueToObject(jsContext,function_,NULL);
 		thisObj = thisObject_;
 		TiValueProtect(jsContext, function);
 		TiValueProtect(jsContext, thisObj);
-		contextLock = [[NSLock alloc] init];
+		if (callbacks==nil)
+		{
+			callbackLock = [[NSLock alloc] init];
+			callbacks = TiCreateNonRetainingArray();
+		}
 		[callbacks addObject:self];
 	}
 	return self;
@@ -67,22 +61,8 @@ static NSLock *callbackLock;
 	[callbackLock unlock];
 
 	[type release];
-	[contextLock release];
-	if ([KrollBridge krollBridgeExists:bridge])
-	{
-		if ([context isKJSThread])
-		{
-			TiValueUnprotect(jsContext, function);
-			TiValueUnprotect(jsContext, thisObj);
-		}
-		else
-		{
-			KrollUnprotectOperation * delayedUnprotect = [[KrollUnprotectOperation alloc]
-					initWithContext:jsContext withJsobject:function andJsobject:thisObj];
-			[context enqueue:delayedUnprotect];
-			[delayedUnprotect release];
-		}
-	}
+	TiValueUnprotect(jsContext, function);
+	TiValueUnprotect(jsContext, thisObj);
 	function = NULL;
 	thisObj = NULL;
 	context = NULL;
@@ -95,31 +75,32 @@ static NSLock *callbackLock;
 	{
 		return YES;
 	}
-	if ((anObject == nil) || ![anObject isKindOfClass:[KrollCallback class]])
+	if (anObject == nil)
+	{
+		return NO;
+	}
+	if ([anObject isKindOfClass:[KrollCallback class]]==NO)
 	{
 		return NO;
 	}
 	KrollCallback *otherCallback = (KrollCallback*)anObject;
 	if (function!=NULL)
-	{	//TODO: Is there ever two functions with diffent memory pointers
-	// that represent the exact same function? I'm thinking not.
+	{
 		TiObjectRef ref1 = function;
 		TiObjectRef ref2 = [otherCallback function];
-		return (ref2 == ref1);
+		return TiValueIsStrictEqual(jsContext,ref1,ref2);
 	}
 	return NO;
 }
 
--(id)call:(NSArray*)args thisObject:(id)thisObject_
+-(void)call:(NSArray*)args thisObject:(id)thisObject_
 {
-	[contextLock lock];
 	if (context==nil)
 	{
-		[contextLock unlock];
-		return nil;
+		return;
 	}
 	
-	[context retain];
+	[[context retain] autorelease];
 	
 	TiValueRef _args[[args count]];
 	for (size_t c = 0; c < [args count]; c++)
@@ -142,22 +123,16 @@ static NSLock *callbackLock;
 		TiValueProtect(jsContext,top);
 	}
 	TiValueRef exception = NULL;
-	TiValueRef retVal = TiObjectCallAsFunction(jsContext,function,tp,[args count],_args,&exception);
+	TiObjectCallAsFunction(jsContext,function,tp,[args count],_args,&exception);
 	if (exception!=NULL)
 	{
-		id excm = [KrollObject toID:context value:exception];
-		[[TiExceptionHandler defaultExceptionHandler] reportScriptError:[TiUtils scriptErrorValue:excm]];
+		NSLog(@"[WARN] Exception in event callback. %@",[KrollObject toID:context value:exception]);
 	}
 	if (top!=NULL)
 	{
 		TiValueUnprotect(jsContext,tp);
 		TiValueUnprotect(jsContext,top);
 	}
-	
-	id val = [KrollObject toID:context value:retVal];
-	[context release];
-	[contextLock unlock];
-	return val;
 }
 
 -(TiObjectRef)function
@@ -170,90 +145,4 @@ static NSLock *callbackLock;
 	return context;
 }
 
--(void)setContext:(KrollContext*)context_
-{
-	[contextLock lock];
-	context = context_;
-	[contextLock unlock];
-}
-
 @end
-
-@implementation KrollWrapper
-@synthesize jsobject, bridge;
-
-/*	NOTE:
- *	Until KrollWrapper takes a more expanded role as a general purpose wrapper,
- *	protectJsobject is to be used during commonJS inclusion ONLY.
- *	For example, KrollBridge ensures that this is only done in the JS thread,
- *	and unlike KrollObject, KrollWrapper does not have the infrastructure to
- *	handle being called outside the JS.
- *	Furthermore, KrollWrapper does not get notified of JSObject finalization,
- *	etc, etc. The specific cases where KrollWrapper is currently used do not
- *	make this an issue, but KrollWrapper needs hardening if it is to be a base
- *	class.
- */
-
-- (void)dealloc {
-	if (protecting) {
-		[self unprotectJsobject];
-	}
-    [super dealloc];
-}
-
--(void)protectJsobject
-{
-	if (protecting || ![KrollBridge krollBridgeExists:bridge])
-	{
-		return;
-	}
-
-	if (![[bridge krollContext] isKJSThread])
-	{
-		DeveloperLog(@"[WARN] KrollWrapper trying to protect in the wrong thread.%@",CODELOCATION);
-		return;
-	}
-	protecting = YES;
-	TiValueProtect([[bridge krollContext] context],jsobject);
-}
-
--(void)unprotectJsobject
-{
-	if (!protecting || ![KrollBridge krollBridgeExists:bridge])
-	{
-		return;
-	}
-	
-	if (![[bridge krollContext] isKJSThread])
-	{
-		DeveloperLog(@"[WARN] KrollWrapper trying to unprotect in the wrong thread.%@",CODELOCATION);
-		return;
-	}
-	protecting = NO;
-	TiValueUnprotect([[bridge krollContext] context],jsobject);
-}
-
-- (void)replaceValue:(id)value forKey:(NSString*)key notification:(BOOL)notify
-{	/*
-	 *	This is to be used ONLY from KrollBridge's require call, due to some
-	 *	JS files assigning exports to a function instead of a standard
-	 *	JS object.
-	 */
-	KrollContext * context = [bridge krollContext];
-	TiValueRef valueRef = [KrollObject toValue:context value:value];
-	TiStringRef keyRef = TiStringCreateWithCFString((CFStringRef) key);
-	TiObjectSetProperty([context context], jsobject, keyRef, valueRef, kTiPropertyAttributeReadOnly, NULL);
-	TiStringRelease(keyRef);
-}
-
-@end
-
-
-KrollWrapper * ConvertKrollCallbackToWrapper(KrollCallback *callback)
-{
-	KrollWrapper * wrapper = [[[KrollWrapper alloc] init] autorelease];
-	[wrapper setBridge:(KrollBridge*)[[callback context] delegate]];
-	[wrapper setJsobject:[callback function]];
-	return wrapper;
-}
-

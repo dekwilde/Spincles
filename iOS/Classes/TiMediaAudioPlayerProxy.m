@@ -3,13 +3,14 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_MEDIA
 
 #import "TiMediaAudioPlayerProxy.h"
 #import "TiUtils.h"
 #import "TiMediaAudioSession.h"
-#include <AudioToolbox/AudioToolbox.h>
 
 @implementation TiMediaAudioPlayerProxy
 
@@ -17,39 +18,28 @@
 
 -(void)_initWithProperties:(NSDictionary *)properties
 {
-	volume = [TiUtils doubleValue:@"volume" properties:properties def:1.0];
 	url = [[TiUtils toURL:[properties objectForKey:@"url"] proxy:self] retain];
     int initialMode = [TiUtils intValue:@"audioSessionMode" 
                              properties:properties
-                                    def:0];
-	if (initialMode) {
-		[self setAudioSessionMode:[NSNumber numberWithInt:initialMode]];
-	}
+                                    def:[[TiMediaAudioSession sharedSession] defaultSessionMode]];
+    [self setAudioSessionMode:[NSNumber numberWithInt:initialMode]];
+	[[TiMediaAudioSession sharedSession] startAudioSession];
 }
 
 -(void)_destroy
 {
+    [[TiMediaAudioSession sharedSession] stopAudioSession];
 	if (timer!=nil)
 	{
 		[timer invalidate];
-		RELEASE_TO_NIL(timer);
 	}
 	if (player!=nil)
 	{
-		if ([player isPlaying] || [player isPaused] || [player isWaiting]) {
-			[player stop];
-			[[TiMediaAudioSession sharedSession] stopAudioSession];
-		}
+		[player stop];
 	}
-	[player setDelegate:nil];
 	RELEASE_TO_NIL(player);
 	RELEASE_TO_NIL(timer);
     [super _destroy];
-}
-
--(NSString*)apiName
-{
-    return @"Ti.Media.AudioPlayer";
 }
 
 -(void)_listenerAdded:(NSString *)type count:(int)count
@@ -77,9 +67,9 @@
 			[self throwException:@"invalid url" subreason:@"url has not been set" location:CODELOCATION];
 		}
 		player = [[AudioStreamer alloc] initWithURL:url];
-		[player setDelegate:self];
-        [player setBufferSize:bufferSize];
-		[player setVolume:volume];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackStateChanged:)
+												name:ASStatusChangedNotification
+												object:player];
 		
 		if (progress)
 		{
@@ -100,19 +90,19 @@
 	}
 	if (player!=nil)
 	{
-		if ([player isPlaying] || [player isPaused] || [player isWaiting])
+		[[NSNotificationCenter defaultCenter] removeObserver:self name:ASStatusChangedNotification object:player];
+		if ([player isPlaying])
 		{
 			[player stop];
-			[[TiMediaAudioSession sharedSession] stopAudioSession];
 		}
-		[player setDelegate:nil];
 		RELEASE_TO_NIL(player);
 	}
 }
 
 -(void)restart:(id)args
 {
-	BOOL playing = [player isPlaying] || [player isPaused] || [player isWaiting];
+	ENSURE_UI_THREAD(restart,args);
+	BOOL playing = [player isPlaying];
 	[self destroyPlayer];
 	
 	if (playing)
@@ -173,50 +163,8 @@ PLAYER_PROP_DOUBLE(bitRate,bitRate);
 PLAYER_PROP_DOUBLE(progress,progress);
 PLAYER_PROP_DOUBLE(state,state);
 
--(NSNumber *)duration
-{
-	if (player != nil){
-        //Convert duration to milliseconds (parity with progress/Android)
-		duration = (int)([player duration]*1000);
-	}
-	return NUMDOUBLE(duration);
-}
-
--(NSNumber *)volume
-{
-	if (player != nil){
-		volume = [player volume];
-	}
-	return NUMDOUBLE(volume);
-}
-
--(void)setVolume:(NSNumber *)newVolume
-{
-	volume = [TiUtils doubleValue:newVolume def:volume];
-	if (player != nil) {
-		[player setVolume:volume];
-	}
-}
-
--(void)setBufferSize:(NSNumber*)bufferSize_
-{
-    bufferSize = [bufferSize_ unsignedIntegerValue];
-    if (player != nil) {
-        [player setBufferSize:bufferSize];
-    }
-}
-
--(NSNumber*)bufferSize
-{
-    return [NSNumber numberWithUnsignedInteger:((bufferSize) ? bufferSize : kAQDefaultBufSize)];
-}
-
 -(void)setUrl:(id)args
 {
-	if (![NSThread isMainThread]) {
-		TiThreadPerformOnMainThread(^{[self setUrl:args];}, YES);
-		return;
-	}
 	RELEASE_TO_NIL(url);
 	ENSURE_SINGLE_ARG(args,NSString);
 	url = [[TiUtils toURL:args proxy:self] retain];
@@ -231,54 +179,26 @@ PLAYER_PROP_DOUBLE(state,state);
 	return url;
 }
 
--(void)play:(id)args
-{
-	[self start:args];
-}
-
-// Only need to ensure the UI thread when starting; and we should actually wait until it's finished so
-// that execution flow is correct (if we stop/pause immediately after)
 -(void)start:(id)args
 {
-	if (![NSThread isMainThread]) {
-		TiThreadPerformOnMainThread(^{[self start:args];}, YES);
-		return;
-	}
+	ENSURE_UI_THREAD(start,args);
 	// indicate we're going to start playing
-	if (![[TiMediaAudioSession sharedSession] canPlayback]) {
-		[self throwException:@"Improper audio session mode for playback"
-				   subreason:[[NSNumber numberWithUnsignedInt:[[TiMediaAudioSession sharedSession] sessionMode]] description]
-					location:CODELOCATION];
-	}
-	
-	if (player == nil || !([player isPlaying] || [player isPaused] || [player isWaiting])) {
-		[[TiMediaAudioSession sharedSession] startAudioSession];
-	}
+	[[TiMediaAudioSession sharedSession] playback:sessionMode];
 	[[self player] start];
 }
 
 -(void)stop:(id)args
 {
-	if (![NSThread isMainThread]) {
-		TiThreadPerformOnMainThread(^{[self stop:args];}, YES);
-		return;
-	}
+	ENSURE_UI_THREAD(stop,args);
 	if (player!=nil)
-	{		
-		if ([player isPlaying] || [player isPaused] || [player isWaiting])
-		{
-			[player stop];
-			[[TiMediaAudioSession sharedSession] stopAudioSession];
-		}
+	{
+		[player stop];
 	}
 }
 
 -(void)pause:(id)args
 {
-	if (![NSThread isMainThread]) {
-		TiThreadPerformOnMainThread(^{[self pause:args];}, YES);
-		return;
-	}
+	ENSURE_UI_THREAD(pause,args);
 	if (player!=nil)
 	{
 		[player pause];
@@ -299,17 +219,15 @@ MAKE_SYSTEM_PROP(STATE_PAUSED,AS_PAUSED);
 {
     UInt32 newMode = [mode unsignedIntegerValue]; // Close as we can get to UInt32
     if (newMode == kAudioSessionCategory_RecordAudio) {
-        DebugLog(@"[WARN] Invalid mode for audio player... setting to default.");
+        NSLog(@"Invalid mode for audio player... setting to default.");
         newMode = kAudioSessionCategory_SoloAmbientSound;
     }
-	DebugLog(@"[WARN] 'Ti.Media.AudioPlayer.audioSessionMode' is deprecated; use 'Ti.Media.audioSessionMode'");
-	[[TiMediaAudioSession sharedSession] setSessionMode:newMode];
+    sessionMode = newMode;
 }
 
 -(NSNumber*)audioSessionMode
 {
-	DebugLog(@"[WARN] 'Ti.Media.AudioPlayer.audioSessionMode' is deprecated; use 'Ti.Media.audioSessionMode'");	
-    return [NSNumber numberWithUnsignedInteger:[[TiMediaAudioSession sharedSession] sessionMode]];
+    return [NSNumber numberWithUnsignedInteger:sessionMode];
 }
 
 -(NSString*)stateToString:(int)state
@@ -346,15 +264,12 @@ MAKE_SYSTEM_PROP(STATE_PAUSED,AS_PAUSED);
 
 #pragma mark Delegates
 
--(void)playbackStateChanged:(id)sender
+-(void)playbackStateChanged:(NSNotification*)note
 {
 	if ([self _hasListeners:@"change"])
 	{
 		NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:[self state],@"state",[self stateToString:player.state],@"description",nil];
 		[self fireEvent:@"change" withObject:event];
-	}
-	if (player.errorCode != AS_NO_ERROR && player.state == AS_STOPPED) {
-		[[TiMediaAudioSession sharedSession] stopAudioSession];
 	}
 }
 

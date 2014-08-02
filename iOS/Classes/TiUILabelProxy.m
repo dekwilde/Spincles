@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UILABEL
 
@@ -12,17 +14,24 @@
 
 @implementation TiUILabelProxy
 
-USE_VIEW_FOR_CONTENT_WIDTH
-USE_VIEW_FOR_CONTENT_HEIGHT
+USE_VIEW_FOR_AUTO_WIDTH
 
--(NSString*)apiName
+-(CGFloat)autoHeightForWidth:(CGFloat)suggestedWidth
 {
-    return @"Ti.UI.Label";
-}
-
--(void)_initWithProperties:(NSDictionary *)properties
-{
-    [super _initWithProperties:properties];
+	NSString *value = [TiUtils stringValue:[self valueForKey:@"text"]];
+	id fontValue = [self valueForKey:@"font"];
+	UIFont *font = nil;
+	if (fontValue!=nil)
+	{
+		font = [[TiUtils fontValue:[self valueForKey:@"font"]] font];
+	}
+	else 
+	{
+		font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+	}
+	CGSize maxSize = CGSizeMake(suggestedWidth, 1E100);
+	CGSize size = [value sizeWithFont:font constrainedToSize:maxSize lineBreakMode:UILineBreakModeTailTruncation];
+	return [self verifyHeight:size.height]; //Todo: We need to verifyHeight elsewhere as well.
 }
 
 -(CGFloat) verifyWidth:(CGFloat)suggestedWidth
@@ -38,47 +47,11 @@ USE_VIEW_FOR_CONTENT_HEIGHT
 -(CGFloat) verifyHeight:(CGFloat)suggestedHeight
 {
 	int height = ceil(suggestedHeight);
-    if ([self viewInitialized]) {
-        int minHeight = ceil([[[(TiUILabel*)view label] font] lineHeight]);
-        if (height < minHeight) {
-            height = minHeight;
-        }
-    }
-    
 	if (height & 0x01)
 	{
 		height ++;
 	}
 	return height;
-}
-
--(NSArray *)keySequence
-{
-	static NSArray *labelKeySequence = nil;
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-		labelKeySequence = [[NSArray arrayWithObjects:@"font",nil] retain];
-	});
-	return labelKeySequence;
-}
-
--(NSMutableDictionary*)langConversionTable
-{
-    return [NSMutableDictionary dictionaryWithObject:@"text" forKey:@"textid"];
-}
-
--(TiDimension)defaultAutoWidthBehavior:(id)unused
-{
-    return TiDimensionAutoSize;
-}
--(TiDimension)defaultAutoHeightBehavior:(id)unused
-{
-    return TiDimensionAutoSize;
-}
-
--(UIView *)parentViewForChild:(TiViewProxy *)child
-{
-	return [[(TiUILabel*)[self view] label] superview];
 }
 
 @end

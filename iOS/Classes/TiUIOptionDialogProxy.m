@@ -1,8 +1,10 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UIOPTIONDIALOG
 
@@ -23,41 +25,21 @@
 	[super dealloc];
 }
 
--(NSMutableDictionary*)langConversionTable
-{
-    return [NSMutableDictionary dictionaryWithObject:@"title" forKey:@"titleid"];
-}
-
--(NSString*)apiName
-{
-    return @"Ti.UI.OptionDialog";
-}
 
 -(void)show:(id)args
 {
 	ENSURE_SINGLE_ARG_OR_NIL(args,NSDictionary);
-	[self rememberSelf];
 	ENSURE_UI_THREAD(show,args);
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(suspended:) name:kTiSuspendNotification object:nil];
-
-	showDialog = YES;
+	
 	NSMutableArray *options = [self valueForKey:@"options"];
 	if (options==nil)
 	{
 		options = [[[NSMutableArray alloc] initWithCapacity:2] autorelease];
 		[options addObject:NSLocalizedString(@"OK",@"Alert OK Button")];
 	}
-
-    persistentFlag = [TiUtils boolValue:[self valueForKey:@"persistent"] def:YES];
-    forceOpaqueBackground = [TiUtils boolValue:[self valueForKey:@"opaquebackground"] def:NO];
-	if (actionSheet != nil) {
-		[actionSheet setDelegate:nil];
-		[actionSheet release];
-	}
+	
 	actionSheet = [[UIActionSheet alloc] init];
 	[actionSheet setDelegate:self];
-
 	[actionSheet setTitle:[TiUtils stringValue:[self valueForKey:@"title"]]];
 	
 	for (id thisOption in options)
@@ -84,77 +66,16 @@
 		{
 			dialogRect = CGRectZero;
 		}
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceRotationBegan:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateOptionDialog:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
 		[self updateOptionDialogNow];
 		return;
 	}
-	[actionSheet showInView:[[TiApp app] topMostView]];
-}
-
--(void)completeWithButton:(int)buttonIndex
-{
-    if (showDialog) {
-        showDialog = NO;
-        if ([self _hasListeners:@"click"])
-        {
-            NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   [NSNumber numberWithInt:buttonIndex],@"index",
-                                   [NSNumber numberWithInt:[actionSheet cancelButtonIndex]],@"cancel",
-                                   [NSNumber numberWithInt:[actionSheet destructiveButtonIndex]],@"destructive",
-                                   nil];
-            [self fireEvent:@"click" withObject:event];
-        }
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
-        [self forgetSelf];
-        [self release];
-    }
-}
-
--(void)hide:(id)args
-{
-	if(actionSheet == nil || !showDialog){
-		return;
-	}
-
-	id options = nil;
-	if ([args count]>0) {
-		options = [args objectAtIndex:0];
-	}
-	BOOL animatedhide = [TiUtils boolValue:@"animated" properties:options def:YES];
-
-    TiThreadPerformOnMainThread(^{
-        if ([actionSheet isVisible]) {
-            [actionSheet dismissWithClickedButtonIndex:[actionSheet cancelButtonIndex] animated:animatedhide];
-        }
-        else if(showDialog) {
-            [self completeWithButton:[actionSheet cancelButtonIndex]];
-        }
-    }, NO);
-}
-
--(void)suspended:(NSNotification*)note
-{
-    if (!persistentFlag) {
-        [self hide:[NSArray arrayWithObject: [NSDictionary dictionaryWithObject:NUMBOOL(NO) forKey:@"animated"]]];
-    }
+	[actionSheet showInView:[[TiApp app] window]];
 }
 
 #pragma mark AlertView Delegate
 
-- (void)willPresentActionSheet:(UIActionSheet *)actionSheet_
-{
-    //TIMOB-15939. Workaround rendering issue on iPAD on iOS7
-    if (actionSheet_ == actionSheet && forceOpaqueBackground &&[TiUtils isIOS7OrGreater] && [TiUtils isIPad]) {
-        NSArray* subviews = [actionSheet subviews];
-        
-        for (UIView* subview in subviews) {
-            [subview setBackgroundColor:[UIColor whiteColor]];
-        }
-        [actionSheet setBackgroundColor:[UIColor whiteColor]];
-    }
-}
-
-- (void)actionSheet:(UIActionSheet *)actionSheet_ didDismissWithButtonIndex:(NSInteger)buttonIndex;
+- (void)actionSheet:(UIActionSheet *)actionSheet_ clickedButtonAtIndex:(NSInteger)buttonIndex;
 {
 	if (buttonIndex == -2)
 	{
@@ -162,35 +83,32 @@
 		//A -2 is used by us to indicate that this was programatically dismissed to properly
 		//place the option dialog during a roation.
 	}
-	[self completeWithButton:buttonIndex];
+	if ([self _hasListeners:@"click"])
+	{
+		NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:
+							   [NSNumber numberWithInt:buttonIndex],@"index",
+							   [NSNumber numberWithInt:[actionSheet cancelButtonIndex]],@"cancel",
+							   [NSNumber numberWithInt:[actionSheet destructiveButtonIndex]],@"destructive",
+							   nil];
+		[self fireEvent:@"click" withObject:event];
+	}
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
+	[self release];
 }
 
--(void)deviceRotationBegan:(NSNotification *)notification
+-(void)updateOptionDialog:(NSNotification *)notification;
 {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateOptionDialogNow) object:nil];
-    NSTimeInterval delay = [[UIApplication sharedApplication] statusBarOrientationAnimationDuration];
-    UIInterfaceOrientation nextOrientation = [[notification.userInfo objectForKey:UIApplicationStatusBarOrientationUserInfoKey] intValue];
-    UIInterfaceOrientation currentOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    if (UIInterfaceOrientationIsPortrait(currentOrientation) == UIInterfaceOrientationIsPortrait(nextOrientation)) {
-        ++accumulatedOrientationChanges; // double for a 180 degree orientation change
-    }
-    if (++accumulatedOrientationChanges > 1) {
-        delay *= MIN(accumulatedOrientationChanges, 4);
-    }
 	[actionSheet dismissWithClickedButtonIndex:-2 animated:animated];
-	[self performSelector:@selector(updateOptionDialogNow) withObject:nil afterDelay:delay];
+	[self performSelector:@selector(updateOptionDialogNow) withObject:nil afterDelay:[[UIApplication sharedApplication] statusBarOrientationAnimationDuration]];
 }
 
 -(void)updateOptionDialogNow;
 {
-	if (!showDialog) {
-		return;
-	}
-    accumulatedOrientationChanges = 0;
+
 	UIView *view = nil;
 	if (dialogView==nil)
 	{
-		view = [[[[TiApp app] window] subviews] lastObject];
+		view = [[TiApp app] controller].view;
 	}
 	else 
 	{
@@ -198,14 +116,16 @@
 		
 		if ([dialogView supportsNavBarPositioning] && [dialogView isUsingBarButtonItem])
 		{
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_3_2				
 			UIBarButtonItem *button = [dialogView barButtonItem];
 			[actionSheet showFromBarButtonItem:button animated:animated];
 			return;
+#endif				
 		}
 		
-		if ([dialogView conformsToProtocol:@protocol(TiToolbar)])
+		if ([dialogView isKindOfClass:[TiToolbar class]])
 		{
-			UIToolbar *toolbar = [(id<TiToolbar>)dialogView toolbar];
+			UIToolbar *toolbar = [(TiToolbar*)dialogView toolbar];
 			[actionSheet showFromToolbar:toolbar];
 			return;
 		}
@@ -222,23 +142,17 @@
 		CGRect rect;
 		if (CGRectIsEmpty(dialogRect))
 		{
-			if(view == nil)
-			{
-				rect = CGRectZero;
-			}
-			else
-			{
-				rect = [view bounds];
-			}
-
+			rect = [view bounds];
 		}
 		else
 		{
 			rect = dialogRect;
 		}
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_3_2				
 		[actionSheet showFromRect:rect inView:view animated:animated];
 		return;
+#endif				
 	}
 	[actionSheet showInView:view];
 }

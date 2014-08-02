@@ -144,11 +144,11 @@ static char ctrl[0x24];
 			
 			
 			// ATTEMPT TO FIGURE OUT WHAT WENT WRONG
-			DebugLog(@"[DEBUG] QUERY URL = %@",inputUrl);
-			DebugLog(@"[DEBUG] QUERY STRING = %@",queryString);
-			DebugLog(@"[DEBUG] QUERY STRING PRE-ESCAPED = %@",prequery);
-			DebugLog(@"[DEBUG] QUERY STRING ESCAPED = %@",query);
-			DebugLog(@"[ERROR] Error in decodeUrlQuery(%@): %@",queryString,error);
+			NSLog(@"[DEBUG] QUERY URL = %@",inputUrl);
+			NSLog(@"[DEBUG] QUERY STRING = %@",queryString);
+			NSLog(@"[DEBUG] QUERY STRING PRE-ESCAPED = %@",prequery);
+			NSLog(@"[DEBUG] QUERY STRING ESCAPED = %@",query);
+			NSLog(@"[ERROR] Error in decodeUrlQuery(%@): %@",queryString,error);
 		}
 		[jsonDecoder release];
 		return result;
@@ -159,11 +159,11 @@ static char ctrl[0x24];
 + (NSString *) stringify: (id) inputObject;
 {
 	NSError * error = nil;
-	SBJSON * stringer = [[SBJSON alloc] init];
+	SBJSON * stringer = [[self alloc] init];
 	NSString * result = [stringer stringWithFragment:inputObject error:&error];
 	[stringer release];
 	if (error != nil) {
-		DebugLog(@"[ERROR] Error in stringify(%@): %@",inputObject,error);
+		NSLog(@"[ERROR] Error in stringify(%@): %@",inputObject,error);
 	}
 	return result;
 }
@@ -230,16 +230,6 @@ static char ctrl[0x24];
     return [@"\n" stringByPaddingToLength:1 + 2 * depth withString:@" " startingAtIndex:0];
 }
 
-// SPT: We need this so that we can 'skip' over proxies, etc. in dictionaries and arrays by
-// performing a limited amount of lookahead.  Ridiculous, yes...
--(BOOL)supportedFragment:(id)fragment
-{
-	return ([fragment isKindOfClass:[NSDictionary class]] || [fragment isKindOfClass:[NSArray class]] ||
-			[fragment isKindOfClass:[NSString class]] || [fragment isKindOfClass:[NSNumber class]] ||
-			[fragment isKindOfClass:[NSDate class]] || [fragment isKindOfClass:[NSNull class]] ||
-			fragment == nil);
-}
-
 - (BOOL)appendValue:(id)fragment into:(NSMutableString*)json error:(NSError**)error {
     if ([fragment isKindOfClass:[NSDictionary class]]) {
         if (![self appendDictionary:fragment into:json error:error])
@@ -274,10 +264,6 @@ static char ctrl[0x24];
     
     BOOL addComma = NO;    
     for (id value in fragment) {
-		if (![self supportedFragment:value]) {
-			continue;
-		}
-		
         if (addComma)
             [json appendString:@","];
         else
@@ -308,12 +294,7 @@ static char ctrl[0x24];
     if (self.sortKeys)
         keys = [keys sortedArrayUsingSelector:@selector(compare:)];
     
-    for (id key in keys) {
-		id value = [fragment objectForKey:key];
-		if (![self supportedFragment:value]) {
-			continue;
-		}
-		
+    for (id value in keys) {
         if (addComma)
             [json appendString:@","];
         else
@@ -322,16 +303,16 @@ static char ctrl[0x24];
         if ([self humanReadable])
             [json appendString:[self indent]];
         
-        if (![key isKindOfClass:[NSString class]]) {
+        if (![value isKindOfClass:[NSString class]]) {
             if(error) *error = err(EUNSUPPORTED, @"JSON object key must be string");
             return NO;
         }
         
-        if (![self appendString:key into:json error:error])
+        if (![self appendString:value into:json error:error])
             return NO;
 		
         [json appendString:colon];
-        if (![self appendValue:value into:json error:error]) {
+        if (![self appendValue:[fragment objectForKey:value] into:json error:error]) {
             if(error) *error = err(EUNSUPPORTED, [NSString stringWithFormat:@"Unsupported value for key %@ in object", value]);
             return NO;
         }
@@ -585,7 +566,7 @@ static char ctrl[0x24];
         
         if (![self scanValue:&v error:error]) {
 			if(error){
-				DeveloperLog(@"[DEBUG] Error in parser: %@",*error);
+				NSLog(@"[DEBUG] error in parser = %@",*error);
 				*error = errWithUnderlier(EPARSE, error, @"Expected value while parsing array");
 			}
             return NO;
@@ -808,7 +789,7 @@ static char ctrl[0x24];
             return NO;
             
         } else {
-            DeveloperLog(@"[ERROR] Should not be able to get here in SBJSON.m");
+            NSLog(@"[ERROR] should not be able to get here in SBJSON.m");
         }
     } while (*c);
     

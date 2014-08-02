@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #if defined(USE_TI_XML) || defined(USE_TI_NETWORK)
 
@@ -28,78 +30,23 @@
 	name = [name_ retain];
 	value = [value_ retain];
 	owner = [owner_ retain];
-    if(value != nil)
-        isSpecified = YES;
-    else
-        isSpecified = NO;
-}
-
--(NSString*)apiName
-{
-    return @"Ti.XML.Attr";
 }
 
 -(id)name
 {
-	if (name != nil)
-		return name;
-	else
-		return [NSNull null];
+	return name;
 }
 
 -(id)value
 {
-    if(value != nil)
-        return value;
-    else
-        return [NSNull null];
-}
-
--(void)setValue:(NSString *)data
-{
-    ENSURE_TYPE(data, NSString);
-    RELEASE_TO_NIL(value);
-    value = [data copy];
-	[node setStringValue:data];
-    isSpecified = YES;
-}
-
--(void)setIsSpecified:(BOOL)isSpecified_
-{
-    isSpecified = isSpecified_;
-}
-
--(void)setNodeValue:(NSString *)data
-{
-	[self setValue:data];
+	return value;
 }
 
 -(id)ownerElement
 {
-    xmlNodePtr parentNode = [node XMLNode]->parent;
-    if (parentNode == NULL)
-        return [NSNull null];
-	
-	id result = [TiDOMNodeProxy nodeForXMLNode:parentNode];
-	if (result != nil) 
-	{
-		return result;
-	}
-	id context = ([self executionContext]==nil)?[self pageContext]:[self executionContext];
-	TiDOMElementProxy *proxy = [[[TiDOMElementProxy alloc] _initWithPageContext:context] autorelease];
-	[proxy setDocument:[self document]];
-	[proxy setElement:[GDataXMLNode nodeBorrowingXMLNode:parentNode]];
-	[TiDOMNodeProxy setNode:proxy forXMLNode:parentNode];
+	TiDOMElementProxy *proxy = [[[TiDOMElementProxy alloc] _initWithPageContext:[self pageContext]] autorelease];
+	[proxy setElement:owner];
 	return proxy;
-}
-
--(id)specified
-{
-    //TODO - Support for default values specified in the DTD.
-    if([node XMLNode]->parent == nil)
-        return NUMBOOL(YES);
-   
-    return NUMBOOL(isSpecified);
 }
 
 

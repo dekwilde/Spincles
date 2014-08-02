@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_MEDIA
 
@@ -32,22 +34,23 @@ TiMediaAudioSessionInputType;
 @private
 	NSInteger count;
 	NSLock *lock;
+    UInt32 defaultSessionMode;
 }
-
-@property (readwrite, assign) UInt32 sessionMode;
 
 +(TiMediaAudioSession*)sharedSession;
 
+@property (nonatomic,readwrite) UInt32 defaultSessionMode;
+
 -(void)startAudioSession;
 -(void)stopAudioSession;
--(BOOL)canRecord;
--(BOOL)canPlayback;
+-(void)record:(UInt32)mode;
+-(void)playback:(UInt32)mode;
 -(BOOL)isActive;
 -(TiMediaAudioSessionInputType)inputType;
 -(CGFloat)volume;
 -(BOOL)isAudioPlaying;
 -(BOOL)hasInput;
--(void)setRouteOverride:(UInt32)mode;
+
 @end
 
 #endif

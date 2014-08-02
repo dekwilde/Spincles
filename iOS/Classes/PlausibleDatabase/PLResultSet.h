@@ -251,3 +251,4 @@
  */
 - (id) objectForColumnIndex: (int) columnIndex;
 @end
+

@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UIPROGRESSBAR
 
@@ -27,28 +29,11 @@
 -(void)dealloc
 {
 	RELEASE_TO_NIL(progress);
+
 	RELEASE_TO_NIL(messageLabel);
+	RELEASE_TO_NIL(fontDesc);
+	RELEASE_TO_NIL(textColor);
 	[super dealloc];
-}
-
--(CGSize)sizeForFont:(CGFloat)suggestedWidth
-{
-	NSString *value = [messageLabel text];
-	UIFont *font = [messageLabel font];
-	CGSize maxSize = CGSizeMake(suggestedWidth<=0 ? 480 : suggestedWidth, 1000);
-	return [value sizeWithFont:font constrainedToSize:maxSize lineBreakMode:UILineBreakModeTailTruncation];
-}
-
--(CGFloat)contentWidthForWidth:(CGFloat)suggestedWidth
-{
-	return [self sizeForFont:suggestedWidth].width;
-}
-
--(CGFloat)contentHeightForWidth:(CGFloat)width
-{
-	CGSize fontSize = [self sizeForFont:width];
-	CGSize progressSize = [progress sizeThatFits:fontSize];
-	return fontSize.height + progressSize.height;
 }
 
 #pragma mark Accessors
@@ -70,16 +55,21 @@
 	{
 		messageLabel=[[UILabel alloc] init];
 		[messageLabel setBackgroundColor:[UIColor clearColor]];
+		if (fontDesc != nil)
+		{
+			[messageLabel setFont:[fontDesc font]];
+		}
+		
+		if (textColor != nil)
+		{
+			[messageLabel setTextColor:textColor];
+		}
+		
 		
 		[self setNeedsLayout];
 		[self addSubview:messageLabel];
 	}
 	return messageLabel;
-}
-
-- (id)accessibilityElement
-{
-	return [self messageLabel];
 }
 
 #pragma mark Repositioning
@@ -106,7 +96,7 @@
 		return;
 	}
 
-	CGSize messageSize = [messageLabel sizeThatFits:boundsRect.size];
+	CGSize messageSize = [messageLabel sizeThatFits:CGSizeZero];
 	
 	float fittingHeight = barSize.height + messageSize.height + 5;
 	
@@ -116,6 +106,19 @@
 	[messageLabel setBounds:CGRectMake(0, 0, messageSize.width, messageSize.height)];
 	[messageLabel setCenter:CGPointMake(centerPoint.x,
 			centerPoint.y - (fittingHeight - messageSize.height)/2)];
+}
+
+
+
+-(BOOL)isFrameUndefined
+{
+	return (TiDimensionIsUndefined(self.layoutProperties->top) && TiDimensionIsUndefined(self.layoutProperties->bottom));
+}
+
+-(BOOL)isFrameAuto
+{
+	return (TiDimensionIsAuto(self.layoutProperties->top) || TiDimensionIsAuto(self.layoutProperties->bottom) ||
+			TiDimensionIsAuto(self.layoutProperties->width) || TiDimensionIsAuto(self.layoutProperties->height));
 }
 
 #pragma mark Properties
@@ -139,19 +142,42 @@
 
 -(void)setFont_:(id)value
 {
-	WebFont * newFont = [TiUtils fontValue:value def:[WebFont defaultFont]];
-	[[self messageLabel] setFont:[newFont font]];
-	[self setNeedsLayout];
+	WebFont * newFont = [TiUtils fontValue:value def:nil];
+	if ((newFont == fontDesc) || ([fontDesc isEqual:newFont]))
+	{
+		return;
+	}
+
+	if (newFont == nil)
+	{
+		newFont = [WebFont defaultFont];
+	}
+	
+	[fontDesc release];
+	fontDesc = [newFont retain];
+
+	if (messageLabel != nil) {
+		[messageLabel setFont:[fontDesc font]];
+	}
 }
 
 
 -(void)setColor_:(id)value
 {
 	UIColor * newColor = [[TiUtils colorValue:value] _color];
-	if (newColor == nil) {
-		newColor = [UIColor blackColor];
+	[textColor release];
+	textColor = [newColor retain];
+	if (messageLabel != nil)
+	{
+		if (textColor == nil)
+		{
+			[messageLabel setTextColor:[UIColor blackColor]];
+		}
+		else
+		{
+			[messageLabel setTextColor:textColor];
+		}
 	}
-	[[self messageLabel] setTextColor:newColor];
 }
 
 -(void)setMessage_:(id)value

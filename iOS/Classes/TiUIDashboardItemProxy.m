@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UIDASHBOARDVIEW
 
@@ -15,23 +17,8 @@
 
 -(void)_destroy
 {
-	item.userData = nil;
-	item.view = nil;
 	RELEASE_TO_NIL(item);
 	[super _destroy];
-}
-
--(void)dealloc{
-	item.userData = nil;
-    item.button = nil;
-	item.view = nil;
-	RELEASE_TO_NIL(item);
-	[super dealloc];
-}
-
--(NSString*)apiName
-{
-    return @"Ti.UI.DashboardItem";
 }
 
 -(void)setItem:(LauncherItem*)item_
@@ -39,7 +26,6 @@
 	if (item!=nil)
 	{
 		item.userData = nil;
-		item.view = nil;
 		RELEASE_TO_NIL(item);
 	}
 	item = [item_ retain];
@@ -60,12 +46,6 @@
 {
 	NSInteger badgeValue = [TiUtils intValue:value];
 	[[self ensureItem] setBadgeValue:badgeValue];
-}
-
--(void)setTitle:(id)value
-{
-	NSString* badgeValue = [TiUtils stringValue:value];
-	[[self ensureItem] setTitle:badgeValue];
 }
 
 -(void)setImage:(id)value
@@ -94,18 +74,11 @@
 	
 	// called when we have a child, which means we want to use ourself
 	// as the view
-    
-    // TODO: This isn't entirely accurate... doing this may cause the view to be set twice
-    // because -[TiViewProxy add:] could exit early if it's not on the main thread.
-    // On the other hand, blocking this to execute on the main thread only doesn't appear to work right.
-    
-	TiThreadPerformOnMainThread(^{
-        LauncherItem *item_ = [self  ensureItem];
-        if (item_.view==nil)
-        {
-            [item_ setView:[self view]];
-        }
-	}, NO);
+	LauncherItem *item_ = [self  ensureItem];
+	if (item_.view==nil)
+	{
+		[item_ setView:[self view]];
+	}
 }
 
 

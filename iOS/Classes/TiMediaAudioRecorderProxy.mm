@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_MEDIA
 
@@ -10,7 +12,6 @@
 #import "TiUtils.h"
 #import "TiFile.h"
 #import "TiMediaAudioSession.h"
-#import "TiFilesystemFileProxy.h"
 
 @implementation TiMediaAudioRecorderProxy
 
@@ -22,16 +23,18 @@
 {
 	RELEASE_TO_NIL(format);
 	RELEASE_TO_NIL(compression);
+	[[TiMediaAudioSession sharedSession] stopAudioSession];
 	[super dealloc];
 }
 
 -(void)_configure
 {
+    sessionMode = kAudioSessionCategory_RecordAudio; // Doesn't fit into the 'default' mode paradigm.. but I guess that's OK?
 	recorder = NULL;
 	format = [[NSNumber numberWithUnsignedInt:kAudioFileCAFType] retain];
 	compression = [[NSNumber numberWithUnsignedInt:kAudioFormatLinearPCM] retain];
 	
-	WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
+	[[TiMediaAudioSession sharedSession] startAudioSession];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioInterruptionBegin:) name:kTiMediaAudioSessionInterruptionBegin object:[TiMediaAudioSession sharedSession]];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioInterruptionEnd:) name:kTiMediaAudioSessionInterruptionEnd object:[TiMediaAudioSession sharedSession]];
 	[super _configure];
@@ -44,21 +47,15 @@
 		if (recorder->IsRunning())
 		{
 			recorder->StopRecord();
-			[[TiMediaAudioSession sharedSession] stopAudioSession];
 		}
 		delete recorder;
 		recorder = NULL;
 	}
 	RELEASE_TO_NIL(file);
-	WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kTiMediaAudioSessionInterruptionBegin object:[TiMediaAudioSession sharedSession]];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kTiMediaAudioSessionInterruptionEnd object:[TiMediaAudioSession sharedSession]];
+	[[TiMediaAudioSession sharedSession] stopAudioSession];
 	[super _destroy];
-}
-
--(NSString*)apiName
-{
-    return @"Ti.Media.AudioRecorder";
 }
 
 -(AQRecorder*)recorder
@@ -122,18 +119,12 @@
 				break;
 			default:
 			{
-				NSLog(@"[WARN] Unsupported recording audio format: %d",fmt);
+				NSLog(@"[WARN] unsupported recording audio format: %d",fmt);
 			}
 		}
 		
 		// indicate we're going to start recording
-		if (![[TiMediaAudioSession sharedSession] canRecord]) {
-			[self throwException:@"Improper audio session mode for recording"
-					   subreason:[[NSNumber numberWithUnsignedInt:[[TiMediaAudioSession sharedSession] sessionMode]] description]
-						location:CODELOCATION];
-		}
-		
-		[[TiMediaAudioSession sharedSession] startAudioSession];
+		[[TiMediaAudioSession sharedSession] record:sessionMode];
 		
 		// set our audio file
 		recorder->SetupAudioFormat(comp);
@@ -150,11 +141,12 @@
 {
 	if (recorder!=NULL)
 	{
-		if (recorder->IsRunning()) {
-			recorder->StopRecord();
-			[[TiMediaAudioSession sharedSession] stopAudioSession];
-		}
-		return [[[TiFilesystemFileProxy alloc] initWithFile:[file path]] autorelease];
+		recorder->StopRecord();
+		
+		// place the session back in playback mode; reset to default category
+		[[TiMediaAudioSession sharedSession] playback:kAudioSessionCategory_SoloAmbientSound];
+		
+		return file;
 	}
 	
 	return nil;
@@ -207,17 +199,15 @@
 {
     UInt32 newMode = [mode unsignedIntegerValue]; // Close as we can get to UInt32
     if (newMode != kAudioSessionCategory_RecordAudio && newMode != kAudioSessionCategory_PlayAndRecord) {
-        DebugLog(@"[WARN] Invalid mode for audio recorder... setting to default.");
+        NSLog(@"Invalid mode for audio recorder... setting to default.");
         newMode = kAudioSessionCategory_RecordAudio;
     }
-	DebugLog(@"[WARN] 'Ti.Media.AudioRecorder.audioSessionMode' is deprecated; use 'Ti.Media.audioSessionMode'");
-	[[TiMediaAudioSession sharedSession] setSessionMode:newMode];
+    sessionMode = newMode;
 }
 
 -(NSNumber*)audioSessionMode
 {
-	DebugLog(@"[WARN] 'Ti.Media.AudioRecorder.audioSessionMode' is deprecated; use 'Ti.Media.audioSessionMode'");	
-    return [NSNumber numberWithUnsignedInt:[[TiMediaAudioSession sharedSession] sessionMode]];
+    return [NSNumber numberWithUnsignedInteger:sessionMode];
 }
 
 #pragma mark Delegates 

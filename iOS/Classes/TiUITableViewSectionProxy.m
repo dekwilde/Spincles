@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UITABLEVIEW
 
@@ -26,7 +28,6 @@
 		if ([thisRow parent] == self)
 		{
 			[thisRow setParent:nil];
-            [thisRow setSection:nil];
 		}
 	}
 	RELEASE_TO_NIL(rows);
@@ -39,11 +40,6 @@
 	self.modelDelegate = self;
 }	
 
--(NSString*)apiName
-{
-    return @"Ti.UI.TableViewSection";
-}
-
 -(void)reorderRows
 {
 	NSInteger index = 0;
@@ -55,7 +51,7 @@
 
 -(void)triggerSectionUpdate
 {
-	TiUITableViewAction *action = [[[TiUITableViewAction alloc] initWithObject:self animation:nil type:TiUITableViewActionSectionReload] autorelease];
+	TiUITableViewAction *action = [[[TiUITableViewAction alloc] initWithRow:nil animation:nil section:self.section type:TiUITableViewActionSectionReload] autorelease];
 	[table dispatchAction:action];
 }
 
@@ -81,11 +77,15 @@
 	return [rows count];
 }
 
+-(TiUITableViewRowProxy*)rowAtIndex:(NSInteger)index
+{
+//The result of a method call also happens to be nil.
+	return [rows objectAtIndex:index];
+}
+
 -(void)add:(id)proxy
 {
 	ENSURE_SINGLE_ARG(proxy,TiUITableViewRowProxy);
-	[self rememberProxy:proxy];
-	[(TiUITableViewRowProxy *)proxy setSection:self];
 	if (rows==nil) 
 	{
 		rows = [[NSMutableArray array] retain];
@@ -96,8 +96,6 @@
 -(void)remove:(id)proxy
 {
 	ENSURE_SINGLE_ARG(proxy,TiUITableViewRowProxy);
-	[self forgetProxy:proxy];
-	[(TiUITableViewRowProxy *)proxy setSection:nil];
 	if (rows!=nil)
 	{
 		[rows removeObject:proxy];
@@ -109,21 +107,14 @@
 	return nil;
 }
 
--(TiUITableViewRowProxy*)rowAtIndex:(NSInteger)index
-{
-//Because rowAtIndex is used internally, with an int, it can't be used by the Javascript.
-//The javascript passes in an NSArray pointer, not an index. And things blow up.
-	return [rows objectAtIndex:index];
-}
-
 -(NSString*)headerTitle
 {
-	return [TiUtils stringValue:[super valueForUndefinedKey:@"headerTitle"]];
+	return [super valueForUndefinedKey:@"headerTitle"];
 }
 
 -(NSString*)footerTitle
 {
-	return [TiUtils stringValue:[super valueForUndefinedKey:@"footerTitle"]];
+	return [super valueForUndefinedKey:@"footerTitle"];
 }
 
 #pragma mark Delegate 
@@ -147,14 +138,6 @@
 	}
 }
 
--(TiDimension)defaultAutoWidthBehavior:(id)unused
-{
-    return TiDimensionAutoSize;
-}
--(TiDimension)defaultAutoHeightBehavior:(id)unused
-{
-    return TiDimensionAutoSize;
-}
 @end
 
 #endif

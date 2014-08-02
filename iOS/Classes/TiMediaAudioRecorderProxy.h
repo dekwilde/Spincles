@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_MEDIA
 
@@ -16,6 +18,7 @@
 	TiFile *file;
 	NSNumber *compression;
 	NSNumber *format;
+    UInt32 sessionMode;
 }
 
 #pragma mark Public APIs
@@ -25,6 +28,7 @@
 @property(nonatomic,readonly) BOOL paused;
 @property(nonatomic,readwrite,retain) NSNumber *compression;
 @property(nonatomic,readwrite,retain) NSNumber *format;
+@property(nonatomic,readwrite,retain) NSNumber* audioSessionMode;
 
 -(void)pause:(id)args;
 -(void)resume:(id)args;

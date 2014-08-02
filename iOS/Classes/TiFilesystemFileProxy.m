@@ -3,23 +3,22 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
+#import "TiFilesystemFileProxy.h"
 
-#if defined(USE_TI_FILESYSTEM) || defined(USE_TI_DATABASE) || defined(USE_TI_MEDIA)
-
-#include <sys/xattr.h>
+#ifdef USE_TI_FILESYSTEM
 
 #import "TiUtils.h"
 #import "TiBlob.h"
-#import "TiFilesystemFileProxy.h"
-#import "TiFilesystemFileStreamProxy.h"
+
 
 #define FILE_TOSTR(x) \
 	([x isKindOfClass:[TiFilesystemFileProxy class]]) ? [(TiFilesystemFileProxy*)x nativePath] : [TiUtils stringValue:x]
 
-static const char* backupAttr = "com.apple.MobileBackup";
-
 @implementation TiFilesystemFileProxy
+
 
 -(id)initWithFile:(NSString*)path_
 {
@@ -34,18 +33,12 @@ static const char* backupAttr = "com.apple.MobileBackup";
 -(void)dealloc
 {
 	RELEASE_TO_NIL(fm);
-    RELEASE_TO_NIL(path);
 	[super dealloc];
-}
-
--(NSString*)apiName
-{
-    return @"Ti.Filesystem.File";
 }
 
 -(id)nativePath
 {
-	return [[NSURL fileURLWithPath:path] absoluteString];
+	return path;
 }
 
 -(id)exists:(id)args
@@ -53,72 +46,31 @@ static const char* backupAttr = "com.apple.MobileBackup";
 	return NUMBOOL([fm fileExistsAtPath:path]);
 }
 
-#define FILEATTR(propName,attrKey,throwError) \
--(id) propName	\
-{	\
-	NSError *error = nil; \
-	NSDictionary * resultDict = [fm attributesOfItemAtPath:path error:&error];\
-	if ((throwError) && error!=nil)	\
-	{	\
-		[self throwException:TiExceptionOSError subreason:[error localizedDescription] location:CODELOCATION];	\
-	}	\
-	return [resultDict objectForKey:attrKey];\
-}
+#define FILEATTR(attr,x,w) \
+NSError *error = nil; \
+NSDictionary * resultDict = [fm attributesOfItemAtPath:path error:&error];\
+if (error!=nil && x) return NUMBOOL(NO);\
+return w([resultDict objectForKey:attr]!=nil);\
 
-FILEATTR(readonly,NSFileImmutable,NO)
-FILEATTR(modificationTimestamp,NSFileModificationDate,YES);
-
--(id)createTimestamp
-{	
-	NSError *error = nil; 
-	NSDictionary * resultDict = [fm attributesOfItemAtPath:path error:&error];
-	if ((YES) && error!=nil)	
-	{	
-		[self throwException:TiExceptionOSError subreason:[error localizedDescription] location:CODELOCATION];	
-	}	
-	// Have to do this one up special because of 3.x bug where NSFileCreationDate is sometimes undefined
-	id result = [resultDict objectForKey:NSFileCreationDate];
-	if (result == nil) {
-		result = [resultDict objectForKey:NSFileModificationDate];
-	}
-	return result;
-}
-
-//TODO: Should this be a method or a property? Until then, do both.
--(id)createTimestamp:(id)args
+-(id)readonly
 {
-	return [self createTimestamp];
-}
-
--(id)modificationTimestamp:(id)args
-{
-	return [self modificationTimestamp];
+	FILEATTR(NSFileImmutable,NO,NUMBOOL);
 }
 
 -(id)symbolicLink
 {
-	NSError *error = nil;
-	NSDictionary * resultDict = [fm attributesOfItemAtPath:path error:&error];
-	if (error!=nil)
-	{
-		[self throwException:TiExceptionOSError subreason:[error localizedDescription] location:CODELOCATION];
-	}
-	NSString * fileType = [resultDict objectForKey:NSFileType];
-
-	return NUMBOOL([fileType isEqualToString:NSFileTypeSymbolicLink]);
+	FILEATTR(NSFileTypeSymbolicLink,NO,NUMBOOL);
 }
 
 -(id)writeable
 {
-	// Note: Despite previous incarnations claiming writeable is the proper API,
-	// writable is the correct spelling.
-	DEPRECATED_REPLACED(@"Filesystem.FileProxy.writeable",@"1.8.1",@"Ti.Filesystem.FileProxy.writable");
-	return [self writable];
+	return NUMBOOL(![self readonly]);
 }
 
 -(id)writable
 {
-	return NUMBOOL(![[self readonly] boolValue]);
+	NSLog(@"[WARN] The File.writable method is deprecated and should no longer be used. Use writeable instead.");
+	return [self writeable];
 }
 
 
@@ -133,6 +85,16 @@ FILENOOP(hidden);
 FILENOOP(setReadonly:(id)x);
 FILENOOP(setExecutable:(id)x);
 FILENOOP(setHidden:(id)x);
+
+-(id)createTimestamp:(id)args
+{
+	FILEATTR(NSFileCreationDate,YES,NUMLONG);
+}
+
+-(id)modificationTimestamp:(id)args
+{
+	FILEATTR(NSFileModificationDate,YES,NUMLONG);
+}
 
 -(id)getDirectoryListing:(id)args
 {
@@ -150,7 +112,7 @@ FILENOOP(setHidden:(id)x);
 	NSError *error = nil; 
 	NSDictionary * resultDict = [fm attributesOfFileSystemForPath:path error:&error];
 	if (error!=nil) return NUMBOOL(NO);
-	return [resultDict objectForKey:NSFileSystemFreeSize];
+	return NUMBOOL([resultDict objectForKey:NSFileSystemFreeSize]!=nil);
 }
 
 -(id)createDirectory:(id)args
@@ -164,28 +126,6 @@ FILENOOP(setHidden:(id)x);
 	return NUMBOOL(result);
 }
 
--(id)isFile:(id)unused
-{
-	BOOL isDirectory;
-	return NUMBOOL([fm fileExistsAtPath:path isDirectory:&isDirectory] && !isDirectory);		
-}
-
--(id)isDirectory:(id)unused
-{
-	BOOL isDirectory;
-	return NUMBOOL([fm fileExistsAtPath:path isDirectory:&isDirectory] && isDirectory);
-}
-
--(TiFilesystemFileStreamProxy *) open:(id) args {
-	NSNumber *mode;
-	ENSURE_ARG_AT_INDEX(mode, args, 0, NSNumber);
-	ENSURE_VALUE_RANGE([mode intValue], TI_READ, TI_APPEND);
-	
-	NSArray *payload = [NSArray arrayWithObjects:[self path], mode, nil];
-	
-	return [[[TiFilesystemFileStreamProxy alloc] _initWithPageContext:[self executionContext] args:payload] autorelease];
-}
-
 -(id)createFile:(id)args
 {
 	BOOL result = NO;
@@ -197,7 +137,7 @@ FILENOOP(setHidden:(id)x);
 			[fm createDirectoryAtPath:[path stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil];
 			//We don't care if this fails.
 		}
-		result = [[NSData data] writeToFile:path options:NSDataWritingFileProtectionComplete error:nil];
+		result = [[NSData data] writeToFile:path options:0 error:nil];
 	}			
 	return NUMBOOL(result);
 }
@@ -242,48 +182,20 @@ FILENOOP(setHidden:(id)x);
 	return NUMBOOL(result);
 }
 
--(NSString *)_grabFirstArgumentAsFileName_:(id)args {
-    NSString * arg = [args objectAtIndex:0];
-    NSString * file = FILE_TOSTR(arg);
-	NSURL * fileUrl = [NSURL URLWithString:file];
-	if([fileUrl isFileURL]){
-		file = [fileUrl path];
-	}
-    NSString * dest = [file stringByStandardizingPath];
-
-    return dest;
-}
-
 -(id)move:(id)args
 {
 	ENSURE_TYPE(args,NSArray);
 	NSError * error=nil;
-	NSString * dest = [self _grabFirstArgumentAsFileName_:args];
-    
-    if (![dest isAbsolutePath]) {
-        NSString * subpath = [path stringByDeletingLastPathComponent];
-        dest = [subpath stringByAppendingPathComponent:dest];
-    }
-    
+	NSString * arg = [args objectAtIndex:0];
+	NSString * file = FILE_TOSTR(arg);
+	NSString * dest = [file stringByStandardizingPath];
 	BOOL result = [fm moveItemAtPath:path toPath:dest error:&error];
 	return NUMBOOL(result);	
 }
 
 -(id)rename:(id)args
 {
-    ENSURE_TYPE(args,NSArray);
-	NSString * dest = [self _grabFirstArgumentAsFileName_:args];
-    NSString * ourSubpath = [path stringByDeletingLastPathComponent];
-    
-    if ([dest isAbsolutePath]) {
-        NSString * destSubpath = [dest stringByDeletingLastPathComponent];
-
-        if (![ourSubpath isEqualToString:destSubpath]) {
-            return NUMBOOL(NO); // rename is not move
-        }
-    }
-    
-    return [self move:args];
+	return [self move:args];
 }
 
 -(id)read:(id)args
@@ -297,82 +209,28 @@ FILENOOP(setHidden:(id)x);
 {
 	ENSURE_TYPE(args,NSArray);
 	id arg = [args objectAtIndex:0];
-
-	if([arg isKindOfClass:[TiFile class]]) {
-		//allow the ability to append files to another file
-		//e.g. file.append(Ti.Filesystem.getFile('somewhere'));
-		
-		TiFile *file_arg = (TiFile *) arg;
-		NSError *err = nil;
-		NSString *contents = [NSString stringWithContentsOfFile:[file_arg path] encoding:NSUTF8StringEncoding error:&err];
-		if(contents != nil && err == nil) {
-			arg = contents;
-		} else {
-			NSLog(@"[ERROR] Can't open file (%@) for reading!\n%@", [file_arg path], err);
-			return NUMBOOL(NO);
-		}
-	}		
-
-	if ([arg isKindOfClass:[TiBlob class]] ||
-		[arg isKindOfClass:[NSString class]]) {
-		
-		NSData *data = nil;
-		if([arg isKindOfClass:[NSString class]]) {
-			data = [arg dataUsingEncoding:NSUTF8StringEncoding];
-		} else {
-			data = [(TiBlob*) arg data];
-		}
-		
-		if(data == nil) {
-			return NUMBOOL(NO);
-		}
-				
-		if(![fm fileExistsAtPath:path]) {
-			//create the file if it doesn't exist already
-			NSError *writeError = nil;
-			[data writeToFile:path options:NSDataWritingFileProtectionComplete | NSDataWritingAtomic error:&writeError];
-			if(writeError != nil) {
-				NSLog(@"[ERROR] Could not write data to file at path \"%@\"", path);
-			}
-			return NUMBOOL(writeError == nil);
-		}	
-		
-		NSFileHandle *handle = [NSFileHandle fileHandleForUpdatingAtPath:path];
-
-		unsigned long long offset = [handle seekToEndOfFile];
-		[handle writeData:data];
-		
-		BOOL success = ([handle offsetInFile] - offset) == [data length];		
-		[handle closeFile];
-		
-		return NUMBOOL(success);
+	if ([arg isKindOfClass:[TiBlob class]]) {
+            TiBlob *blob = (TiBlob*)arg;
+            NSFileHandle *file = [[NSFileHandle fileHandleForUpdatingAtPath:path] retain];
+            if (file) {
+                [file seekToEndOfFile];
+                [file writeData:[blob data]];
+                [file closeFile];
+                [file release];
+                return NUMBOOL(YES);
+            } else {
+                NSLog(@"[ERROR] Can't open file for appending");
+            }
 	} else {
-		NSLog(@"[ERROR] Can only append blobs and strings");
-	}
-	return NUMBOOL(NO);
-}
+            NSLog(@"[ERROR] Can only append blobs");
+        }
+        return NUMBOOL(NO);
+}            
 
 -(id)write:(id)args
 {
-	ENSURE_TYPE(args,NSArray);	
+	ENSURE_TYPE(args,NSArray);
 	id arg = [args objectAtIndex:0];
-
-	//Short-circuit against non-supported types
-	if(!([arg isKindOfClass:[TiFile class]] || [arg isKindOfClass:[TiBlob class]] 
-		 || [arg isKindOfClass:[NSString class]])) {
-		return NUMBOOL(NO);
-	}
-	
-	if([args count] > 1) {
-		ENSURE_TYPE([args objectAtIndex:1], NSNumber);
-		
-		//We have a second argument, is it truthy?
-		//If yes, we'll hand the args to -append:
-		NSNumber *append = [args objectAtIndex:1];
-		if([append boolValue] == YES) {
-			return [self append:[args subarrayWithRange:NSMakeRange(0, 1)]];
-		}
-	}
 	if ([arg isKindOfClass:[TiBlob class]])
 	{
 		TiBlob *blob = (TiBlob*)arg;
@@ -390,14 +248,11 @@ FILENOOP(setHidden:(id)x);
 		}
 		return NUMBOOL(error==nil);
 	}
-    NSString* dataString = [TiUtils stringValue:arg];
-    NSData* data = [dataString dataUsingEncoding:NSUTF8StringEncoding];
-	NSError *err = nil;
-    [data writeToFile:path options:NSDataWritingFileProtectionComplete | NSDataWritingAtomic error:&err];
-	if(err != nil) {
-		NSLog(@"[ERROR] Could not write data to file at path \"%@\" - details: %@", path, err);
+	else
+	{
+		NSString *data = [TiUtils stringValue:arg];
+		return NUMBOOL([data writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:nil]);
 	}
-	return NUMBOOL(err == nil);
 }
 
 -(id)extension:(id)args
@@ -455,7 +310,7 @@ FILENOOP(setHidden:(id)x);
 	} 
 	else 
 	{
-		[[NSData data] writeToFile:resultPath options:NSDataWritingFileProtectionComplete error:&error];
+		[[NSData data] writeToFile:resultPath options:0 error:&error];
 	}
 	
 	if (error != nil)
@@ -465,38 +320,6 @@ FILENOOP(setHidden:(id)x);
 	}
 	
 	return [[[TiFilesystemFileProxy alloc] initWithFile:resultPath] autorelease];
-}
-
--(NSNumber*)remoteBackup
-{
-    u_int8_t value;
-    const char* fullPath = [[self path] fileSystemRepresentation];
-    
-    int result = getxattr(fullPath, backupAttr, &value, sizeof(value), 0, 0);
-    if (result == -1) {
-        // Doesn't matter what errno is set to; this means that we're backing up.
-        return [NSNumber numberWithBool:YES];
-    }
-
-    // A value of 0 means backup, so:
-    return [NSNumber numberWithBool:!value];
-}
-
--(void)setRemoteBackup:(NSNumber *)remoteBackup
-{
-    // Value of 1 means nobackup
-    u_int8_t value = ![TiUtils boolValue:remoteBackup def:YES];
-    const char* fullPath = [[self path] fileSystemRepresentation];
-    
-    int result = setxattr(fullPath, backupAttr, &value, sizeof(value), 0, 0);
-    if (result != 0) {
-        // Throw an exception with the errno
-        char* errmsg = strerror(errno);
-        [self throwException:@"Error setting remote backup flag:" 
-                   subreason:[NSString stringWithUTF8String:errmsg] 
-                    location:CODELOCATION];
-        return;
-    }
 }
 
 @end

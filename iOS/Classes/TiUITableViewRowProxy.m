@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UITABLEVIEW
 
@@ -14,25 +16,162 @@
 #import "TiUtils.h"
 #import "Webcolor.h"
 #import "ImageLoader.h"
-#import "TiSelectedCellbackgroundView.h"
-#import "TiLayoutQueue.h"
-#import <libkern/OSAtomic.h>
 
 NSString * const defaultRowTableClass = @"_default_";
 #define CHILD_ACCESSORY_WIDTH 20.0
 #define CHECK_ACCESSORY_WIDTH 20.0
 #define DETAIL_ACCESSORY_WIDTH 33.0
-#define IOS7_ACCESSORY_EXTRA_OFFSET 15.0
-// TODO: Clean this up a bit
-#define NEEDS_UPDATE_ROW 1
+
+static void addRoundedRectToPath(CGContextRef context, CGRect rect,
+								 float ovalWidth,float ovalHeight)
+
+{
+    float fw, fh;
+	
+    if (ovalWidth == 0 || ovalHeight == 0) {// 1
+        CGContextAddRect(context, rect);
+        return;
+    }
+	
+    CGContextSaveGState(context);// 2
+	
+    CGContextTranslateCTM (context, CGRectGetMinX(rect),// 3
+						   CGRectGetMinY(rect));
+    CGContextScaleCTM (context, ovalWidth, ovalHeight);// 4
+    fw = CGRectGetWidth (rect) / ovalWidth;// 5
+    fh = CGRectGetHeight (rect) / ovalHeight;// 6
+	
+    CGContextMoveToPoint(context, fw, fh/2); // 7
+    CGContextAddArcToPoint(context, fw, fh, fw/2, fh, 1);// 8
+    CGContextAddArcToPoint(context, 0, fh, 0, fh/2, 1);// 9
+    CGContextAddArcToPoint(context, 0, 0, fw/2, 0, 1);// 10
+    CGContextAddArcToPoint(context, fw, 0, fw, fh/2, 1); // 11
+    CGContextClosePath(context);// 12
+	
+    CGContextRestoreGState(context);// 13
+}
+
+@interface TiSelectedCellBackgroundView : UIView 
+{
+    TiCellBackgroundViewPosition position;
+	UIColor *fillColor;
+}
+@property(nonatomic) TiCellBackgroundViewPosition position;
+@property(nonatomic,retain) UIColor *fillColor;
+@end
+
+#define ROUND_SIZE 10
+
+@implementation TiSelectedCellBackgroundView
+@synthesize position,fillColor;
+
+-(void)dealloc
+{
+	RELEASE_TO_NIL(fillColor);
+	[super dealloc];
+}
+
+-(BOOL)isOpaque 
+{
+    return NO;
+}
+
+-(void)drawRect:(CGRect)rect 
+{
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+	
+	CGContextSetFillColorWithColor(ctx, [fillColor CGColor]);
+    CGContextSetStrokeColorWithColor(ctx, [fillColor CGColor]);
+    CGContextSetLineWidth(ctx, 2);
+	
+    if (position == TiCellBackgroundViewPositionTop) 
+	{
+        CGFloat minx = CGRectGetMinX(rect), midx = CGRectGetMidX(rect), maxx = CGRectGetMaxX(rect) ;
+        CGFloat miny = CGRectGetMinY(rect), maxy = CGRectGetMaxY(rect);
+        minx = minx + 1;
+        miny = miny + 1;
+        maxx = maxx - 1;
+		
+        CGContextMoveToPoint(ctx, minx, maxy);
+        CGContextAddArcToPoint(ctx, minx, miny, midx, miny, ROUND_SIZE);
+        CGContextAddArcToPoint(ctx, maxx, miny, maxx, maxy, ROUND_SIZE);
+        CGContextAddLineToPoint(ctx, maxx, maxy);
+		
+        // Close the path
+        CGContextClosePath(ctx);
+		CGContextSaveGState(ctx);
+		CGContextDrawPath(ctx, kCGPathFill);
+        return;
+    } 
+	else if (position == TiCellBackgroundViewPositionBottom) 
+	{
+        CGFloat minx = CGRectGetMinX(rect) , midx = CGRectGetMidX(rect), maxx = CGRectGetMaxX(rect) ;
+        CGFloat miny = CGRectGetMinY(rect) , maxy = CGRectGetMaxY(rect) ;
+        minx = minx + 1;
+        miny = miny + 1;
+        maxx = maxx - 1;
+        maxy = maxy - 1;
+		
+        CGContextMoveToPoint(ctx, minx, miny);
+        CGContextAddArcToPoint(ctx, minx, maxy, midx, maxy, ROUND_SIZE);
+        CGContextAddArcToPoint(ctx, maxx, maxy, maxx, miny, ROUND_SIZE);
+        CGContextAddLineToPoint(ctx, maxx, miny);
+        CGContextClosePath(ctx);
+		CGContextSaveGState(ctx);
+		CGContextDrawPath(ctx, kCGPathFill);
+        return;
+    } 
+	else if (position == TiCellBackgroundViewPositionMiddle) 
+	{
+        CGFloat minx = CGRectGetMinX(rect), maxx = CGRectGetMaxX(rect);
+        CGFloat miny = CGRectGetMinY(rect), maxy = CGRectGetMaxY(rect);
+        minx = minx + 1;
+        miny = miny + 1;
+        maxx = maxx - 1;
+        CGContextMoveToPoint(ctx, minx, miny);
+        CGContextAddLineToPoint(ctx, maxx, miny);
+        CGContextAddLineToPoint(ctx, maxx, maxy);
+        CGContextAddLineToPoint(ctx, minx, maxy);
+        CGContextClosePath(ctx);
+		CGContextSaveGState(ctx);
+		CGContextDrawPath(ctx, kCGPathFill);
+        return;
+    }
+	else if (position == TiCellBackgroundViewPositionSingleLine)
+	{
+		CGContextBeginPath(ctx);
+		addRoundedRectToPath(ctx, rect, ROUND_SIZE*1.5, ROUND_SIZE*1.5);
+		CGContextFillPath(ctx);  
+		
+		CGContextSetLineWidth(ctx, 2);  
+		CGContextBeginPath(ctx);
+		addRoundedRectToPath(ctx, rect, ROUND_SIZE*1.5, ROUND_SIZE*1.5);  
+		CGContextStrokePath(ctx);   
+		
+		return;
+	}
+	[super drawRect:rect];
+}
+
+-(void)setPosition:(TiCellBackgroundViewPosition)inPosition
+{
+	if(position != inPosition)
+	{
+		position = inPosition;
+		[self setNeedsDisplay];
+	}
+}
+
+@end
+
+
+// used as a marker interface
 
 @interface TiUITableViewRowContainer : UIView
 {
 	TiProxy * hitTarget;
-	CGPoint hitPoint;
 }
 @property(nonatomic,retain,readwrite) TiProxy * hitTarget;
-@property(nonatomic,assign,readwrite) CGPoint hitPoint;
 -(void)clearHitTarget;
 
 @end
@@ -61,25 +200,12 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 }
 
 @implementation TiUITableViewRowContainer
-@synthesize hitTarget, hitPoint;
-
--(id)init
-{
-	if (self = [super init]) {
-		hitPoint = CGPointZero;
-	}
-	return self;
-}
+@synthesize hitTarget;
 
 -(void)clearHitTarget
 {
 	[hitTarget autorelease];
 	hitTarget = nil;
-}
-
--(NSString*)apiName
-{
-    return @"Ti.UI.TableViewRow";
 }
 
 -(TiProxy *)hitTarget
@@ -92,8 +218,7 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 - (UIView *)hitTest:(CGPoint) point withEvent:(UIEvent *)event 
 {
     UIView * result = [super hitTest:point withEvent:event];
-	[self setHitPoint:point];
-	
+
 	if (result==nil)
 	{
 		[self setHitTarget:DeepScanForProxyOfViewContainingPoint(self,point)];
@@ -124,16 +249,13 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 @implementation TiUITableViewRowProxy
 
 @synthesize tableClass, table, section, row, callbackCell;
-@synthesize reusable = reusable_;
 
 -(void)_destroy
 {
+	RELEASE_TO_NIL(table);
 	RELEASE_TO_NIL(tableClass);
-	TiThreadRemoveFromSuperviewOnMainThread(rowContainerView, NO);
-	TiThreadReleaseOnMainThread(rowContainerView, NO);
-	rowContainerView = nil;
-	[callbackCell setProxy:nil];
-	callbackCell = nil;
+	RELEASE_TO_NIL(rowContainerView);
+	RELEASE_TO_NIL(callbackCell);
 	[super _destroy];
 }
 
@@ -160,120 +282,61 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 	return tableClass;
 }
 
--(id)height
-{
-    return [self valueForUndefinedKey:@"height"];
-}
-
 -(void)setHeight:(id)value
 {
 	height = [TiUtils dimensionValue:value];
 	[self replaceValue:value forKey:@"height" notification:YES];
 }
 
--(id) backgroundLeftCap
+-(void)setLayout:(id)value
 {
-    return [self valueForUndefinedKey:@"backgroundLeftCap"];
-}
-
--(void)setBackgroundLeftCap:(id)value
-{
-    leftCap = TiDimensionFromObject(value);
-    [self replaceValue:value forKey:@"backgroundLeftCap" notification:NO];
-    if (callbackCell != nil) {
-        [self configureBackground:callbackCell];
-    }
-}
-
--(id) backgroundTopCap
-{
-    return [self valueForUndefinedKey:@"backgroundTopCap"];
-}
-
--(void)setBackgroundTopCap:(id)value
-{
-    topCap = TiDimensionFromObject(value);
-    [self replaceValue:value forKey:@"backgroundTopCap" notification:NO];
-    if (callbackCell != nil) {
-        [self configureBackground:callbackCell];
-    }
-}
-
-// Special handling to try and avoid Apple's detection of private API 'layout'
--(void)setValue:(id)value forUndefinedKey:(NSString *)key
-{
-    if ([key isEqualToString:[@"lay" stringByAppendingString:@"out"]]) {
-        //CAN NOT USE THE MACRO 
-        if (ENFORCE_BATCH_UPDATE) {
-            if (updateStarted) {
-                [self setTempProperty:value forKey:key]; \
-                return;
-            }
-            else if(!allowLayoutUpdate){
-                return;
-            }
-        }
-        layoutProperties.layoutStyle = TiLayoutRuleFromObject(value);
-        [self replaceValue:value forKey:[@"lay" stringByAppendingString:@"out"] notification:YES];
-        return;
-    }
-    [super setValue:value forUndefinedKey:key];
+	layoutProperties.layout = TiLayoutRuleFromObject(value);
+	[self replaceValue:value forKey:@"layout" notification:YES];
 }
 
 -(CGFloat)sizeWidthForDecorations:(CGFloat)oldWidth forceResizing:(BOOL)force
 {
-    CGFloat width = oldWidth;
-    BOOL updateForiOS7 = NO;
-    if (force || !configuredChildren) {
-        if ([TiUtils boolValue:[self valueForKey:@"hasChild"] def:NO]) {
-            width -= CHILD_ACCESSORY_WIDTH;
-            updateForiOS7 = YES;
-        }
-        else if ([TiUtils boolValue:[self valueForKey:@"hasDetail"] def:NO]) {
-            width -= DETAIL_ACCESSORY_WIDTH;
-            updateForiOS7 = YES;
-        }
-        else if ([TiUtils boolValue:[self valueForKey:@"hasCheck"] def:NO]) {
-            width -= CHECK_ACCESSORY_WIDTH;
-            updateForiOS7 = YES;
-        }
+	CGFloat width = oldWidth;
+	if (force || !configuredChildren) {
+		if ([TiUtils boolValue:[self valueForKey:@"hasChild"] def:NO]) {
+			width -= CHILD_ACCESSORY_WIDTH;
+		}
+		else if ([TiUtils boolValue:[self valueForKey:@"hasDetail"] def:NO]) {
+			width -= DETAIL_ACCESSORY_WIDTH;
+		}
+		else if ([TiUtils boolValue:[self valueForKey:@"hasCheck"] def:NO]) {
+			width -= CHECK_ACCESSORY_WIDTH;
+		}
 		
-        id rightImage = [self valueForKey:@"rightImage"];
-        if (rightImage != nil) {
-            NSURL *url = [TiUtils toURL:rightImage proxy:self];
-            UIImage *image = [[ImageLoader sharedLoader] loadImmediateImage:url];
-            width -= [image size].width;
-        }
+		id rightImage = [self valueForKey:@"rightImage"];
+		if (rightImage != nil) {
+			NSURL *url = [TiUtils toURL:rightImage proxy:self];
+			UIImage *image = [[ImageLoader sharedLoader] loadImmediateImage:url];
+			width -= [image size].width;
+		}
 		
-        id leftImage = [self valueForKey:@"leftImage"];
-        if (leftImage != nil) {
-            NSURL *url = [TiUtils toURL:leftImage proxy:self];
-            UIImage *image = [[ImageLoader sharedLoader] loadImmediateImage:url];
-            width -= [image size].width;
-        }
-    }
-    
-    if (updateForiOS7 && [TiUtils isIOS7OrGreater]) {
-        width -= IOS7_ACCESSORY_EXTRA_OFFSET;
-    }
+		id leftImage = [self valueForKey:@"leftImage"];
+		if (leftImage != nil) {
+			NSURL *url = [TiUtils toURL:leftImage proxy:self];
+			UIImage *image = [[ImageLoader sharedLoader] loadImmediateImage:url];
+			width -= [image size].width;			
+		}
+	}
 	
-    return width;
+	return width;
 }
 
 -(CGFloat)rowHeight:(CGFloat)width
 {
-	if (TiDimensionIsDip(height))
+	if (TiDimensionIsPixels(height))
 	{
 		return height.value;
 	}
 	CGFloat result = 0;
-	if (TiDimensionIsAuto(height) || TiDimensionIsAutoSize(height) || TiDimensionIsUndefined(height))
+	if (TiDimensionIsAuto(height))
 	{
-		result = [self minimumParentHeightForSize:CGSizeMake(width, [self table].bounds.size.height)];
+		result = [self autoHeightForWidth:width];
 	}
-    if (TiDimensionIsPercent(height) && [self table] != nil) {
-        result = TiDimensionCalculateValue(height, [self table].bounds.size.height);
-    }
 	return (result == 0) ? [table tableRowHeight:0] : result;
 }
 
@@ -311,19 +374,7 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 		[textLabel setTextColor:(textColor==nil)?[UIColor blackColor]:textColor];
 		
 		UIColor * selectedTextColor = [[TiUtils colorValue:[self valueForKey:@"selectedColor"]] _color];
-		[textLabel setHighlightedTextColor:(selectedTextColor==nil)?[UIColor whiteColor]:selectedTextColor];
-		
-		id fontValue = [self valueForKey:@"font"];
-		UIFont * font;
-		if (fontValue!=nil)
-		{
-			font = [[TiUtils fontValue:fontValue] font];
-		}
-		else
-		{
-			font = [UIFont systemFontOfSize:0];
-		}
-		[textLabel setFont:font];
+		[textLabel setHighlightedTextColor:(selectedTextColor==nil)?[UIColor whiteColor]:selectedTextColor];	
 	}
 	else
 	{
@@ -365,27 +416,21 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 		UIImage *image = [[ImageLoader sharedLoader] loadImmediateImage:url];
 		cell.accessoryView = [[[UIImageView alloc] initWithImage:image] autorelease];
 	}
-    else {
-        cell.accessoryView = nil;
-    }
 }
 
 -(void)configureBackground:(UITableViewCell*)cell
 {
-	[(TiUITableViewCell *)cell setBackgroundGradient_:[self valueForKey:@"backgroundGradient"]];
-	[(TiUITableViewCell *)cell setSelectedBackgroundGradient_:[self valueForKey:@"selectedBackgroundGradient"]];
-
 	id bgImage = [self valueForKey:@"backgroundImage"];
 	id selBgColor = [self valueForKey:@"selectedBackgroundColor"];
 
 	if (bgImage!=nil)
 	{
 		NSURL *url = [TiUtils toURL:bgImage proxy:(TiProxy*)table.proxy];
-		UIImage *image = [[ImageLoader sharedLoader] loadImmediateStretchableImage:url withLeftCap:leftCap topCap:topCap];
+		UIImage *image = [[ImageLoader sharedLoader] loadImmediateImage:url];
 		if ([cell.backgroundView isKindOfClass:[UIImageView class]]==NO)
 		{
-			UIImageView *view_ = [[[UIImageView alloc] initWithFrame:CGRectZero] autorelease];
-			cell.backgroundView = view_;
+			UIImageView *view = [[[UIImageView alloc] initWithFrame:CGRectZero] autorelease];
+			cell.backgroundView = view;
 		}
 		if (image!=((UIImageView*)cell.backgroundView).image)
 		{
@@ -397,52 +442,77 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 		cell.backgroundView = nil;
 	}
 	
-    id selBgImage = [self valueForKey:@"selectedBackgroundImage"];
-    if (selBgImage!=nil) {
-        NSURL *url = [TiUtils toURL:selBgImage proxy:(TiProxy*)table.proxy];
-        UIImage *image = [[ImageLoader sharedLoader] loadImmediateStretchableImage:url withLeftCap:leftCap topCap:topCap];
-        if ([cell.selectedBackgroundView isKindOfClass:[UIImageView class]]==NO) {
-            UIImageView *view_ = [[[UIImageView alloc] initWithFrame:CGRectZero] autorelease];
-            cell.selectedBackgroundView = view_;
-        }
-        if (image!=((UIImageView*)cell.selectedBackgroundView).image) {
-            ((UIImageView*)cell.selectedBackgroundView).image = image;
-        }
-        
-        UIColor* theColor = [Webcolor webColorNamed:selBgColor];
-        cell.selectedBackgroundView.backgroundColor = ((theColor == nil)?[UIColor clearColor]:theColor);
-    } else {
-        if (![cell.selectedBackgroundView isKindOfClass:[TiSelectedCellBackgroundView class]]) {
-            cell.selectedBackgroundView = [[[TiSelectedCellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
-        }
-        TiSelectedCellBackgroundView *selectedBGView = (TiSelectedCellBackgroundView*)cell.selectedBackgroundView;
-        selectedBGView.grouped = [[table tableView] style]==UITableViewStyleGrouped;
-        UIColor* theColor = [Webcolor webColorNamed:selBgColor];
-        if (theColor == nil) {
-            switch (cell.selectionStyle) {
-                case UITableViewCellSelectionStyleGray:theColor = [Webcolor webColorNamed:@"#bbb"];break;
-                case UITableViewCellSelectionStyleNone:theColor = [UIColor clearColor];break;
-                case UITableViewCellSelectionStyleBlue:theColor = [Webcolor webColorNamed:@"#0272ed"];break;
-                default:theColor = [TiUtils isIOS7OrGreater] ? [Webcolor webColorNamed:@"#e0e0e0"] : [Webcolor webColorNamed:@"#0272ed"];break;
-            }
-        }
-        selectedBGView.fillColor = theColor;
-        int count = [section rowCount];
-        if (count == 1) {
-            selectedBGView.position = TiCellBackgroundViewPositionSingleLine;
-        }
-        else {
-            if (row == 0) {
-                selectedBGView.position = TiCellBackgroundViewPositionTop;
-            }
-            else if (row == count-1) {
-                selectedBGView.position = TiCellBackgroundViewPositionBottom;
-            }
-            else {
-                selectedBGView.position = TiCellBackgroundViewPositionMiddle;
-            }
-        }
-    }
+	id selBgImage = [self valueForKey:@"selectedBackgroundImage"];
+	if (selBgImage!=nil)
+	{
+		NSURL *url = [TiUtils toURL:selBgImage proxy:(TiProxy*)table.proxy];
+		UIImage *image = [[ImageLoader sharedLoader] loadImmediateImage:url];
+		if ([cell.selectedBackgroundView isKindOfClass:[UIImageView class]]==NO)
+		{
+			UIImageView *view = [[[UIImageView alloc] initWithFrame:CGRectZero] autorelease];
+			cell.selectedBackgroundView = view;
+		}
+		if (image!=((UIImageView*)cell.selectedBackgroundView).image)
+		{
+			((UIImageView*)cell.selectedBackgroundView).image = image;
+		}
+	}
+	else if (selBgColor==nil && cell.selectedBackgroundView!=nil && [cell.selectedBackgroundView isKindOfClass:[UIImageView class]] && ((UIImageView*)cell.selectedBackgroundView).image!=nil)
+	{
+		cell.selectedBackgroundView = nil;
+	}
+	
+	if (selBgImage==nil && (selBgColor!=nil || [[table tableView]style]==UITableViewStyleGrouped))
+	{
+		if (selBgColor==nil)
+		{
+			// if we have a grouped view with no selected background color, we 
+			// need to setup a cell and force the color otherwise you'll get
+			// square corners on a rounded row
+			if ([cell selectionStyle]==UITableViewCellSelectionStyleBlue)
+			{
+				selBgColor = @"#0272ed";
+			}
+			else if ([cell selectionStyle]==UITableViewCellSelectionStyleGray)
+			{
+				selBgColor = @"#bbb";
+			}
+			else 
+			{
+				selBgColor = @"#fff";
+			}
+		}
+		if (cell.selectedBackgroundView == nil || [cell.selectedBackgroundView isKindOfClass:[TiSelectedCellBackgroundView class]]==NO)
+		{								
+			cell.selectedBackgroundView = [[[TiSelectedCellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+		}
+		TiSelectedCellBackgroundView *sv = (TiSelectedCellBackgroundView*)cell.selectedBackgroundView;
+		int count = [section rowCount];
+		if (count == 1)
+		{
+			sv.position = TiCellBackgroundViewPositionSingleLine;
+		}
+		else 
+		{
+			if (row == 0)
+			{
+				sv.position = TiCellBackgroundViewPositionTop;
+			}
+			else if (row == count-1)
+			{
+				sv.position = TiCellBackgroundViewPositionBottom;
+			}
+			else 
+			{
+				sv.position = TiCellBackgroundViewPositionMiddle;
+			}
+		}
+		sv.fillColor = [Webcolor webColorNamed:selBgColor];	
+	}
+	else if (cell.selectedBackgroundView!=nil)
+	{
+		cell.selectedBackgroundView.backgroundColor = nil;
+	}
 }
 
 -(void)configureLeftSide:(UITableViewCell*)cell
@@ -496,7 +566,7 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 
 -(BOOL)viewAttached
 {
-	return (callbackCell != nil) && (callbackCell.proxy == self);
+	return rowContainerView != nil;
 }
 
 -(BOOL)canHaveControllerParent
@@ -507,16 +577,10 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 -(void)redelegateViews:(TiViewProxy *)proxy toView:(UIView *)touchDelegate;
 {
 	[[proxy view] setTouchDelegate:touchDelegate];
-    NSArray* subproxies = [proxy children];
-	for (TiViewProxy * childProxy in subproxies)
+	for (TiViewProxy * childProxy in [proxy children])
 	{
 		[self redelegateViews:childProxy toView:touchDelegate];
 	}
-}
-
--(TiProxy*)parentForBubbling
-{
-	return section;
 }
 
 -(UIView*)view
@@ -524,164 +588,174 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 	return nil;
 }
 
-//Private method : For internal use only
--(UIView*) currentRowContainerView
-{
-    return rowContainerView;
-}
-//Private method :For internal use only. Called from layoutSubviews of the cell.
--(void)triggerLayout
-{
-    if (modifyingRow) {
-        return;
-    }
-    modifyingRow = YES;
-    [TiLayoutQueue layoutProxy:self];
-    modifyingRow = NO;
-    
-}
-
-- (void)prepareTableRowForReuse
-{
-	if (!self.reusable) {
-		[rowContainerView removeFromSuperview];
-		return;
-	}
-	if (![self.tableClass isEqualToString:defaultRowTableClass]) {
-		return;
-	}
-	RELEASE_TO_NIL(rowContainerView);
-
-    // ... But that's not enough. We need to detatch the views
-    // for all children of the row, to clean up memory.
-    for (TiViewProxy* child in [self children]) {
-        [child detachView];
-    }
-}
-
-- (void)didReceiveMemoryWarning:(NSNotification *)notification
-{
-	if (self.viewAttached) {
-		return;
-	}
-	
-	RELEASE_TO_NIL(rowContainerView);
-    for (TiViewProxy* child in [self children]) {
-        [child detachView];
-    }	
-}
-
 -(void)configureChildren:(UITableViewCell*)cell
 {
 	// this method is called when the cell is initially created
 	// to be initialized. on subsequent repaints of a re-used
 	// table cell, the updateChildren below will be called instead
-	configuredChildren = NO;
-	if ([[self children] count] > 0)
+	configuredChildren = YES;
+	if (self.children!=nil)
 	{
 		UIView *contentView = cell.contentView;
-		CGRect rect = [contentView bounds];
-        CGSize cellSize = [(TiUITableViewCell*)cell computeCellSize];
-		CGFloat rowWidth = cellSize.width;
-		CGFloat rowHeight = cellSize.height;
-
-		if (rowHeight < rect.size.height || rowWidth < rect.size.width)
+		CGRect rect = [contentView frame];
+		CGFloat rowWidth = [self sizeWidthForDecorations:rect.size.width forceResizing:NO];
+		CGFloat rowHeight = [self rowHeight:rowWidth];
+		rowHeight = [table tableRowHeight:rowHeight];
+		if (rect.size.height < rowHeight || rowWidth < rect.size.width)
 		{
 			rect.size.height = rowHeight;
 			rect.size.width = rowWidth;
 			contentView.frame = rect;
 		}
-        else if (CGSizeEqualToSize(rect.size, CGSizeZero)) {
-            rect.size = CGSizeMake(rowWidth, rowHeight);
-            [contentView setFrame:rect];
-        }
 		rect.origin = CGPointZero;
-		if (self.reusable || (rowContainerView == nil)) {
-			if (self.reusable) {
-				RELEASE_TO_NIL(rowContainerView);
-				for (UIView* subview in [[cell contentView] subviews]) {
-					if ([subview isKindOfClass:[TiUITableViewRowContainer class]]) {
-						rowContainerView = [subview retain];
-						break;
-					}
-				}
-			}
-			NSArray *rowChildren = [self children];
-			if (self.reusable && (rowContainerView != nil)) {
-				__block BOOL canReproxy = YES;
-				NSArray *existingSubviews = [rowContainerView subviews];
-				if ([rowChildren count] != [existingSubviews count]) {
-					canReproxy = NO;
-				} else {
-					[rowChildren enumerateObjectsUsingBlock:^(TiViewProxy *proxy, NSUInteger idx, BOOL *stop) {
-						TiUIView *uiview = [existingSubviews objectAtIndex:idx];
-						if (![uiview validateTransferToProxy:proxy deep:YES]) {
-							canReproxy = NO;
-							*stop = YES;
-						}
-					}];
-				}
-				if (!canReproxy && ([existingSubviews count] > 0)) {
-					DebugLog(@"[ERROR] TableViewRow structures for className %@ does not match", self.tableClass);
-					[existingSubviews enumerateObjectsUsingBlock:^(TiUIView *child, NSUInteger idx, BOOL *stop) {
-						[(TiViewProxy *)child.proxy detachView];
-					}];
-				}
-			}
-			if (rowContainerView == nil) {
-				rowContainerView = [[TiUITableViewRowContainer alloc] initWithFrame:rect];
-				[contentView addSubview:rowContainerView];
-			} else {
-				[rowContainerView setFrame:rect];
-			}
-			[rowContainerView setBackgroundColor:[UIColor clearColor]];
-			[rowContainerView setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
-			
-			NSArray *existingSubviews = [rowContainerView subviews];
-			[rowChildren enumerateObjectsUsingBlock:^(TiViewProxy *proxy, NSUInteger idx, BOOL *stop) {
-				TiUIView *uiview = idx < [existingSubviews count] ? [existingSubviews objectAtIndex:idx] : nil;
-				if (!CGRectEqualToRect([proxy sandboxBounds], rect)) {
-					[proxy setSandboxBounds:rect];
-				}
-				[proxy windowWillOpen];
-				[proxy setReproxying:YES];
-				[uiview transferProxy:proxy deep:YES];
-				[self redelegateViews:proxy toView:contentView];
-				if (uiview == nil) {
-					[rowContainerView addSubview:[proxy view]];
-				}
-				[proxy setReproxying:NO];
-			}];
-		} else {
-			[[self children] enumerateObjectsUsingBlock:^(TiViewProxy *proxy, NSUInteger idx, BOOL *stop) {
-				[self redelegateViews:proxy toView:contentView];
-			}];
-			[rowContainerView setFrame:rect];
-			[contentView addSubview:rowContainerView];
+		[rowContainerView release];
+		rowContainerView = [[TiUITableViewRowContainer alloc] initWithFrame:rect];
+		[rowContainerView setBackgroundColor:[UIColor clearColor]];
+		[rowContainerView setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
+		
+		for (TiViewProxy *proxy in self.children)
+		{
+			[proxy windowWillOpen];
+			[proxy setReproxying:YES];
+			TiUIView *uiview = [proxy view];
+			uiview.parent = self;
+			[self redelegateViews:proxy toView:contentView];
+			[rowContainerView addSubview:uiview];
+			[proxy setReproxying:NO];
 		}
+		[self layoutChildren:NO];
+		[contentView addSubview:rowContainerView];
 	}
 	configuredChildren = YES;
 }
 
--(void)configureTintColor:(UITableViewCell*)cell
+-(void)reproxyChildren:(TiViewProxy*)proxy 
+				  view:(TiUIView*)uiview 
+				parent:(TiViewProxy*)newParent
+		 touchDelegate:(id)touchDelegate
 {
-    if ([TiUtils isIOS7OrGreater]) {
-        UIColor* theTint = nil;
-        id theColor = [self valueForUndefinedKey:@"tintColor"];
-        if (theColor != nil) {
-            theTint = [[TiUtils colorValue:theColor] color];
-        }
-        if (theTint == nil) {
-            theTint = [[table tableView] tintColor];
-        }
-        [cell performSelector:@selector(setTintColor:) withObject:theTint];
-    }
+	TiViewProxy * oldProxy = (TiViewProxy*)[uiview proxy];
+
+	[uiview transferProxy:proxy];
+	
+	// because proxies can have children, we need to recursively do this
+	NSArray *children_ = proxy.children;
+	if (children_!=nil && [children_ count]>0)
+	{
+		NSArray * oldProxyChildren = [oldProxy children];
+
+		if ([oldProxyChildren count] != [children_ count])
+		{
+			NSLog(@"[WARN] looks like we have a different table cell layout than expected.  Make sure you set the 'className' property of the table row when you have different cell layouts");
+			NSLog(@"[WARN] if you don't fix this, your tableview will suffer performance issues and also will not render properly");
+			return;
+		}
+		int c = 0;
+		NSEnumerator * oldChildrenEnumator = [oldProxyChildren objectEnumerator];
+		for (TiViewProxy* child in children_)
+		{
+			TiViewProxy * oldChild = [oldChildrenEnumator nextObject];
+			if (![oldChild viewAttached])
+			{
+				NSLog(@"[WARN] Orphaned child found during proxy transfer!");
+			}
+			//Todo: We should probably be doing this only if the view is attached,
+			//And something else entirely if the view wasn't attached.
+			[self reproxyChildren:child 
+							 view:[oldChild view]
+						   parent:proxy touchDelegate:nil];
+
+		}
+	}
+}
+
+-(void)updateChildren:(UITableViewCell*)cell
+{
+	// this method is called with a cached table cell and we need
+	// to cause the existing cell to be updated with any values 
+	// that are different from the previous cached use of the cell.  
+	// we simply do this by sending property change events to the 
+	// cached cell view and then switching it's active proxy.
+	// this will cause any property changes to be reflected in the 
+	// cached cell (and resulting underlying UI component changes)
+	// and the proxy change ensures that the new row proxy gets the
+	// events now
+	BOOL emptyChildren = [[self children] count] == 0;
+	
+	if (emptyChildren)
+	{
+		return;
+	}
+	
+	UIView *contentView = cell.contentView;
+	NSArray *subviews = [contentView subviews];
+	if (contentView==nil || [subviews count]==0)
+	{
+		// this can happen if we're giving a reused table cell
+		// but he's removed the children from it... in this 
+		// case we just re-add like it was brand new
+		[self configureChildren:cell];
+		return;
+	}
+	BOOL found = NO;
+	for (UIView *aview in subviews)
+	{
+		// since the table will insert the accessory view and 
+		// other stuff in our contentView we need to check and
+		// and skip non TiUIViews
+		if ([aview isKindOfClass:[TiUITableViewRowContainer class]])
+		{
+			NSArray *subviews = [aview subviews];
+			// this can happen because the cell dropped our views
+			if ([subviews count]==0)
+			{
+				[aview removeFromSuperview];
+				[self configureChildren:cell];
+				return;
+			}
+			[rowContainerView release];
+			rowContainerView = [aview retain];
+			for (size_t x=0;x<[subviews count];x++)
+			{
+				TiViewProxy *proxy = [self.children objectAtIndex:x];
+				TiUIView *uiview = [subviews objectAtIndex:x];
+				[self reproxyChildren:proxy view:uiview parent:self touchDelegate:contentView];
+			}
+			[self layoutChildren:NO];
+			found = YES;
+			// once we find the container we can break
+			break;
+		}
+	} 
+	if (found==NO)
+	{
+		// this probably happens if a developer specified the same
+		// row but the layout is different and they're trying to reuse
+		// it -- in this case, we're just going to reconfig
+		
+		// at least warn the user
+		NSLog(@"[WARN] looks like we have a different table cell layout than expected.  Make sure you set the 'className' property of the table row when you have different cell layouts");
+		NSLog(@"[WARN] if you don't fix this, your tableview will suffer performance issues");
+		
+		// change the classname so at least we don't too much of a performance
+		// hit on subsequent repaints
+		RELEASE_TO_NIL(tableClass);
+		tableClass = [[NSString stringWithFormat:@"%d",[self hash]] retain];
+		
+		// now force a repaint by reconfiguring this cell
+		for (UIView *v in subviews)
+		{
+			[v removeFromSuperview];
+		}
+		
+		[self configureChildren:cell];
+		return;
+	}
 }
 
 -(void)initializeTableViewCell:(UITableViewCell*)cell
 {
 	modifyingRow = YES;
-	[self configureTintColor:cell];
 	[self configureTitle:cell];
 	[self configureSelectionStyle:cell];
 	[self configureLeftSide:cell];
@@ -689,9 +763,37 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 	[self configureBackground:cell];
 	[self configureIndentionLevel:cell];
 	[self configureChildren:cell];
-	cell.accessibilityLabel = [TiUtils stringValue:[self valueForUndefinedKey:@"accessibilityLabel"]];
-	cell.accessibilityValue = [TiUtils stringValue:[self valueForUndefinedKey:@"accessibilityValue"]];
-	cell.accessibilityHint = [TiUtils stringValue:[self valueForUndefinedKey:@"accessibilityHint"]];
+	modifyingRow = NO;
+}
+
+-(void)renderTableViewCell:(UITableViewCell*)cell
+{
+	modifyingRow = YES;
+	[self configureTitle:cell];
+	[self configureSelectionStyle:cell];
+	[self configureLeftSide:cell];
+	[self configureRightSide:cell];
+	[self configureBackground:cell];
+	[self configureIndentionLevel:cell];
+
+	NSString * cellReuseIdent = [cell reuseIdentifier];
+
+	if([cellReuseIdent isEqual:defaultRowTableClass])
+	{
+		//We can make no assumptions when a class is not specified.
+		for (UIView * oldView in [[cell contentView] subviews])
+		{
+			if ([oldView isKindOfClass:[TiUITableViewRowContainer class]])
+			{
+				[oldView removeFromSuperview];
+			}
+		}
+		[self configureChildren:cell];
+	}
+	else
+	{
+		[self updateChildren:cell];
+	}
 	modifyingRow = NO;
 }
 
@@ -700,44 +802,19 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 	return (table!=nil) && ([self parent]!=nil);
 }
 
-// TODO: SUPER MEGA UGLY but it's the only workaround for now.  zindex does NOT work with table rows.
-// TODO: Add child locking methods for whenever we have to touch children outside TiViewProxy
--(void)willShow
-{
-    NSArray* subproxies = [self children];
-	for (TiViewProxy* child in subproxies) {
-		[child setParentVisible:YES];
-	}
-}
-
 -(void)triggerAttach
 {
-	if (!attaching && ![self viewAttached]) {
-		attaching = YES;
-		[self windowWillOpen];
-		[self willShow];
-		attaching = NO;
-	}
-}
-
--(void)updateRow:(TiUITableViewAction*)action
-{
-	OSAtomicTestAndClearBarrier(NEEDS_UPDATE_ROW, &dirtyRowFlags);
-	[table dispatchAction:action];
+	attaching = YES;
+	[self windowWillOpen];
+	attaching = NO;
 }
 
 -(void)triggerRowUpdate
-{	
-	if ([self isAttached] && self.viewAttached && !modifyingRow && !attaching)
+{
+	if ([self isAttached] && !modifyingRow && !attaching)
 	{
-		if (OSAtomicTestAndSetBarrier(NEEDS_UPDATE_ROW, &dirtyRowFlags)) {
-			return;
-		}
-		
-		TiUITableViewAction *action = [[[TiUITableViewAction alloc] initWithObject:self 
-																		 animation:nil 
-																			  type:TiUITableViewActionRowReload] autorelease];
-		TiThreadPerformOnMainThread(^{[self updateRow:action];}, NO);
+		TiUITableViewAction *action = [[[TiUITableViewAction alloc] initWithRow:self animation:nil section:section.section type:TiUITableViewActionRowReload] autorelease];
+		[table dispatchAction:action];
 	}
 }
 
@@ -745,57 +822,34 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 {
 	attaching = YES;
 	[super windowWillOpen];
-	[self setParentVisible:YES];
 	attaching = NO;
 }
 
--(void)triggerUpdateIfHeightChanged
-{
-    TiThreadPerformOnMainThread(^{
-        if ([self viewAttached] && rowContainerView != nil) {
-            CGFloat curHeight = rowContainerView.bounds.size.height;
-            CGSize newSize = [callbackCell computeCellSize];
-            if (newSize.height != curHeight) {
-                DeveloperLog(@"Height changing from %.1f to %.1f. Triggering update.",curHeight,newSize.height);
-                [self triggerRowUpdate];
-            } else {
-                DeveloperLog(@"Height does not change. Just laying out children. Height %.1f",curHeight);
-                //TIMOB-13121. Ensure touchdelegate is set if we are not going to reconstruct the row.
-                if ([rowContainerView superview] != nil) {
-                    UIView* contentView = [rowContainerView superview];
-                    [[self children] enumerateObjectsUsingBlock:^(TiViewProxy *proxy, NSUInteger idx, BOOL *stop) {
-                        [self redelegateViews:proxy toView:contentView];
-                    }];
-                }
-                [callbackCell setNeedsDisplay];
-            }
-        } else {
-            [callbackCell setNeedsDisplay];
-        }
-    }, NO);
-}
-
--(void)contentsWillChange
+-(void)childAdded:(id)child
 {
 	if (attaching==NO)
 	{
-		[self triggerUpdateIfHeightChanged];
+		[self triggerRowUpdate];
 	}
+}
+
+-(void)childRemoved:(id)child
+{
+	[self triggerRowUpdate];
 }
 
 -(void)childWillResize:(TiViewProxy *)child
 {
-	[self triggerUpdateIfHeightChanged];
+	[self triggerRowUpdate];
 }
 
--(TiProxy *)touchedViewProxyInCell:(UITableViewCell *)targetCell atPoint:(CGPoint*)point
+-(TiProxy *)touchedViewProxyInCell:(UITableViewCell *)targetCell
 {
 	for (TiUITableViewRowContainer * thisContainer in [[targetCell contentView] subviews])
 	{
 		if ([thisContainer isKindOfClass:[TiUITableViewRowContainer class]])
 		{
 			TiProxy * result = [thisContainer hitTarget];
-			*point = [thisContainer hitPoint];
 			if (result != nil)
 			{
 				return result;
@@ -818,10 +872,7 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 	}
 	NSInteger index = [table indexForRow:self];
 	[dict setObject:NUMINT(index) forKey:@"index"];
-    // TODO: We really need to ensure that a row's section is set upon creation - even if this means changing how tables work.
-    if (section != nil) {
-        [dict setObject:section forKey:@"section"];
-    }
+	[dict setObject:section forKey:@"section"];
 	[dict setObject:self forKey:@"row"];
 	[dict setObject:self forKey:@"rowData"];
 	[dict setObject:NUMBOOL(NO) forKey:@"detail"];
@@ -830,8 +881,7 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 	return dict;
 }
 
-//TODO: Remove when deprication is done.
--(void)fireEvent:(NSString*)type withObject:(id)obj withSource:(id)source propagate:(BOOL)propagate reportSuccess:(BOOL)report errorCode:(int)code message:(NSString*)message;
+-(void)fireEvent:(NSString *)type withObject:(id)obj withSource:(id)source propagate:(BOOL)propagate
 {
 	// merge in any row level properties for the event
 	if (source!=self)
@@ -839,58 +889,11 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 		obj = [self createEventObject:obj];
 	}
 	[callbackCell handleEvent:type];
-	[super fireEvent:type withObject:obj withSource:source propagate:propagate reportSuccess:report errorCode:code message:message];
+	[super fireEvent:type withObject:obj withSource:source propagate:propagate];
 }
 
--(void)fireEvent:(NSString*)type withObject:(id)obj propagate:(BOOL)propagate reportSuccess:(BOOL)report errorCode:(int)code message:(NSString*)message;
-{
-	[callbackCell handleEvent:type];
-	[super fireEvent:type withObject:obj propagate:propagate reportSuccess:report errorCode:code message:message];
-}
 
--(void)setSelectedBackgroundColor:(id)arg
-{
-    [self replaceValue:arg forKey:@"selectedBackgroundColor" notification:NO];
-    TiThreadPerformOnMainThread(^{
-        if ([self viewAttached]) {
-            [self configureBackground:callbackCell];
-        }
-    }, NO);
-}
-
--(void)setBackgroundImage:(id)arg
-{
-	[self replaceValue:arg forKey:@"backgroundImage" notification:NO];	
-    TiThreadPerformOnMainThread(^{
-        if ([self viewAttached]) {
-            [self configureBackground:callbackCell];
-        }
-    }, NO);
-}
-
--(void)setSelectedBackgroundImage:(id)arg
-{
-	[self replaceValue:arg forKey:@"selectedBackgroundImage" notification:NO];	
-    TiThreadPerformOnMainThread(^{
-        if ([self viewAttached]) {
-            [self configureBackground:callbackCell];
-        }
-    }, NO);
-}
-
--(void)setBackgroundGradient:(id)arg
-{
-	TiGradient * newGradient = [TiGradient gradientFromObject:arg proxy:self];
-	[self replaceValue:newGradient forKey:@"backgroundGradient" notification:NO];
-	TiThreadPerformOnMainThread(^{[callbackCell setBackgroundGradient_:newGradient];}, NO);
-}
-
--(void)setSelectedBackgroundGradient:(id)arg
-{
-	TiGradient * newGradient = [TiGradient gradientFromObject:arg proxy:self];
-	[self replaceValue:newGradient forKey:@"selectedBackgroundGradient" notification:NO];
-	TiThreadPerformOnMainThread(^{[callbackCell setSelectedBackgroundGradient_:newGradient];}, NO);
-}
+#pragma mark Delegate
 
 
 -(void)propertyChanged:(NSString*)key oldValue:(id)oldValue newValue:(id)newValue proxy:(TiProxy*)proxy
@@ -900,49 +903,20 @@ TiProxy * DeepScanForProxyOfViewContainingPoint(UIView * targetView, CGPoint poi
 	if (TableViewRowProperties==nil)
 	{
 		TableViewRowProperties = [[NSSet alloc] initWithObjects:
-					@"title", @"accessibilityLabel", @"backgroundImage",
+					@"title", @"backgroundColor",@"backgroundImage",
 					@"leftImage",@"hasDetail",@"hasCheck",@"hasChild",	
 					@"indentionLevel",@"selectionStyle",@"color",@"selectedColor",
-					@"height",@"width",@"backgroundColor",@"rightImage",@"tintColor",
+					@"height",@"width",
 					nil];
 	}
 	
-    if ([TableViewRowProperties member:key]!=nil)
-    {
-        TiThreadPerformOnMainThread(^{
-            if (![self viewAttached]) {
-                return;
-            }
-            if ([key isEqualToString:@"height"] || [key isEqualToString:@"width"] || [key isEqualToString:@"indentionLevel"]) {
-                [self triggerRowUpdate];
-            } else if ([key isEqualToString:@"title"] || [key isEqualToString:@"color"] || [key isEqualToString:@"font"] || [key isEqualToString:@"selectedColor"]) {
-                [self configureTitle:callbackCell];
-                [callbackCell setNeedsDisplay];
-            } else if ([key isEqualToString:@"hasCheck"] || [key isEqualToString:@"hasChild"] || [key isEqualToString:@"hasDetail"] || [key isEqualToString:@"rightImage"]) {
-                [self configureRightSide:callbackCell];
-                [self triggerUpdateIfHeightChanged];
-            } else if ([key isEqualToString:@"leftImage"]) {
-                [self configureLeftSide:callbackCell];
-                [self triggerUpdateIfHeightChanged];
-            } else if ([key isEqualToString:@"backgroundImage"]) {
-                [self configureBackground:callbackCell];
-                [callbackCell setNeedsDisplay];
-            } else if ([key isEqualToString:@"backgroundColor"]) {
-                [callbackCell setBackgroundColor:[[TiUtils colorValue:newValue] color]];
-                [self triggerRowUpdate];
-            } else if ([key isEqualToString:@"accessibilityLabel"]){
-                callbackCell.accessibilityLabel = [TiUtils stringValue:newValue];
-            } else if ([key isEqualToString:@"tintColor"]){
-                [self configureTintColor:callbackCell];
-            }
-        }, NO);
-    }
+	if ([TableViewRowProperties member:key]!=nil)
+	{
+		[self triggerRowUpdate];
+	}
 }
 
--(TiDimension)defaultAutoHeightBehavior:(id)unused
-{
-    return TiDimensionAutoSize;
-}
+
 @end
 
 #endif

@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_PLATFORM
 
@@ -23,7 +25,7 @@ NSString* const DATA_IFACE = @"pdp_ip0";
 
 @implementation PlatformModule
 
-@synthesize name, model, version, architecture, processorCount, username, ostype, availableMemory;
+@synthesize name, model, version, architecture, macaddress, processorCount, username, ostype, availableMemory;
 
 #pragma mark Internal
 
@@ -35,7 +37,7 @@ NSString* const DATA_IFACE = @"pdp_ip0";
 		name = [[theDevice systemName] retain];
 		version = [[theDevice systemVersion] retain];
 		processorCount = [[NSNumber numberWithInt:1] retain];
-		username = [[theDevice name] retain];
+		username = [theDevice name];
 		ostype = [@"32bit" retain];
 		
 		if ([TiUtils isIPad])
@@ -48,6 +50,8 @@ NSString* const DATA_IFACE = @"pdp_ip0";
 			// iphone is a constant for Ti.Platform.osname
 			[self replaceValue:@"iphone" forKey:@"osname" notification:NO]; 
 		}
+		
+		macaddress = [[[UIDevice currentDevice] uniqueIdentifier] retain];
 		
 		NSString *themodel = [theDevice model];
 		
@@ -77,26 +81,15 @@ NSString* const DATA_IFACE = @"pdp_ip0";
 		{
 			model = [[NSString stringWithFormat:@"%@ 2G",themodel] retain];
 		}
-		// detect iPad 2 model
-		else if (!strcmp(u.machine, "iPad2,1")) 
-		{
-			model = [[NSString stringWithFormat:@"%@ 2",themodel] retain];
-		}
-		// detect simulator for i386
+		// detect simulator
 		else if (!strcmp(u.machine, "i386")) 
 		{
 			model = [@"Simulator" retain];
 			arch = @"i386";
 		}
-		// detect simulator for x86_64
-		else if (!strcmp(u.machine, "x86_64")) 
-		{
-			model = [@"Simulator" retain];
-			arch = @"x86_64";
-		}
 		else 
 		{
-			model = [[NSString alloc] initWithUTF8String:u.machine];
+			model = [themodel retain];
 		}
 		architecture = [arch retain];
 
@@ -112,6 +105,7 @@ NSString* const DATA_IFACE = @"pdp_ip0";
 	RELEASE_TO_NIL(model);
 	RELEASE_TO_NIL(version);
 	RELEASE_TO_NIL(architecture);
+	RELEASE_TO_NIL(macaddress);
 	RELEASE_TO_NIL(processorCount);
 	RELEASE_TO_NIL(username);
 	RELEASE_TO_NIL(address);
@@ -119,11 +113,6 @@ NSString* const DATA_IFACE = @"pdp_ip0";
 	RELEASE_TO_NIL(availableMemory);
 	RELEASE_TO_NIL(capabilities);
 	[super dealloc];
-}
-
--(NSString*)apiName
-{
-    return @"Ti.Platform";
 }
 
 -(void)_listenerAdded:(NSString *)type count:(int)count
@@ -137,7 +126,6 @@ NSString* const DATA_IFACE = @"pdp_ip0";
 			batteryEnabled = YES;
 			[device setBatteryMonitoringEnabled:YES];
 		}
-		WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(batteryStateChanged:) name:UIDeviceBatteryStateDidChangeNotification object:device];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(batteryStateChanged:) name:UIDeviceBatteryLevelDidChangeNotification object:device];
 	}
@@ -152,7 +140,6 @@ NSString* const DATA_IFACE = @"pdp_ip0";
 		{
 			[device setBatteryMonitoringEnabled:NO];
 		}
-		WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceBatteryStateDidChangeNotification object:device];
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceBatteryLevelDidChangeNotification object:device];
 	}
@@ -189,16 +176,6 @@ NSString* const DATA_IFACE = @"pdp_ip0";
 
 #pragma mark Public APIs
 
--(NSString*)runtime
-{
-	return @"javascriptcore";
-}
-
--(NSString*)manufacturer
-{
-    return @"apple";
-}
-
 -(NSString*)locale
 {
 	// this will return the locale that the user has set the phone in
@@ -208,34 +185,15 @@ NSString* const DATA_IFACE = @"pdp_ip0";
 	return [languages count] > 0 ? [languages objectAtIndex:0] : @"en";
 }
 
--(NSString*)macaddress
-{
-    return [TiUtils appIdentifier];
-}
-
 -(id)id
 {
-    return [TiUtils appIdentifier];
+	return [[UIDevice currentDevice] uniqueIdentifier];
 }
 
 - (NSString *)createUUID:(id)args
 {
 	return [TiUtils createUUID];
 }
-
--(NSNumber*) is24HourTimeFormat: (id) unused
-{
-	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setLocale:[NSLocale currentLocale]];
-	[dateFormatter setTimeStyle:kCFDateFormatterShortStyle];
-	NSString *dateInStringForm = [dateFormatter stringFromDate:[NSDate date]];
-	NSRange amRange = [dateInStringForm rangeOfString:[dateFormatter AMSymbol]];
-	NSRange pmRange = [dateInStringForm rangeOfString:[dateFormatter PMSymbol]];
-	[dateFormatter release];
-	return NUMBOOL(amRange.location == NSNotFound && pmRange.location == NSNotFound);
-	
-}
-
 
 - (NSNumber*)availableMemory
 {
@@ -263,19 +221,11 @@ NSString* const DATA_IFACE = @"pdp_ip0";
 	return [NSNumber numberWithBool:result];
 }
 
-
--(NSNumber*)canOpenURL:(id)arg
-{
-	ENSURE_SINGLE_ARG(arg, NSString);
-	NSURL* url = [TiUtils toURL:arg proxy:self];
-	return NUMBOOL([[UIApplication sharedApplication] canOpenURL:url]);
-}
-
--(TiPlatformDisplayCaps*)displayCaps
+-(PlatformModuleDisplayCapsProxy*)displayCaps
 {
 	if (capabilities == nil)
 	{
-		return [[[TiPlatformDisplayCaps alloc] _initWithPageContext:[self executionContext]] autorelease];
+		return [[[PlatformModuleDisplayCapsProxy alloc] _initWithPageContext:[self executionContext]] autorelease];
 	}
 	return capabilities;
 }

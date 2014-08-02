@@ -22,7 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
-#if defined(USE_TI_UIIOSCOVERFLOWVIEW) || defined(USE_TI_UICOVERFLOWVIEW)
+#ifdef USE_TI_UICOVERFLOWVIEW
 
 #import "AFItemView.h"
 #import <QuartzCore/QuartzCore.h>
@@ -30,7 +30,7 @@
 
 
 @implementation AFItemView
-@synthesize imageView, horizontalPosition, verticalPosition;
+@synthesize number, imageView, horizontalPosition, verticalPosition;
 
 - (id)initWithFrame:(CGRect)frame {
 	if (self = [super initWithFrame:frame]) {
@@ -53,10 +53,6 @@
 	verticalPosition = imageHeight * reflectionFraction / 2;
 	originalImageHeight = imageHeight;
 	self.frame = CGRectMake(0, 0, newImage.size.width, newImage.size.height);
-}
-
-- (int)number {
-	return number;
 }
 
 - (void)setNumber:(int)newNumber {

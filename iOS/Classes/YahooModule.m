@@ -3,10 +3,13 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_YAHOO
 
 #import "YahooModule.h"
+#import "ASIHTTPRequest.h"
 #include <CommonCrypto/CommonHMAC.h>
 #include "Base64Transcoder.h"
 #import "SBJSON.h"
@@ -37,50 +40,37 @@ const NSString *apiEndpoint = @"http://query.yahooapis.com/v1/public/yql?format=
 	[super dealloc];
 }
 
--(NSString*)apiName
-{
-    return @"Ti.Yahoo";
-}
-
 #pragma mark Delegates
 
-- (void)request:(APSHTTPRequest *)request onLoad:(APSHTTPResponse *)response
+- (void)requestFinished:(ASIHTTPRequest *)request
 {
 	[[TiApp app] stopNetwork];
 	
-	NSString *responseString = [response responseString];
-    NSError *error = nil;
-	id result = [TiUtils jsonParse:responseString error:&error];
-	NSMutableDictionary *event;
-	if (error == nil)
+	NSString *responseString = [request responseString];
+	SBJSON *json = [[[SBJSON alloc] init] autorelease];
+	NSError *error = nil;
+	id result = [json objectWithString:responseString error:&error];
+	NSMutableDictionary *event = [NSMutableDictionary dictionary];
+	if (error==nil)
 	{
-		NSDictionary* errorDict = [result objectForKey:@"error"];
-		int code = (errorDict != nil)?-1:0;
-		NSString * message = [errorDict objectForKey:@"description"];
-		event = [TiUtils dictionaryWithCode:code message:message];
-
-		if (errorDict!=nil) {
-			[event setObject:message forKey:@"message"];
-		} else {
-			[event setObject:[[result objectForKey:@"query"] objectForKey:@"results"] forKey:@"data"];
-		}
+		[event setObject:NUMBOOL(YES) forKey:@"success"];
+		[event setObject:[[result objectForKey:@"query"] objectForKey:@"results"] forKey:@"data"];
 	}
 	else
 	{
-		NSString * message = [TiUtils messageFromError:error];
-		event = [TiUtils dictionaryWithCode:[error code] message:message];
-		[event setObject:message forKey:@"message"];
+		[event setObject:NUMBOOL(NO) forKey:@"success"];
+		[event setObject:[error description] forKey:@"message"];
 	}
 	[module _fireEventToListener:@"yql" withObject:event listener:callback thisObject:nil];
 	[self autorelease];
 }
 
-- (void)request:(APSHTTPRequest *)request onError:(APSHTTPResponse *)response
+- (void)requestFailed:(ASIHTTPRequest *)request
 {
 	[[TiApp app] stopNetwork];
 	
-	NSError *error = [response error];
-	NSMutableDictionary * event = [TiUtils dictionaryWithCode:[error code] message:[TiUtils messageFromError:error]];
+	NSError *error = [request error];
+	NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:NUMBOOL(NO),@"success",[error description],@"message",nil];
 	[module _fireEventToListener:@"yql" withObject:event listener:callback thisObject:nil];
 	[self autorelease];
 }
@@ -185,15 +175,11 @@ const NSString *apiEndpoint = @"http://query.yahooapis.com/v1/public/yql?format=
 #endif
 	
 	YQLCallback *job = [[YQLCallback alloc] initWithCallback:callback module:self];
-	APSHTTPRequest *req = [[APSHTTPRequest alloc] init];
-    [req setUrl:[NSURL URLWithString:theurl]];
+	ASIHTTPRequest *req = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:theurl]];
 	[req addRequestHeader:@"User-Agent" value:[[TiApp app] userAgent]];
 	[[TiApp app] startNetwork];
 	[req setDelegate:job];
-    TiThreadPerformOnMainThread(^{
-        [req send];
-        [req autorelease];
-    }, NO);
+	[req startAsynchronous];
 }
 
 @end

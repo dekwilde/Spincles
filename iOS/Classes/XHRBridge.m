@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UIWEBVIEW
 
@@ -112,7 +114,7 @@ static XHRBridge *xhrBridge = nil;
 	}
 	else 
 	{
-		DebugLog(@"[ERROR] Error loading %@",url);
+		NSLog(@"[ERROR] Error loading %@",url);
 		[client URLProtocol:self didFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorResourceUnavailable userInfo:nil]];
 		[client URLProtocolDidFinishLoading:self];
 	}
@@ -131,7 +133,9 @@ static XHRBridge *xhrBridge = nil;
 		return;
 	}
 
-	DebugLog(@"[DEBUG] Requested resource via app protocol, loading: %@",url);
+#ifdef DEBUG	
+	NSLog(@"[DEBUG] app protocol, loading: %@",url);
+#endif
 		
 	// see if it's a compiled resource
 	NSData *data = [TiUtils loadAppResource:url];
@@ -149,7 +153,7 @@ static XHRBridge *xhrBridge = nil;
 		}
 		if (data==nil)
 		{
-			NSString *resourceurl = [TiHost resourcePath];
+			NSString *resourceurl = [[NSBundle mainBundle] resourcePath];
 			NSString *path = [NSString stringWithFormat:@"%@%@",resourceurl,urlpath];
 			data = [[[NSData alloc] initWithContentsOfFile:path] autorelease];
 		}

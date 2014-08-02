@@ -22,7 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
-#if defined(USE_TI_UIIOSCOVERFLOWVIEW) || defined(USE_TI_UICOVERFLOWVIEW)
+#ifdef USE_TI_UICOVERFLOWVIEW
 
 #import <UIKit/UIKit.h>
 #import "AFItemView.h"
@@ -64,7 +64,7 @@
 @property (nonatomic, assign) id <AFOpenFlowViewDataSource> dataSource;
 @property (nonatomic, assign) id <AFOpenFlowViewDelegate> viewDelegate;
 @property (nonatomic, retain) UIImage *defaultImage;
-@property (nonatomic) int numberOfImages;
+@property int numberOfImages;
 
 - (void)setSelectedCover:(int)newSelectedCover;
 - (void)centerOnSelectedCover:(BOOL)animated;

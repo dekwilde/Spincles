@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UITEXTFIELD
 
@@ -16,7 +18,6 @@
 DEFINE_DEF_PROP(value,@"");
 DEFINE_DEF_BOOL_PROP(enabled,YES);
 DEFINE_DEF_BOOL_PROP(enableReturnKey,NO);
-DEFINE_DEF_BOOL_PROP(editable,YES);
 DEFINE_DEF_BOOL_PROP(autocorrect,NO);
 DEFINE_DEF_BOOL_PROP(clearOnEdit,NO);
 DEFINE_DEF_BOOL_PROP(passwordMask,NO);
@@ -40,15 +41,7 @@ DEFINE_DEF_INT_PROP(leftButtonMode,UITextFieldViewModeNever);
 DEFINE_DEF_INT_PROP(rightButtonMode,UITextFieldViewModeNever);
 DEFINE_DEF_INT_PROP(appearance,UIKeyboardAppearanceDefault);
 DEFINE_DEF_INT_PROP(autocapitalization,UITextAutocapitalizationTypeNone);
-DEFINE_DEF_INT_PROP(maxLength,-1);
-
--(NSString*)apiName
-{
-    return @"Ti.UI.TextField";
-}
-
+					
 @end
-
-
 
 #endif

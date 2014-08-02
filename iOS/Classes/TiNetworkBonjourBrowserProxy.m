@@ -49,11 +49,6 @@
     [super dealloc];
 }
 
--(NSString*)apiName
-{
-    return @"Ti.Network.BonjourBrowser";
-}
-
 -(NSString*)description
 {
     return [NSString stringWithFormat:@"BonjourServiceBrowser: %@ (%d)", [services description], [services retainCount]];
@@ -136,21 +131,16 @@
 
 #pragma mark Service management
 
--(void)fireServiceUpdateEvent
-{
-	NSDictionary * eventObject = [NSDictionary dictionaryWithObject:[[services copy] autorelease] 
-															 forKey:@"services"];
-	[self fireEvent:@"updatedServices" withObject:eventObject];	//TODO: Deprecate old event.
-	[self fireEvent:@"updatedservices" withObject:eventObject];
-}
-
 -(void)netServiceBrowser:(NSNetServiceBrowser*)browser_ didFindService:(NSNetService*)service moreComing:(BOOL)more
 {
     [services addObject:[[[TiNetworkBonjourServiceProxy alloc] initWithContext:[self pageContext]
                                                                 service:service
                                                                   local:NO] autorelease]];
+    
     if (!more) {
-		[self fireServiceUpdateEvent];
+        [self fireEvent:@"updatedServices"
+             withObject:[NSDictionary dictionaryWithObject:[[services copy] autorelease] 
+                                                    forKey:@"services"]];
     }
 }
 
@@ -162,7 +152,9 @@
                                                                      local:NO] autorelease]];
     
     if (!more) {
-		[self fireServiceUpdateEvent];
+        [self fireEvent:@"updatedServices"
+             withObject:[NSDictionary dictionaryWithObject:[[services copy] autorelease] 
+                                                    forKey:@"services"]];
     }
 }
 

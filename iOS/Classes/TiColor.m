@@ -3,17 +3,15 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
 #import "TiColor.h"
 #import "Webcolor.h"
-#import "TiBase.h"
-#import "TiUtils.h"
 //TODO: Move all of Webcolor into TiColor.
 
 @implementation TiColor
-
-@synthesize color, name;
 
 +(id)colorNamed:(NSString *)name
 {
@@ -28,10 +26,7 @@
 			return nil;
 		}
 	}
-    if ([TiUtils isIOS6OrGreater] && (translatedColor == [UIColor groupTableViewBackgroundColor])) {
-        DebugLog(@"[WARN]Group style table view backgrounds can no longer be represented by a simple color. Reverting to black");
-        translatedColor = [UIColor blackColor];
-    }
+
 	result = [[self alloc] initWithColor:translatedColor name:name];
 	return [result autorelease];
 }
@@ -62,16 +57,14 @@
 	return name;
 }
 
-#pragma mark Deprecated
-
 -(UIColor*)_color
 {
-	return self.color;
+	return [[color retain] autorelease];
 }
 
 -(NSString*)_name
 {
-	return self.name;
+	return name;
 }
 
 @end

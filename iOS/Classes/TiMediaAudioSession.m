@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_MEDIA
 
@@ -23,12 +25,10 @@ void TiAudioSessionInterruptionCallback(void *inUserData,UInt32 interruptionStat
 	{
 		if (interruptionState == kAudioSessionBeginInterruption)
 		{
-			WARN_IF_BACKGROUND_THREAD;	//NSNotificationCenter is not threadsafe!
 			[[NSNotificationCenter defaultCenter] postNotificationName:kTiMediaAudioSessionInterruptionBegin object:session];
 		}
 		else if (interruptionState == kAudioSessionEndInterruption)
 		{
-			WARN_IF_BACKGROUND_THREAD;	//NSNotificationCenter is not threadsafe!
 			[[NSNotificationCenter defaultCenter] postNotificationName:kTiMediaAudioSessionInterruptionEnd object:session];
 		}
 	}
@@ -37,7 +37,6 @@ void TiAudioSessionInterruptionCallback(void *inUserData,UInt32 interruptionStat
 void TiAudioSessionAudioVolumeCallback(void *inUserData, AudioSessionPropertyID prop, UInt32 size, const void *inData)
 {
 	TiMediaAudioSession* session = (TiMediaAudioSession*)inUserData;
-	WARN_IF_BACKGROUND_THREAD;	//NSNotificationCenter is not threadsafe!
 	[[NSNotificationCenter defaultCenter] postNotificationName:kTiMediaAudioSessionVolumeChange object:session];
 }
 
@@ -93,50 +92,28 @@ void TiAudioSessionAudioRouteChangeCallback(void *inUserData, AudioSessionProper
 			break;
 		}
 	}
-    id oldRouteObject = [dict objectForKey:@"OutputDeviceDidChange_OldRoute"];
-    [event setObject:((oldRouteObject == nil) ? [NSNull null] : oldRouteObject) forKey:@"oldRoute"];
+	[event setObject:[dict objectForKey:@"OutputDeviceDidChange_OldRoute"] forKey:@"oldRoute"];
 	[event setObject:reason forKey:@"reason"];
-	WARN_IF_BACKGROUND_THREAD;	//NSNotificationCenter is not threadsafe!
 	[[NSNotificationCenter defaultCenter] postNotificationName:kTiMediaAudioSessionRouteChange object:session userInfo:event];
 }
 
 void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionPropertyID inID, UInt32 dataSize, const void* inData)
 {
 	TiMediaAudioSession* session = (TiMediaAudioSession*)inUserData;
-	WARN_IF_BACKGROUND_THREAD;	//NSNotificationCenter is not threadsafe!
 	[[NSNotificationCenter defaultCenter] postNotificationName:kTiMediaAudioSessionInputChange object:session];
 }
 
 @implementation TiMediaAudioSession
 
--(void)deactivateSession
-{
-    // deregister from audio route changes
-    AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_AudioRouteChange, TiAudioSessionAudioRouteChangeCallback, self);
-    //deregister from audio volume changes
-    AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_CurrentHardwareOutputVolume,TiAudioSessionAudioVolumeCallback,self);
-    //deregister from input availability changes
-    AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_AudioInputAvailable,TiAudioSessionInputAvailableCallback,self);
-    AudioSessionSetActive(false);
-}
-
-- (void)dealloc {
-    if ([self isActive]) {
-        DeveloperLog(@"[WARN] AudioSession being deallocated is still active");
-        [self deactivateSession];
-    }
-    RELEASE_TO_NIL(lock);
-    [super dealloc];
-}
+@synthesize defaultSessionMode;
 
 -(id)init
 {
 	if (self = [super init])
 	{
+        defaultSessionMode = kAudioSessionCategory_SoloAmbientSound;
 		count = 0;
 		lock = [[NSLock alloc] init];
-		
-		AudioSessionInitialize (NULL, NULL, TiAudioSessionInterruptionCallback, self);
 	}
 	return self;
 }
@@ -144,11 +121,9 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
 +(TiMediaAudioSession*)sharedSession
 {
 	static TiMediaAudioSession *session = nil;
-	@synchronized(self) {
-		if (session == nil)
-		{
-			session = [[TiMediaAudioSession alloc] init];
-		}
+	if (session == nil)
+	{
+		session = [[TiMediaAudioSession alloc] init];
 	}
 	return session;
 }
@@ -165,44 +140,34 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
 -(BOOL)isAudioPlaying
 {
 	// returns YES if audio is currently playing
-	if (![self isActive]) {
-		return NO;
-	}
-	
-	[self startAudioSession];
 	UInt32 size, playing;
 	size = sizeof(UInt32);
 	AudioSessionGetProperty(kAudioSessionProperty_OtherAudioIsPlaying, &size, &playing);
-	[self stopAudioSession];
 	return playing;
 }
 
 -(CGFloat)volume
 {
-	[self startAudioSession];
 	UInt32 size;
 	CGFloat volume;
 	size = sizeof(CGFloat);
 	AudioSessionGetProperty(kAudioSessionProperty_CurrentHardwareOutputVolume, &size, &volume);
-	[self stopAudioSession];
 	return volume;
 }
 
 -(BOOL)hasInput
 {
-	[self startAudioSession];
 	UInt32 hasInput;
 	UInt32 size = sizeof(hasInput);
 	AudioSessionGetProperty(kAudioSessionProperty_AudioInputAvailable, &size, &hasInput);
-	[self stopAudioSession];
 	return hasInput;
 }
 
 -(TiMediaAudioSessionInputType)inputType
 {
-	[self startAudioSession];
 	CFStringRef newRoute = NULL;
 	UInt32 size = sizeof(CFStringRef);
+	[self startAudioSession];
 	AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &size, &newRoute);
 	[self stopAudioSession];
 	if (newRoute)
@@ -247,74 +212,49 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
 	return TiMediaAudioSessionInputUnavailable;
 }
 
--(BOOL)canRecord
+-(void)record:(UInt32)mode
 {
-	UInt32 mode;
-	UInt32 size = sizeof(mode);
-	[self startAudioSession];
-	AudioSessionGetProperty(kAudioSessionProperty_AudioCategory, &size, &mode);
-	[self stopAudioSession];
     if (mode != kAudioSessionCategory_RecordAudio && mode != kAudioSessionCategory_PlayAndRecord) {
-		return false;
+        // Default is to use RecordAudio mode
+        mode = kAudioSessionCategory_RecordAudio;
     }
-	return true;
+	AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof (mode), &mode);
 }
 
--(BOOL)canPlayback
+-(void)playback:(UInt32)mode
 {
-	UInt32 mode;
-	UInt32 size = sizeof(mode);
-	[self startAudioSession];
-	AudioSessionGetProperty(kAudioSessionProperty_AudioCategory, &size, &mode);
-	[self stopAudioSession];
     if (mode == kAudioSessionCategory_RecordAudio) {
-		return false;
+        // Default is to use solo ambient
+        mode = kAudioSessionCategory_SoloAmbientSound;
     }
-	return true;
-}
-
--(void)setSessionMode:(UInt32)mode
-{
-	if ([self isActive]) {
-		DebugLog(@"[WARN] Setting audio mode while playing audio... changes will not take effect until audio is restarted.");
-	}
 	AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(mode), &mode);
-}
-
--(void)setRouteOverride:(UInt32)mode
-{
-	if ([self isActive]) {
-		DebugLog(@"[WARN] Overriding audio route while playing audio... changes will not take effect until audio is restarted.");
-	}
-	AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(mode), &mode);
-}
-
--(UInt32)sessionMode
-{
-	UInt32 mode;
-	UInt32 size = sizeof(mode);
-	[self startAudioSession];
-	AudioSessionGetProperty(kAudioSessionProperty_AudioCategory, &size, &mode);
-	[self stopAudioSession];
-	return mode;
 }
 
 -(void)startAudioSession
 {
+	static BOOL init = NO;
 	[lock lock];
 	count++;
 	if (count == 1)
 	{
-		// Registration must be done with each new audio session activation
+		// only init once, but activate each time
+		if (init == NO)
+		{
+			init = YES;
+			AudioSessionInitialize (NULL, NULL, TiAudioSessionInterruptionCallback, self);
+
+			// register for audio route changes
+			AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, TiAudioSessionAudioRouteChangeCallback, self); 
+			
+			// register for audio volume changes
+			AudioSessionAddPropertyListener(kAudioSessionProperty_CurrentHardwareOutputVolume, TiAudioSessionAudioVolumeCallback, self);
 		
-		// register for audio route changes
-		AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, TiAudioSessionAudioRouteChangeCallback, self); 
-		
-		// register for audio volume changes
-		AudioSessionAddPropertyListener(kAudioSessionProperty_CurrentHardwareOutputVolume, TiAudioSessionAudioVolumeCallback, self);
-		
-		// register for input availability changes
-		AudioSessionAddPropertyListener(kAudioSessionProperty_AudioInputAvailable, TiAudioSessionInputAvailableCallback, self);
+			// register for input availability changes
+			AudioSessionAddPropertyListener(kAudioSessionProperty_AudioInputAvailable, TiAudioSessionInputAvailableCallback, self);
+		}
+
+		// make our audio session active
+        AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(defaultSessionMode), &defaultSessionMode);
 		AudioSessionSetActive(true);
 	}
 	[lock unlock];
@@ -326,7 +266,7 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
 	count--;
 	if (count == 0)
 	{
-        [self deactivateSession];
+		AudioSessionSetActive(false);
 	}
 #ifdef DEBUG	
 	NSAssert(count >= 0, @"stopAudioSession called too many times");

@@ -3,92 +3,115 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 
 #import "ImageLoader.h"
 #import "OperationQueue.h"
 #import "TiUtils.h"
+#import "ASIHTTPRequest.h"
 #import "TiApp.h"
 #import "UIImage+Resize.h"
-#import <CommonCrypto/CommonDigest.h>
 
-//#define DEBUG_IMAGE_CACHE
-
-#ifdef DEBUG_IMAGE_CACHE
+#ifdef VERBOSE
 #import <mach/mach.h>
 #endif
+
+
 
 @interface ImageCacheEntry : NSObject
 {
 	UIImage * fullImage;
 	UIImage * stretchableImage;
 	UIImage * recentlyResizedImage;
-    
     TiDimension leftCap;
     TiDimension topCap;
-    
     BOOL recapStretchableImage;
-	BOOL hires;
-    
-    NSString* localPath;
-    NSURL* remoteURL;
-    
-    NSDate* lastModified;
-    BOOL local;
+	BOOL isLocalImage;
 }
 
-@property(nonatomic,readonly) NSString * localPath;
 @property(nonatomic,readwrite,retain) UIImage * fullImage;
-@property(nonatomic,readwrite,retain) UIImage* recentlyResizedImage;
-@property(nonatomic,readonly) UIImage* stretchableImage;
-
+@property(nonatomic,readwrite,retain) UIImage * recentlyResizedImage;
 @property(nonatomic,readwrite) TiDimension leftCap;
 @property(nonatomic,readwrite) TiDimension topCap;
-@property(nonatomic,readwrite) BOOL hires;
-@property(nonatomic,readonly) NSDate* lastModified;
-@property(nonatomic,readonly) BOOL local;
-
--(ImageCacheEntry*)initWithURL:(NSURL*)url;
-
+@property(nonatomic,readwrite) BOOL isLocalImage;
 -(UIImage *)imageForSize:(CGSize)imageSize;
--(void)setData:(NSData*)data;
--(void)serialize:(NSData*)data;
+-(UIImage *)stretchableImage;
 
-+(NSString*)cachePathForURL:(NSURL*)url;
+-(BOOL)purgable;
 
 @end
 
 @implementation ImageCacheEntry
+@synthesize fullImage, recentlyResizedImage, leftCap, topCap, isLocalImage;
 
-@synthesize fullImage, leftCap, topCap, hires, localPath, stretchableImage, recentlyResizedImage, lastModified, local;
-
-- (UIImage *)fullImage {
-	if(fullImage == nil) {
-		if(localPath == nil) {
-			return nil;
-		}
-#ifdef DEBUG_IMAGE_CACHE
-		NSLog(@"[CACHE DEBUG] Retrieving local image [lazy]: %@", localPath);
-#endif
-        RELEASE_TO_NIL(stretchableImage);
-        RELEASE_TO_NIL(recentlyResizedImage);
-        RELEASE_TO_NIL(lastModified);
-		fullImage = [[UIImage alloc] initWithContentsOfFile:localPath];
-        if (local) {
-            lastModified = [[[[NSFileManager defaultManager] attributesOfItemAtPath:localPath error:nil]  objectForKey:NSFileModificationDate] retain];
-        }
+-(void)ensureFullImageForUrl:(NSURL *)url
+{
+	if (isLocalImage && (fullImage == nil))
+	{
+		[self setFullImage:[UIImage imageWithContentsOfFile:[url path]]];
 	}
-	return fullImage;
 }
 
-- (void)setData:(NSData *)data
-{	
-    RELEASE_TO_NIL(fullImage);
-    RELEASE_TO_NIL(stretchableImage);
-    RELEASE_TO_NIL(recentlyResizedImage);
-    RELEASE_TO_NIL(lastModified);
-    fullImage = [[UIImage alloc] initWithData:data];
-    [self serialize:data];
+-(UIImage *)imageForSize:(CGSize)imageSize scalingStyle:(TiImageScalingStyle)scalingStyle
+{
+	if (scalingStyle == TiImageScalingStretch)
+	{
+		return [self stretchableImage];
+	}
+
+	CGSize fullImageSize = [fullImage size];
+
+	if (scalingStyle != TiImageScalingNonProportional)
+	{
+		BOOL validScale = NO;
+		CGFloat scale = 1.0;
+		
+		if (imageSize.height > 1.0)
+		{
+			scale = imageSize.height/fullImageSize.height;
+			validScale = YES;
+		}
+		if (imageSize.width > 1.0)
+		{
+			CGFloat widthScale = imageSize.width/fullImageSize.width;
+			if (!validScale || (widthScale<scale))
+			{
+				scale = widthScale;
+				validScale = YES;
+			}
+		}
+		
+		if (validScale && ((scalingStyle != TiImageScalingThumbnail) || (scale < 1.0)))
+		{
+			imageSize = CGSizeMake(ceilf(scale*fullImageSize.width),
+					ceilf(scale*fullImageSize.height));
+		}
+		else
+		{
+			imageSize = fullImageSize;
+		}
+	}
+
+	if (CGSizeEqualToSize(imageSize, fullImageSize))
+	{
+		return fullImage;
+	}
+	
+	if (CGSizeEqualToSize(imageSize, [recentlyResizedImage size]))
+	{
+		return recentlyResizedImage;
+	}
+
+//TODO: Tweak quality depending on how large the result will be.
+	CGInterpolationQuality quality = kCGInterpolationDefault;
+
+	[self setRecentlyResizedImage:[UIImageResize
+			resizedImage:imageSize
+			interpolationQuality:quality
+			image:fullImage]];
+	return recentlyResizedImage;
 }
 
 -(void)setLeftCap:(TiDimension)cap
@@ -111,193 +134,86 @@
 {
     if (stretchableImage == nil || recapStretchableImage) {
         [stretchableImage release];
-        UIImage *theImage = [self fullImage];
-        CGFloat maxWidth = [theImage size].width;
-        CGFloat maxHeight = [theImage size].height;
         
+        CGSize imageSize = [fullImage size];
+		
         NSInteger left = (TiDimensionIsAuto(leftCap) || TiDimensionIsUndefined(leftCap) || leftCap.value == 0) ?
-                                maxWidth/2  : 
-                                TiDimensionCalculateValue(leftCap, maxWidth);
+                                imageSize.width/2  : 
+                                TiDimensionCalculateValue(leftCap, imageSize.width);
         NSInteger top = (TiDimensionIsAuto(topCap) || TiDimensionIsUndefined(topCap) || topCap.value == 0) ? 
-                                maxHeight/2  : 
-                                TiDimensionCalculateValue(topCap, maxHeight);
+                                imageSize.height/2  : 
+                                TiDimensionCalculateValue(topCap, imageSize.height);
         
-        if (left >= maxWidth) {
-            left = maxWidth - 2;
-        }
-        if (top >= maxHeight) {
-            top = maxHeight - 2;
-        }
-            
-        NSInteger right = left;
-        NSInteger bottom = top;
-            
-        if ((left + right) >= maxWidth) {
-            right = maxWidth - (left + 1);
-        }
-        if ((top + bottom) >= maxHeight) {
-            bottom = maxHeight - (top + 1);
-        }
-        stretchableImage = [[theImage resizableImageWithCapInsets:UIEdgeInsetsMake(top, left, bottom, right) resizingMode:UIImageResizingModeStretch] retain];
+        stretchableImage = [[fullImage stretchableImageWithLeftCapWidth:left
+                                                           topCapHeight:top] retain];
         recapStretchableImage = NO;
     }
 	return stretchableImage;
 }
-
--(UIImage *)imageForSize:(CGSize)imageSize scalingStyle:(TiImageScalingStyle)scalingStyle
-{
-	
-	if (scalingStyle == TiImageScalingStretch)
-	{
-	   return [self stretchableImage];
-	}
-	
-	CGSize fullImageSize = [[self fullImage] size];
-	
-	if (scalingStyle != TiImageScalingNonProportional)
-	 {
-		BOOL validScale = NO;
-		CGFloat scale = 1.0;
-		
-		if (imageSize.height > 1.0)
-		 {
-			scale = imageSize.height/fullImageSize.height;
-			validScale = YES;
-		 }
-		if (imageSize.width > 1.0)
-		 {
-			CGFloat widthScale = imageSize.width/fullImageSize.width;
-			if (!validScale || (widthScale<scale))
-			 {
-				scale = widthScale;
-				validScale = YES;
-			 }
-		 }
-		
-		if (validScale && ((scalingStyle != TiImageScalingThumbnail) || (scale < 1.0)))
-		 {
-			imageSize = CGSizeMake(ceilf(scale*fullImageSize.width),
-								   ceilf(scale*fullImageSize.height));
-		 }
-		else
-		 {
-			imageSize = fullImageSize;
-		 }
-	 }
-	
-	if (CGSizeEqualToSize(imageSize, fullImageSize))
-	 {
-		return fullImage;
-	 }
-	
-	if (CGSizeEqualToSize(imageSize, [recentlyResizedImage size]))
-	 {
-		return recentlyResizedImage;
-	 }
-	
-	//TODO: Tweak quality depending on how large the result will be.
-	CGInterpolationQuality quality = kCGInterpolationDefault;
-	
-	[self setRecentlyResizedImage:[UIImageResize
-								   resizedImage:imageSize
-								   interpolationQuality:quality
-								   image:fullImage
-								   hires:hires]];
-	return recentlyResizedImage;
-}
-
 
 -(UIImage *)imageForSize:(CGSize)imageSize
 {
 	return [self imageForSize:imageSize scalingStyle:TiImageScalingDefault];
 }
 
--(ImageCacheEntry*)initWithURL:(NSURL *)url
+-(BOOL)purgable
 {
-    if (self = [super init]) {
-        remoteURL = [url retain];        
-        local = NO;
-        
-        if ([remoteURL isFileURL]) {
-            localPath = [[remoteURL path] retain];
-            local = YES;
-            lastModified = [[[[NSFileManager defaultManager] attributesOfItemAtPath:localPath error:nil]  objectForKey:NSFileModificationDate] retain];
-        }
-        else {
-            localPath = [[ImageCacheEntry cachePathForURL:url] retain];
-        }
-    }
-    return self;
+	BOOL canPurge = YES;
+	if ([recentlyResizedImage retainCount]<2)
+	{
+		RELEASE_TO_NIL(recentlyResizedImage)
+	}
+	else
+	{
+		canPurge = NO;
+	}
+
+	if ([stretchableImage retainCount]<2)
+	{
+		RELEASE_TO_NIL(stretchableImage)
+	}
+	else
+	{
+		canPurge = NO;
+	}
+
+	if (canPurge && [fullImage retainCount]<2)
+	{
+		RELEASE_TO_NIL(fullImage);
+		return YES;
+	}
+	else if(isLocalImage && [fullImage retainCount]<2)
+	{
+		RELEASE_TO_NIL(fullImage);
+	}
+
+	return NO;
 }
 
 - (void) dealloc
 {
-	RELEASE_TO_NIL(localPath);
 	RELEASE_TO_NIL(recentlyResizedImage);
 	RELEASE_TO_NIL(stretchableImage);
 	RELEASE_TO_NIL(fullImage);
-    RELEASE_TO_NIL(remoteURL);
-    RELEASE_TO_NIL(lastModified);
 	[super dealloc];
 }
 
--(void)serialize:(NSData*)imageData
-{
-    if (!local && imageData != nil) {
-        NSFileManager* fm = [NSFileManager defaultManager];
-        NSString* path = localPath;
-        if (hires && [TiUtils isRetinaDisplay]) { // Save as @2x w/retina
-            path = [NSString stringWithFormat:@"%@@2x.%@", [localPath stringByDeletingPathExtension], [localPath pathExtension]];
-        }
-        
-        if ([fm isDeletableFileAtPath:path]) {
-            [fm removeItemAtPath:path error:nil];
-        }
-        if (![fm createFileAtPath:path contents:imageData  attributes:nil]) {
-            NSLog(@"[ERROR] Unknown error serializing image %@ to path %@", remoteURL, path);
-        }
-    }
-}
-
--(NSString*)description
-{
-    return [NSString stringWithFormat:@"<ImageCache:%@> %@[%@]",self,remoteURL,localPath];
-}
-
-+(NSString*)cachePathForURL:(NSURL *)url
-{
-    if ([url isFileURL]) {
-        return [url path];
-    }
-    
-    NSFileManager* fm = [NSFileManager defaultManager];
-    NSError* error = nil;
-    
-    NSURL* cacheFile = [fm URLForDirectory:NSCachesDirectory 
-                                  inDomain:(NSUserDomainMask | NSLocalDomainMask) 
-                         appropriateForURL:nil 
-                                    create:YES 
-                                     error:&error];
-    if (error != nil) {
-        NSLog(@"[ERROR] Error finding cache directory: %@", [error localizedDescription]);
-        return nil;
-    }
-    
-    NSString* urlStr = [url absoluteString];
-    const char* data = [urlStr UTF8String];
-    NSString* md5key = [TiUtils md5:[NSData dataWithBytes:data length:strlen(data)]];
-    
-    cacheFile = [cacheFile URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@",md5key,[url pathExtension]]];
-    return [cacheFile path];
-}
 
 @end
+
+
+
+
+
+
+
+
 
 ImageLoader *sharedLoader = nil;
 
 @implementation ImageLoaderRequest
 
-@synthesize completed, delegate, imageSize, request;
+@synthesize completed, delegate, imageSize;
 
 DEFINE_EXCEPTIONS
 
@@ -321,10 +237,15 @@ DEFINE_EXCEPTIONS
 	return self;
 }
 
+-(void)setRequest:(ASIHTTPRequest*)request_
+{
+	request = [request_ retain];
+}
+
 -(void)cancel
 {
 	cancelled = YES;
-	[request abort];
+	[request cancel];
 	RELEASE_TO_NIL(request);
 }
 
@@ -352,7 +273,6 @@ DEFINE_EXCEPTIONS
 {
 	if (self = [super init])
 	{
-		WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(didReceiveMemoryWarning:)
 													 name:UIApplicationDidReceiveMemoryWarningNotification  
@@ -363,8 +283,7 @@ DEFINE_EXCEPTIONS
 }
 
 -(void)dealloc
-{	
-	WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
+{
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:UIApplicationDidReceiveMemoryWarningNotification  
 												  object:nil];  
@@ -377,18 +296,41 @@ DEFINE_EXCEPTIONS
 
 -(void)didReceiveMemoryWarning:(id)sender
 {
-#ifdef DEBUG_IMAGE_CACHE
+	NSString * doomedKey;
+
+	int cacheCount = [cache count];
+#ifdef VERBOSE
 	vm_statistics_data_t vmStats;
 	mach_msg_type_number_t infoCount = HOST_VM_INFO_COUNT;
 	kern_return_t kernReturn = host_statistics(mach_host_self(), HOST_VM_INFO, (host_info_t)&vmStats, &infoCount);
-	NSLog(@"[CACHE DEBUG] %d pages free before clearing image cache.",vmStats.free_count);
+	NSLog(@"[INFO] %d pages free before clearing image cache.",vmStats.free_count);
 #endif
-    
-    [cache removeAllObjects];
-    
-#ifdef DEBUG_IMAGE_CACHE
+
+
+	do
+	{
+		doomedKey = nil;
+		for (NSString * thisKey in cache)
+		{
+			ImageCacheEntry * thisValue = [cache objectForKey:thisKey];
+			if ([thisValue purgable])
+			{
+				doomedKey = thisKey;
+				break;
+			}
+		}
+		if (doomedKey != nil)
+		{
+			VerboseLog(@"[INFO] Due to memory conditions, releasing cached image: %@",doomedKey);
+			[cache removeObjectForKey:doomedKey];
+		}
+	} while (doomedKey != nil);
+#ifdef VERBOSE
 	kernReturn = host_statistics(mach_host_self(), HOST_VM_INFO, (host_info_t)&vmStats, &infoCount);
-	NSLog(@"[CACHE DEBUG] %d pages free after clearing image cache.",vmStats.free_count);
+	NSLog(@"[INFO] %d of %d images remain in cache, %d pages now free.",[cache count],cacheCount,vmStats.free_count);
+#else
+	int newCacheCount = [cache count];
+	NSLog(@"[INFO] Due to memory conditions, %d of %d images were unloaded from cache.",cacheCount - newCacheCount,cacheCount);
 #endif
 
 
@@ -396,68 +338,51 @@ DEFINE_EXCEPTIONS
 
 +(ImageLoader*)sharedLoader
 {
-    // GCD allows single-dispatch predicates, specifically for situations like singleton initialization.
-    // We should be switching to this pattern EVERYWHERE.
-    
-    static dispatch_once_t pred;
-    dispatch_once(&pred, ^{
-        sharedLoader = [[ImageLoader alloc] init];
-    });
+	if (sharedLoader==nil)
+	{
+		sharedLoader = [[ImageLoader alloc] init];
+	}
 	return sharedLoader;
 }
 
--(ImageCacheEntry *)setImage:(id)image forKey:(NSURL *)url hires:(BOOL)hires;
+-(ImageCacheEntry *)setImage:(UIImage *)image forKey:(NSString *)urlString cache:(BOOL)doCache
 {
-	NSString *urlString = [url absoluteString];
 	if (image==nil)
 	{
 		return nil;
 	}
 	if (cache==nil)
 	{
-		cache = [[NSCache alloc] init];
-        [cache setName:@"TiImageCache"];
-#ifdef DEBUG_IMAGE_CACHE
-        [cache setDelegate:self];
-        NSLog(@"[CACHE DEBUG] Count limit: %d", [cache countLimit]);
-        NSLog(@"[CACHE DEBUG] Cost limit: %d", [cache totalCostLimit]);
-#endif
+		cache = [[NSMutableDictionary alloc] init];
 	}
-	ImageCacheEntry * newEntry = [[[ImageCacheEntry alloc] initWithURL:url] autorelease];
-    [newEntry setHires:hires];
-    
-    if ([image isKindOfClass:[UIImage class]]) {
-        [newEntry setFullImage:image];
-    }
-    else if ([image isKindOfClass:[NSData class]]) {
-        [newEntry setData:image];
-    }
-    else {
-        DebugLog(@"[DEBUG] Unexpected image data type %@; not caching", [image class]);
-        return nil;
-    }
+	ImageCacheEntry * newEntry = [[[ImageCacheEntry alloc] init] autorelease];
+	[newEntry setFullImage:image];
 	
-#ifdef DEBUG_IMAGE_CACHE
-    NSLog(@"[CACHE DEBUG] Caching: %@",newEntry);
-#endif
-    
-    [cache setObject:newEntry forKey:urlString];
-
+	if (doCache)
+	{
+		VerboseLog(@"[DEBUG] Caching image %@: %@",urlString,image);
+		[cache setObject:newEntry forKey:urlString];
+	}
 	return newEntry;
 }
 
--(void)purge:(NSURL*)url
+-(ImageCacheEntry *)setImage:(UIImage *)image forKey:(NSString *)urlString
 {
-    NSString* urlStr = [url absoluteString];
-    [cache removeObjectForKey:urlStr];
+	return [self setImage:image forKey:urlString cache:YES];
 }
 
 -(CGFloat)imageScale:(UIImage*)image
 {
+	// we have to check both what's being compiled as 
+	// well as if we're running on device that supports it.
+	// i.e. a 4.0 built iphone app running in emulation mode
+	// on an iPad will not have scale
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
 	if ([image respondsToSelector:@selector(scale)])
 	{
 		return [image scale];
 	}
+#endif
 	return 1.0;
 }
 
@@ -470,37 +395,22 @@ DEFINE_EXCEPTIONS
 
 	NSString * urlString = [url absoluteString];
 	ImageCacheEntry * result = [cache objectForKey:urlString];
-
-
-#ifdef DEBUG_IMAGE_CACHE
-    NSLog(@"[CACHE DEBUG] cache[%@] : %@", urlString, result);
-#endif
-    if (result != nil) {
-        if ([result local]) {
-            NSError* error = nil;
-            NSDate* currentTimeStamp = [[[NSFileManager defaultManager] attributesOfItemAtPath:result.localPath  error:&error]  objectForKey:NSFileModificationDate];
-            
-            if (![currentTimeStamp isEqualToDate:result.lastModified]) {
-               //We should remove the cached image as the local file backing cached image has changed.
-               [self purge:url];
-               result = nil;
-           }
-        }
-    }
-    
-    if (result == nil) {
-        if ([url isFileURL]) // Load up straight from disk
-        {
+	
+	if ([url isFileURL])
+	{
+		if (result == nil)
+		{
+			//Well, let's make it for them!
 			NSString * path = [url path];
-#ifdef DEBUG_IMAGE_CACHE
-            NSLog(@"[CACHE DEBUG] Loading locally from path %@", path);
-#endif
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
 			BOOL scaleUp = NO;
 			if ([TiUtils isRetinaDisplay] && [path rangeOfString:@"@2x"].location!=NSNotFound)
 			{
 				scaleUp = YES;
 			}
+#endif
 			UIImage * resultImage = [UIImage imageWithContentsOfFile:path];
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
 			if (scaleUp && [self imageScale:resultImage]==1.0)
 			{
 				// on the ipad running iphone app in emulation mode, this won't exist when
@@ -511,33 +421,31 @@ DEFINE_EXCEPTIONS
 					resultImage = [UIImage imageWithCGImage:[resultImage CGImage] scale:2.0 orientation:[resultImage imageOrientation]];
 				}
 			}
-		    result = [self setImage:resultImage forKey:url hires:NO];
-		}
-        else // Check and see if we cached a file to disk
-        {
-            NSString* diskCache = [ImageCacheEntry cachePathForURL:url];
-            if ([[NSFileManager defaultManager] fileExistsAtPath:diskCache]) {
-#ifdef DEBUG_IMAGE_CACHE
-                NSLog(@"[CACHE DEBUG] Retrieving local image [prefetch]: %@", diskCache);
 #endif
-                UIImage* resultImage = [UIImage imageWithContentsOfFile:diskCache];
-                result = [self setImage:resultImage forKey:url hires:NO];                
-            }
-        }
+			result = [self setImage:resultImage forKey:urlString];
+			[result setIsLocalImage:YES];
+		}
+		else
+		{
+			[result ensureFullImageForUrl:url];
+		}
 	}
 	
 	return result;
 }
 
--(id)cache:(id)image forURL:(NSURL*)url size:(CGSize)imageSize hires:(BOOL)hires
+
+
+-(id)cache:(UIImage*)image forURL:(NSURL*)url size:(CGSize)imageSize
 {
-	return [[self setImage:image forKey:url hires:hires] imageForSize:imageSize];
+	return [[self setImage:image forKey:[url absoluteString]] imageForSize:imageSize];
 }
 
--(id)cache:(id)image forURL:(NSURL*)url
+-(id)cache:(UIImage*)image forURL:(NSURL*)url
 {
-	return [self cache:image forURL:url size:CGSizeZero hires:NO];
+	return [self cache:image forURL:url size:CGSizeZero];
 }
+
 
 -(id)loadRemote:(NSURL*)url
 {
@@ -548,21 +456,16 @@ DEFINE_EXCEPTIONS
 		return image;
 	}
 	
-    APSHTTPRequest *req = [[[APSHTTPRequest alloc] init] autorelease];
-    [req setUrl:url];
-    [req addRequestHeader:@"User-Agent" value:[[TiApp app] userAgent]];
-    [req setSynchronous:YES];
-    [[TiApp app] startNetwork];
-	[req send];
+	ASIHTTPRequest *req = [ASIHTTPRequest requestWithURL:url];
+	[req addRequestHeader:@"User-Agent" value:[[TiApp app] userAgent]];
+	[[TiApp app] startNetwork];
+	[req start];
 	[[TiApp app] stopNetwork];
-
-	if (req!=nil && [[req response] error]==nil)
+	
+	if (req!=nil && [req error]==nil)
 	{
-	   NSData *data = [[req response] responseData];
-	   UIImage *resultImage = [UIImage imageWithData:data];
-	   ImageCacheEntry *result = [self setImage:resultImage forKey:url hires:NO];
-	   [result setData:data];
-	   return [result imageForSize:CGSizeZero];
+		UIImage * resultImage = [UIImage imageWithData:[req responseData]];
+		return [[self setImage:resultImage forKey:[url absoluteString]] imageForSize:CGSizeZero];
 	}
 	
 	return nil;
@@ -572,6 +475,7 @@ DEFINE_EXCEPTIONS
 {
 	return [self loadImmediateImage:url withSize:CGSizeZero];
 }
+
 
 -(UIImage *)loadImmediateImage:(NSURL *)url withSize:(CGSize)imageSize;
 {
@@ -591,23 +495,14 @@ DEFINE_EXCEPTIONS
 	return [image stretchableImage];    
 }
 
--(CGSize)fullImageSize:(NSURL *)url
+-(void)notifyImageCompleted:(NSArray*)args
 {
-	ImageCacheEntry* image = [self entryForKey:url];
-	if (image!=nil) 
+	if ([args count]==2)
 	{
-		return [[image fullImage] size];
+		ImageLoaderRequest *request = [args objectAtIndex:0];
+		UIImage *image = [args objectAtIndex:1];
+		[[request delegate] imageLoadSuccess:request image:image];
 	}
-	else
-	{
-		return CGSizeZero;
-	}
-}
-
--(void)notifyRequest:(ImageLoaderRequest*) request imageCompleted:(UIImage*)image
-{
-	[[request delegate] imageLoadSuccess:request image:image];
-	[request setRequest:nil];
 }
 
 -(void)doImageLoader:(ImageLoaderRequest*)request
@@ -617,30 +512,33 @@ DEFINE_EXCEPTIONS
 	UIImage *image = [[self entryForKey:url] imageForSize:[request imageSize]];
 	if (image!=nil)
 	{
-		TiThreadPerformOnMainThread(^{[self notifyRequest:request imageCompleted:image];}, NO);
+		[self performSelectorOnMainThread:@selector(notifyImageCompleted:) withObject:[NSArray arrayWithObjects:request,image,nil] waitUntilDone:NO modes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
 		return;
 	}
 	
 	// we don't have it local or in the cache so we need to fetch it remotely
 	if (queue == nil)
 	{
-		queue = [[NSOperationQueue alloc] init];
+		queue = [[ASINetworkQueue alloc] init];
 		[queue setMaxConcurrentOperationCount:4];
+		[queue setShouldCancelAllRequestsOnFailure:NO];
+		[queue setDelegate:self];
+		[queue setRequestDidFailSelector:@selector(queueRequestDidFail:)];
+		[queue setRequestDidFinishSelector:@selector(queueRequestDidFinish:)];
+		[queue go];
 	}
 	
 	NSDictionary *dict = [NSDictionary dictionaryWithObject:request forKey:@"request"];
-	APSHTTPRequest *req = [[[APSHTTPRequest alloc] init] autorelease];
-    [req setDelegate:self];
-    [req setUrl:url];
+	ASIHTTPRequest *req = [ASIHTTPRequest requestWithURL:url];
 	[req setUserInfo:dict];
-	[req setMethod:@"GET"];
+	[req setRequestMethod:@"GET"];
 	[req addRequestHeader:@"User-Agent" value:[[TiApp app] userAgent]];
-	[req setTimeout:20];
-    [req setTheQueue:queue];
-    [req send];
+	[req setTimeOutSeconds:20];
 	[request setRequest:req];
 	
 	[[TiApp app] startNetwork];
+	
+	[queue addOperation:req];
 }
 
 -(ImageLoaderRequest*)loadImage:(NSURL*)url delegate:(NSObject<ImageLoaderDelegate>*)delegate userInfo:(NSDictionary*)userInfo
@@ -683,7 +581,7 @@ DEFINE_EXCEPTIONS
 	[lock lock];
 	if (queue!=nil)
 	{
-		[queue cancelAllOperations];
+		[queue reset];
 	}
 	[lock unlock];
 }
@@ -721,25 +619,26 @@ DEFINE_EXCEPTIONS
 
 #pragma mark Delegates
 
--(void)request:(APSHTTPRequest *)request onLoad:(APSHTTPResponse *)response
+
+-(void)queueRequestDidFinish:(ASIHTTPRequest*)request
 {
+	ENSURE_UI_THREAD_1_ARG(request);
+
 	// hold while we're working with it (release below)
 	[request retain];
 	
 	[[TiApp app] stopNetwork];
-	ImageLoaderRequest *req = [[[request userInfo] objectForKey:@"request"] retain];
+	ImageLoaderRequest *req = [[request userInfo] objectForKey:@"request"];
 	if ([req cancelled]==NO)
 	{
-		NSData *data = [response responseData];
+		NSData *data = [request responseData];
 		if (data == nil || [data length]==0)
 		{
 			NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
 			[errorDetail setValue:@"Response returned nil" forKey:NSLocalizedDescriptionKey];
-			NSError *error = [NSError errorWithDomain:@"com.appcelerator.titanium.imageloader" code:1 userInfo:errorDetail];
+			NSError *error = [NSError errorWithDomain:@"com.test3._test3.imageloader" code:1 userInfo:errorDetail];
 			[[req delegate] imageLoadFailed:req error:error];
-			[request setUserInfo:nil];
 			[request release];
-			[req release];
 			return;
 		}
 		
@@ -747,8 +646,8 @@ DEFINE_EXCEPTIONS
 		// honor cache control parameters - however, we're only caching
 		// for this session and not on disk so we ignore (potentially at a determinent?)
 		// the actual max-age setting for now.
+		NSString *cacheControl = [[request responseHeaders] objectForKey:@"Cache-Control"];
 		BOOL cacheable = YES;
-		NSString *cacheControl = [[response headers] objectForKey:@"Cache-Control"];
 		if (cacheControl!=nil)
 		{
 			// check to see if we're cacheable or not
@@ -767,77 +666,41 @@ DEFINE_EXCEPTIONS
 			}
 		}
 		
-        // Previously, we were creating the image here, then caching the image, then setting the data.
-        // This created TWO images in memory from the same binary data, which the system might not be
-        // smart enough to avoid dual allocations of (and for big remote images: Obviously a problem). 
-        // So now, we cache (if we can) and then pull the created image, or just create the image if
-        // we need to, and then dump the entry from the cache if there was a problem.
-        
-		UIImage* image = nil;
-
+		UIImage *image = [UIImage imageWithData:data];
+		
 		if (cacheable)
 		{
-			BOOL hires = [TiUtils boolValue:[[req userInfo] valueForKey:@"hires"] def:NO];
-            
-			[self cache:data forURL:[req url] size:CGSizeZero hires:hires];
-			ImageCacheEntry *entry = [self entryForKey:[req url]];
-            
-            image = [entry fullImage];
+			[self cache:image forURL:[request url]];
 		}
-        else {
-            image = [UIImage imageWithData:data];
-        }
-        
-		if (image == nil) 
-		{
-            if (cacheable) {
-                [self purge:[req url]];
-            }
-                 
-			NSMutableDictionary* errorDetail = [NSMutableDictionary dictionary];
-			[errorDetail setValue:@"Returned invalid image data" forKey:NSLocalizedDescriptionKey];
-			NSError* error = [NSError errorWithDomain:@"com.appcelerator.titanium.imageloader" code:1 userInfo:errorDetail];
-			[[req delegate] imageLoadFailed:req error:error];
-			[request setUserInfo:nil];
-			[request release];
-			[req release];
-			return;
-		}
-        [self notifyRequest:req imageCompleted:image];
+		
+		[self notifyImageCompleted:[NSArray arrayWithObjects:req,image,nil]];
 	}
-    
 	else
 	{
-		if ([[req delegate] respondsToSelector:@selector(imageLoadCancelled:)]) {
+		if ([[req delegate] respondsToSelector:@selector(imageLoadCancelled:)])
+		{
 			[[req delegate] performSelector:@selector(imageLoadCancelled:) withObject:req];
 		}
 	}
-	[request setUserInfo:nil];
 	[request release];
-	[req release];
 }
 
--(void)request:(APSHTTPRequest *)request onError:(APSHTTPResponse *)response
+-(void)queueRequestDidFail:(ASIHTTPRequest*)request
 {
 	[[TiApp app] stopNetwork];
 	ImageLoaderRequest *req = [[request userInfo] objectForKey:@"request"];
-	NSError *error = [response error];
-    
-	if ([request cancelled]) {
-        if ([[req delegate] respondsToSelector:@selector(imageLoadCancelled:)]) {
-            [[req delegate] performSelector:@selector(imageLoadCancelled:) withObject:req];
-        }
-	} else {
-		[[req delegate] imageLoadFailed:req error:[response error]];
+	NSError *error = [request error];
+	if ([error code] == ASIRequestCancelledErrorType && [error domain] == NetworkRequestErrorDomain)
+	{
+		if ([[req delegate] respondsToSelector:@selector(imageLoadCancelled:)])
+		{
+			[[req delegate] performSelector:@selector(imageLoadCancelled:) withObject:req];
+		}
 	}
-	[request setUserInfo:nil];
-}
-
--(void)cache:(NSCache *)cache willEvictObject:(id)obj
-{
-#ifdef DEBUG_IMAGE_CACHE
-    NSLog(@"[CACHE DEBUG] Purging image cache object %@", obj);
-#endif
+	else 
+	{
+		[[req delegate] imageLoadFailed:req error:[request error]];
+	}
 }
 
 @end

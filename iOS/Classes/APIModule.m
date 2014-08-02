@@ -3,95 +3,50 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
+#ifdef USE_TI_API
+
 #import "APIModule.h"
 #import "TiUtils.h"
 #import "TiBase.h"
-#import "TiApp.h"
-#import "TiDebugger.h"
-#import "TiExceptionHandler.h"
-
-extern NSString * const TI_APPLICATION_DEPLOYTYPE;
 
 @implementation APIModule
 
--(NSString*)apiName
-{
-    return @"Ti.API";
-}
-
--(void)logMessage:(NSArray*)args severity:(NSString*)severity
-{
-    NSMutableString* message = [NSMutableString string];
-    
-    NSString* lcSeverity = [severity lowercaseString];
-    DebuggerLogLevel level = OUT;
-    if ([lcSeverity isEqualToString:@"warn"]) {
-        level = WARN;
-    }
-    else if ([lcSeverity isEqualToString:@"error"] ||
-             [lcSeverity isEqualToString:@"critical"] ||
-             [lcSeverity isEqualToString:@"fatal"]) {
-        level = ERR;
-    }
-    else if ([lcSeverity isEqualToString:@"trace"]) {
-        level = TRACE;
-    }
-    else if ([lcSeverity isEqualToString:@"debug"]) {
-        level = LOG_DEBUG;
-    }
-    
-    if ([[TiApp app] debugMode]) {
-        NSMutableArray* messages = [NSMutableArray arrayWithArray:args];
-        
-        if (![lcSeverity isEqualToString:@"info"]) { // Custom severity, or just a badly-formed log; either way, debugger treats it as info
-            [messages insertObject:[NSString stringWithFormat:@"[%@]", severity] atIndex:0];
-        }
-        
-        TiDebuggerLogMessage(level, [messages componentsJoinedByString:@" "]);
-    }
-    else {
-        if ([TI_APPLICATION_DEPLOYTYPE isEqualToString:@"production"]) {
-            if (level != ERR) {
-                return;
-            }
-        }
-        NSLog(@"[%@] %@", [severity uppercaseString], [args componentsJoinedByString:@" "]);
-        fflush(stderr);
-    }
-}
-
 -(id)transform:(id)arg
 {
-	if ([arg isKindOfClass:[NSDictionary class]]) {
-		return [[[[TiScriptError alloc] initWithDictionary:arg] autorelease] description];
-	}
-	return arg;
+	return [TiUtils exceptionMessage:arg];
 }
 
 -(void)debug:(NSArray*)args
 {
-    [self logMessage:args severity:@"debug"];
+	NSLog(@"[DEBUG] %@", [self transform:[args objectAtIndex:0]]);
+	fflush(stderr);
 }
 
 -(void)info:(NSArray*)args
 {
-    [self logMessage:args severity:@"info"];    
+	NSLog(@"[INFO] %@", [self transform:[args objectAtIndex:0]]);
+	fflush(stderr);
 }
 
 -(void)warn:(NSArray*)args
 {
-    [self logMessage:args severity:@"warn"];        
+	NSLog(@"[WARN] %@", [self transform:[args objectAtIndex:0]]);
+	fflush(stderr);
 }
 
 -(void)error:(NSArray*)args
 {
-    [self logMessage:args severity:@"error"];            
+	NSLog(@"[ERROR] %@", [self transform:[args objectAtIndex:0]]);
+	fflush(stderr);
 }
 
 -(void)trace:(NSArray*)args
 {
-    [self logMessage:args severity:@"trace"];
+	NSLog(@"[TRACE] %@", [self transform:[args objectAtIndex:0]]);
+	fflush(stderr);
 }
 
 -(void)timestamp:(NSArray*)args
@@ -102,22 +57,27 @@ extern NSString * const TI_APPLICATION_DEPLOYTYPE;
 
 -(void)notice:(NSArray*)args
 {
-    [self logMessage:args severity:@"info"];
+	NSLog(@"[INFO] %@", [args objectAtIndex:0]);
+	fflush(stderr);
 }
 
 -(void)critical:(NSArray*)args
 {
-    [self logMessage:args severity:@"error"];
+	NSLog(@"[ERROR] %@", [args objectAtIndex:0]);
+	fflush(stderr);
 }
 
 -(void)log:(NSArray*)args
 {
-    if ([args count] > 1) {
-        [self logMessage:[args subarrayWithRange:NSMakeRange(1, [args count]-1)] severity:[args objectAtIndex:0]];
-    }
-    else {
-        [self logMessage:args severity:@"info"];
-    }
+	NSString * severityString = [args objectAtIndex:0];
+	id loggedObject = [args count] > 1 ? [self transform:[args objectAtIndex:1]] : nil;
+	
+	if(loggedObject == nil){
+		loggedObject = severityString;
+		severityString = @"info";
+	}
+	NSLog(@"[%@] %@",[severityString uppercaseString],loggedObject);
+	fflush(stderr);
 }
 
 -(void)reportUnhandledException:(NSArray*)args
@@ -132,3 +92,5 @@ extern NSString * const TI_APPLICATION_DEPLOYTYPE;
 
 
 @end
+
+#endif

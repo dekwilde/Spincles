@@ -22,11 +22,11 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
-#if defined(USE_TI_UIIOSCOVERFLOWVIEW) || defined(USE_TI_UICOVERFLOWVIEW)
+#ifdef USE_TI_UICOVERFLOWVIEW
 
 #import <UIKit/UIKit.h>
 
-// Appcelerator modification note: 
+// test3 modification note: 
 // using categories with static libraries don't seem to work
 // right on device with iphone - probably a symbol issue
 // turn this into a static function (from what was a category to UIImage

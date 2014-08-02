@@ -21,7 +21,7 @@
 @class GDataXMLElement, GDataXMLDocument;
 
 
-static const int kGDataXMLParseOptions = 0;
+static const int kGDataXMLParseOptions = (XML_PARSE_NOCDATA | XML_PARSE_NOBLANKS);
 
 // dictionary key callbacks for string cache
 static const void *StringCacheKeyRetainCallBack(CFAllocatorRef allocator, const void *str);
@@ -246,56 +246,6 @@ static xmlChar *SplitQNameReverse(const xmlChar *qname, xmlChar **prefix) {
 		return [self nodeConsumingXMLNode:theNewText];
 	}
 	return nil;
-}
-
-+ (id)cDataSectionWithStringValue:(NSString *)value
-{
-	xmlChar* cdata = GDataGetXMLString(value);
-	int len = 0;
-	if (cdata != NULL)
-		len = xmlStrlen(cdata);
-	xmlNodePtr theCdataBlock = xmlNewCDataBlock(NULL, cdata, len);
-	if (theCdataBlock) {
-		return [self nodeConsumingXMLNode:theCdataBlock];
-	}
-	return nil;
-}
-
-+ (id)commentWithStringValue:(NSString *)value
-{
-	xmlNodePtr theNewText = xmlNewComment(GDataGetXMLString(value));
-	if (theNewText) {
-		return [self nodeConsumingXMLNode:theNewText];
-	}
-	return nil;
-}
-
-+ (id)processingInstructionWithTarget:(NSString *)theName andData:(NSString*)content
-{
-    xmlNodePtr theNewPI = xmlNewPI(GDataGetXMLString(theName), GDataGetXMLString(content));
-    if (theNewPI){
-        return [self nodeConsumingXMLNode:theNewPI];
-    }
-    return nil;
-}
-
-+ (id)dtdWithQualifiedName:(NSString*)qName publicId:(NSString*)pubId sysId:(NSString*)sysId
-{
-    xmlDtdPtr theNewDTD = xmlNewDtd(nil, GDataGetXMLString(qName), GDataGetXMLString(pubId), GDataGetXMLString(sysId));
-    if (theNewDTD)
-    {
-        return [self nodeConsumingXMLNode:(xmlNodePtr)theNewDTD];
-    }
-    return nil;
-}
-
-+ (id)createNewDocFragment
-{
-    xmlNodePtr theDocFrag = xmlNewDocFragment(nil);
-    if (theDocFrag) {
-        return [self nodeConsumingXMLNode:theDocFrag];
-    }
-    return nil;
 }
 
 + (id)namespaceWithName:(NSString *)name stringValue:(NSString *)value {
@@ -817,7 +767,7 @@ static xmlChar *SplitQNameReverse(const xmlChar *qname, xmlChar **prefix) {
 						int result = xmlXPathRegisterNs(xpathCtx, prefix, nsPtr->href);
 						if (result != 0) {
 #if DEBUG
-							NSCAssert1(result == 0, @"GDataXMLNode XPath namespace %s issue",
+							NSCAssert1(result == 0, @"GDataXMLNode XPath namespace %@ issue",
 									   prefix);
 #endif
 						}
@@ -1061,10 +1011,10 @@ static xmlChar *SplitQNameReverse(const xmlChar *qname, xmlChar **prefix) {
 	}
 }
 
-- (GDataXMLNode*)addChild:(GDataXMLNode *)child {
+- (void)addChild:(GDataXMLNode *)child {
 	if ([child kind] == GDataXMLAttributeKind) {
 		[self addAttribute:child];
-		return [GDataXMLNode nodeBorrowingXMLNode:xmlNode_];
+		return;
 	}
 	
 	if (xmlNode_ != NULL) {
@@ -1085,11 +1035,9 @@ static xmlChar *SplitQNameReverse(const xmlChar *qname, xmlChar **prefix) {
 				// previously-unresolved namespace prefixes that can now be fixed up
 				[[self class] fixUpNamespacesForNode:childNodeCopy
 								  graftingToTreeNode:xmlNode_];
-				return [GDataXMLNode nodeBorrowingXMLNode:resultNode];
 			}
 		}
 	}
-    return nil;
 }
 
 - (void)removeChild:(GDataXMLNode *)child {
@@ -1840,53 +1788,6 @@ static xmlChar *SplitQNameReverse(const xmlChar *qname, xmlChar **prefix) {
 		return array;
 	}
 	return nil;
-}
-
-- (id) importNode:(GDataXMLNode*)theNode recursive:(BOOL)deep
-{
-    xmlNodePtr ret = NULL;
-    if (xmlDoc_ != NULL) 
-    {
-        xmlNodePtr nodeToImport = [theNode XMLNode];
-        
-        if (deep)
-        {
-            ret = xmlDocCopyNode(nodeToImport, xmlDoc_, 1);
-        }
-        else
-        {
-            ret = xmlDocCopyNode(nodeToImport, xmlDoc_, 0);
-        }
-    }
-    
-    if (ret != NULL)
-    {
-        return [GDataXMLNode nodeBorrowingXMLNode:ret];
-    }
-    return nil;
-}
-
-- (id) entityRefForName:(NSString*)theName
-{
-    if (xmlDoc_ != NULL)
-    {
-        xmlNodePtr theRef = xmlNewReference(xmlDoc_, GDataGetXMLString(theName));
-        if (theRef != NULL)
-        {
-            return [GDataXMLNode nodeConsumingXMLNode:theRef];
-        }
-    }
-    return nil;
-}
-
--(xmlDtdPtr) intDTD
-{
-    return xmlGetIntSubset(xmlDoc_);
-}
-
-- (xmlDocPtr) docNode
-{
-    return xmlDoc_;
 }
 
 @end

@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UITABLEVIEW
 
@@ -12,11 +14,11 @@
 
 @implementation TiUITableViewAction
 
-@synthesize animation, obj, type;
+@synthesize animation, section, row, type;
 
 -(void)dealloc
 {
-	RELEASE_TO_NIL(obj);
+	RELEASE_TO_NIL(row);
 	[super dealloc];
 }
 
@@ -32,13 +34,14 @@
 	return animate ? UITableViewRowAnimationFade : UITableViewRowAnimationNone;
 }
 
--(id)initWithObject:(id)obj_ animation:(NSDictionary*)animation_ type:(TiUITableViewActionType)type_
+-(id)initWithRow:(TiUITableViewRowProxy*)row_ animation:(NSDictionary*)animation_ section:(NSInteger)section_ type:(TiUITableViewActionType)type_
 {
 	if (self = [self init])
 	{
 		animation = [TiUITableViewAction animationStyleForProperties:animation_];
+		section = section_;
 		type = type_;
-		obj = [obj_ retain];
+		row = [row_ retain];
 	}
 	return self;
 }

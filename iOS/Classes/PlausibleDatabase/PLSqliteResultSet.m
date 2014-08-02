@@ -67,11 +67,11 @@
     /* Create a column name cache. Optimization possibility: Using CFDictionary may
      * provide an optimization here, since dictionary values do not need to be boxed as objects */
     _columnNames = [[NSMutableDictionary alloc] initWithCapacity: _columnCount];
-    columnNamesArray =  [[NSMutableArray alloc] initWithCapacity: _columnCount];
+	columnNamesArray = [[NSMutableArray alloc] initWithCapacity:_columnCount];
     for (int columnIndex = 0; columnIndex < _columnCount; columnIndex++) {
-        NSString *name = [NSString stringWithUTF8String: sqlite3_column_name(_sqlite_stmt, columnIndex)];
-        [(NSMutableArray *)columnNamesArray addObject: name];
-        [_columnNames setValue: [NSNumber numberWithInt: columnIndex] forKey: [name lowercaseString]];
+        NSString *name = [[NSString stringWithUTF8String: sqlite3_column_name(_sqlite_stmt, columnIndex)] lowercaseString];
+        [_columnNames setValue: [NSNumber numberWithInt: columnIndex] forKey: name];
+		[(NSMutableArray *)columnNamesArray addObject:name];
     }
 
     return self;
@@ -92,7 +92,7 @@
 
     /* Release the column cache. */
     [_columnNames release];
-    [columnNamesArray release];
+	[columnNamesArray release];
     
     /* Release the statement. */
     [_stmt release];
@@ -116,7 +116,7 @@
  */
 - (void) assertNotClosed {
     if (_sqlite_stmt == nil)
-        [NSException raise: TI_PLSqliteException format: @"Attempt to access already-closed result set."];
+        [NSException raise: PLSqliteException format: @"Attempt to access already-closed result set."];
 }
 
 -(void)reset
@@ -127,7 +127,7 @@
 - (int) fullCount {
     [self assertNotClosed];
 	int result = 0;
-	while (YES){
+	while (result < 1000){
 		int ret = sqlite3_step(_sqlite_stmt);
 		if (ret==SQLITE_ROW){
 			result ++;
@@ -158,7 +158,7 @@
     NSString *error = [NSString stringWithFormat: @"Error occurred calling next on a PLSqliteResultSet. SQLite error: '%s' for '%s'", sqlite3_errmsg(sqlite3_db_handle(_sqlite_stmt)), sqlite3_sql(_sqlite_stmt)];
     NSLog(@"[ERROR] %@", error);
 
-    [NSException raise: TI_PLSqliteException format: @"%@", error];
+    [NSException raise: PLSqliteException format: @"%@", error];
 
     /* Unreachable */
     abort();
@@ -174,7 +174,7 @@
         return [number intValue];
     
     /* Not found */
-    [NSException raise: TI_PLSqliteException format: @"Attempted to access unknown result column %@", name];
+    [NSException raise: PLSqliteException format: @"Attempted to access unknown result column %@", name];
 
     /* Unreachable */
     abort();
@@ -192,14 +192,14 @@
     
     /* Verify that the index is in range */
     if (columnIndex > _columnCount - 1 || columnIndex < 0)
-        [NSException raise: TI_PLSqliteException format: @"Attempted to access out-of-range column index %d", columnIndex];
+        [NSException raise: PLSqliteException format: @"Attempted to access out-of-range column index %d", columnIndex];
 
     /* Fetch the type */
     columnType = sqlite3_column_type(_sqlite_stmt, columnIndex);
     
     /* Verify nullability */
     if (!nullable && columnType == SQLITE_NULL) {
-        [NSException raise: TI_PLSqliteException format: @"Attempted to access null column value for column index %d. Use -[PLResultSet isNullColumn].", columnIndex];
+        [NSException raise: PLSqliteException format: @"Attempted to access null column value for column index %d. Use -[PLResultSet isNullColumn].", columnIndex];
     }
 
     return columnType;
@@ -215,7 +215,7 @@
             return (Expression); \
         \
         /* unknown value */ \
-        [NSException raise: TI_PLSqliteException format: @"Attempted to access non-%s column as %s.", #ReturnType, #ReturnType]; \
+        [NSException raise: PLSqliteException format: @"Attempted to access non-%s column as %s.", #ReturnType, #ReturnType]; \
         \
         /* Unreachable */ \
         abort(); \
@@ -276,7 +276,7 @@ VALUE_ACCESSORS(NSData *, data, SQLITE_BLOB, [NSData dataWithBytes: sqlite3_colu
             return [NSNull null];
 
         default:
-            [NSException raise: TI_PLDatabaseException format: @"Unhandled SQLite column type %d", columnType];
+            [NSException raise: PLDatabaseException format: @"Unhandled SQLite column type %d", columnType];
     }
 
     /* Unreachable */
@@ -335,7 +335,7 @@ VALUE_ACCESSORS(NSData *, data, SQLITE_BLOB, [NSData dataWithBytes: sqlite3_colu
 				[result addObject:[NSNull null]]; break;
 				
 			default:
-				[NSException raise: TI_PLDatabaseException format: @"Unhandled SQLite column type %d", columnType];
+				[NSException raise: PLDatabaseException format: @"Unhandled SQLite column type %d", columnType];
 		}
 	}
 
@@ -351,3 +351,5 @@ VALUE_ACCESSORS(NSData *, data, SQLITE_BLOB, [NSData dataWithBytes: sqlite3_colu
 
 
 @end
+
+

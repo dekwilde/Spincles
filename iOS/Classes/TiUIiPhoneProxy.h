@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UIIPHONE
 
@@ -49,21 +51,6 @@
 #ifdef USE_TI_UIIPHONETABLEVIEWCELLSELECTIONSTYLE
 	TiProxy *tableViewCellSelectionStyle;
 #endif
-#ifdef USE_TI_UIIPHONEALERTDIALOGSTYLE
-	TiProxy *alertDialogStyle;
-#endif
-#ifdef USE_TI_UIIPHONELISTVIEWSTYLE
-	TiProxy *listViewStyle;
-#endif
-#ifdef USE_TI_UIIPHONELISTVIEWSCROLLPOSITION
-	TiProxy *listViewScrollPosition;
-#endif
-#ifdef USE_TI_UIIPHONELISTVIEWCELLSELECTIONSTYLE
-	TiProxy *listViewCellSelectionStyle;
-#endif
-#ifdef USE_TI_UIIPHONELISTVIEWSEPARATORSTYLE
-	TiProxy *listViewSeparatorStyle;
-#endif
 }
 
 #ifdef USE_TI_UIIPHONEANIMATIONSTYLE
@@ -105,38 +92,33 @@
 #ifdef USE_TI_UIIPHONETABLEVIEWCELLSELECTIONSTYLE
 @property(nonatomic,readonly) TiProxy* TableViewCellSelectionStyle;
 #endif
-#ifdef USE_TI_UIIPHONEALERTDIALOGSTYLE
-@property(nonatomic, readonly) TiProxy *AlertDialogStyle;
-#endif
-#ifdef USE_TI_UIIPHONELISTVIEWSTYLE
-@property(nonatomic,readonly) TiProxy* ListViewStyle;
-#endif
-#ifdef USE_TI_UIIPHONELISTVIEWSCROLLPOSITION
-@property(nonatomic,readonly) TiProxy* ListViewScrollPosition;
-#endif
-#ifdef USE_TI_UIIPHONELISTVIEWCELLSELECTIONSTYLE
-@property(nonatomic,readonly) TiProxy* ListViewCellSelectionStyle;
-#endif
-#ifdef USE_TI_UIIPHONELISTVIEWSEPARATORSTYLE
-@property(nonatomic,readonly) TiProxy* ListViewSeparatorStyle;
-#endif
 
 
-@property(nonatomic,readonly)	NSNumber *statusBarHidden;
-@property(nonatomic,readonly)	NSNumber *statusBarStyle;
+@property(nonatomic,readwrite,assign)	NSNumber *statusBarHidden;
+@property(nonatomic,readwrite,assign)	NSNumber *statusBarStyle;
 @property(nonatomic,readwrite,assign)	NSNumber *appBadge;
 @property(nonatomic,readwrite,assign)	NSNumber *appSupportsShakeToEdit;
 
 @property(nonatomic,readonly) NSNumber *MODAL_TRANSITION_STYLE_COVER_VERTICAL;
 @property(nonatomic,readonly) NSNumber *MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL;
 @property(nonatomic,readonly) NSNumber *MODAL_TRANSITION_STYLE_CROSS_DISSOLVE;
-
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_3_2
 @property(nonatomic,readonly) NSNumber *MODAL_TRANSITION_STYLE_PARTIAL_CURL;
 
 @property(nonatomic,readonly) NSNumber *MODAL_PRESENTATION_FULLSCREEN;
 @property(nonatomic,readonly) NSNumber *MODAL_PRESENTATION_PAGESHEET;
 @property(nonatomic,readonly) NSNumber *MODAL_PRESENTATION_FORMSHEET;
 @property(nonatomic,readonly) NSNumber *MODAL_PRESENTATION_CURRENT_CONTEXT;
+#endif
+
+
+-(void)hideStatusBar:(id)args;
+-(void)showStatusBar:(id)args;
+
+#ifdef USE_TI_UIIPHONENAVIGATIONGROUP
+-(id)createNavigationGroup:(id)args;
+#endif
+
 
 @end
 

@@ -3,8 +3,10 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
-#if defined(USE_TI_UITABLEVIEW) || defined(USE_TI_UILISTVIEW)
+#ifdef USE_TI_UITABLEVIEW
 #ifndef USE_TI_UISEARCHBAR
 #define USE_TI_UISEARCHBAR
 #endif
@@ -15,7 +17,6 @@
 #import "TiUtils.h"
 #import "TiUISearchBarProxy.h"
 #import "TiUISearchBar.h"
-#import "ImageLoader.h"
 
 @implementation TiUISearchBar
 
@@ -23,13 +24,7 @@
 {
 	[searchView setDelegate:nil];
 	RELEASE_TO_NIL(searchView);
-	[backgroundLayer removeFromSuperlayer];
-	RELEASE_TO_NIL(backgroundLayer);
 	[super dealloc];
-}
--(CGFloat)contentHeightForWidth:(CGFloat)width
-{
-    return [[self searchBar] sizeThatFits:CGSizeZero].height;
 }
 
 -(UISearchBar*)searchBar
@@ -39,22 +34,14 @@
 		searchView = [[UISearchBar alloc] initWithFrame:CGRectZero];
 		[searchView setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
 		[searchView setDelegate:self];
-		[searchView setShowsCancelButton:[(TiUISearchBarProxy *)[self proxy] showsCancelButton]];
 		[self addSubview:searchView];
 	}
 	return searchView;
 }	
 
-- (id)accessibilityElement
-{
-	return [self searchBar];
-}
-
 -(void)frameSizeChanged:(CGRect)frame bounds:(CGRect)bounds
 {
-	[[self searchBar] setFrame:bounds];
-	[backgroundLayer setFrame:bounds];
-    [super frameSizeChanged:frame bounds:bounds];
+	[TiUtils setView:[self searchBar] positionRect:bounds];
 }
 
 -(void)setDelegate:(id<UISearchBarDelegate>)delegate_
@@ -78,13 +65,6 @@
 -(void)setValue_:(id)value
 {
 	[[self searchBar] setText:[TiUtils stringValue:value]];
-}
-
--(void)setShowBookmark_:(id)value
-{
-	UISearchBar *search = [self searchBar];
-	[search setShowsBookmarkButton:[TiUtils boolValue:value]];
-	[search sizeToFit];
 }
 
 -(void)setShowCancel_:(id)value
@@ -119,46 +99,17 @@
 	[[self searchBar] setAutocapitalizationType:[TiUtils intValue:value]];
 }
 
--(void)setTintColor_:(id)color
-{
-    if ([TiUtils isIOS7OrGreater]) {
-        TiColor *ticolor = [TiUtils colorValue:color];
-        UIColor* theColor = [ticolor _color];
-        [[self searchBar] performSelector:@selector(setTintColor:) withObject:theColor];
-        [self performSelector:@selector(setTintColor:) withObject:theColor];
-    }
-}
-
 -(void)setBarColor_:(id)value
 {
 	TiColor * newBarColor = [TiUtils colorValue:value];
 	UISearchBar *search = [self searchBar];
 	
 	[search setBarStyle:[TiUtils barStyleForColor:newBarColor]];
+	[search setTintColor:[TiUtils barColorForColor:newBarColor]];
 	[search setTranslucent:[TiUtils barTranslucencyForColor:newBarColor]];
-	UIColor* theColor = [TiUtils barColorForColor:newBarColor];
-	if ([TiUtils isIOS7OrGreater]) {
-		[search performSelector:@selector(setBarTintColor:) withObject:theColor];
-	} else {
-		[search setTintColor:theColor];
-	}
-}
-
--(void)setBackgroundImage_:(id)arg
-{
-    UIImage *image = [self loadImage:arg];
-    [[self searchBar] setBackgroundImage:image];
-    self.backgroundImage = arg;
 }
 
 #pragma mark Delegate 
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
-{
-    if (delegate!=nil && [delegate respondsToSelector:@selector(searchBarShouldBeginEditing:)]) {
-        [delegate searchBarShouldBeginEditing:searchBar];
-    }
-    return YES;
-}
 
 // called when text starts editing
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar                    
@@ -232,22 +183,11 @@
 	}
 }
 
+
 // called when bookmark button pressed
 - (void)searchBarBookmarkButtonClicked:(UISearchBar *)searchBar                   
 {	
-	NSString * text = @"";
-	
-	if ([searchBar text]!=nil)
-	{
-		text = [searchBar text];
-	}
-	
-	[self.proxy replaceValue:text forKey:@"value" notification:NO];
-	
-	if ([self.proxy _hasListeners:@"bookmark"])
-	{
-		[self.proxy fireEvent:@"bookmark" withObject:[NSDictionary dictionaryWithObject:text forKey:@"value"]];
-	}
+	//TODO: update to the new event model
 	
 	if (delegate!=nil && [delegate respondsToSelector:@selector(searchBarBookmarkButtonClicked:)])
 	{

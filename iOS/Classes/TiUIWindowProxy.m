@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UIWINDOW
 
@@ -12,7 +14,7 @@
 #import "ImageLoader.h"
 #import "TiComplexValue.h"
 #import "TiApp.h"
-#import "TiLayoutQueue.h"
+#import "TiTabController.h"
 
 // this is how long we should wait on the new JS context to be loaded
 // holding the UI thread before we return during an window open. we 
@@ -37,7 +39,6 @@
 {
 	NSCondition *lock;
 	TiUIWindowProxy* window;
-	id args;
 	BOOL completed;
 	BOOL timeout;
 }
@@ -45,12 +46,11 @@
 
 @implementation TiUIWindowProxyLatch
 
--(id)initWithTiWindow:(id)window_ args:(id)args_
+-(id)initWithWindow:(id)window_
 {
 	if (self = [super init])
 	{
 		window = [window_ retain];
-		args = [args_ retain];
 		lock = [[NSCondition alloc] init];
 	}
 	return self;
@@ -60,7 +60,6 @@
 {
 	RELEASE_TO_NIL(lock);
 	RELEASE_TO_NIL(window);
-	RELEASE_TO_NIL(args);
 	[super dealloc];
 }
 
@@ -71,7 +70,7 @@
 	[lock signal];
 	if (timeout)
 	{
-		[window boot:YES args:args];
+		[window boot:YES];
 	}
 	[lock unlock];
 }
@@ -106,13 +105,8 @@
 
 -(void)_destroy
 {
-    if (!closing && opened) {
-        TiThreadPerformOnMainThread(^{[self close:nil];}, YES);
-    }
-    
-	TiThreadRemoveFromSuperviewOnMainThread(barImageView, NO);
-	TiThreadReleaseOnMainThread(barImageView, NO);
-	barImageView = nil;
+	[self performSelectorOnMainThread:@selector(close:) withObject:nil waitUntilDone:YES];
+	RELEASE_TO_NIL(barImageView);
 	if (context!=nil)
 	{
 		[context shutdown:nil];
@@ -123,64 +117,25 @@
 	[super _destroy];
 }
 
--(void)_configure
+-(void)boot:(BOOL)timeout
 {
-	[self replaceValue:nil forKey:@"barColor" notification:NO];
-	[self replaceValue:nil forKey:@"navTintColor" notification:NO];
-	[self replaceValue:nil forKey:@"barImage" notification:NO];
-	[self replaceValue:nil forKey:@"translucent" notification:NO];
-	[self replaceValue:nil forKey:@"titleAttributes" notification:NO];
-	[self replaceValue:NUMBOOL(NO) forKey:@"tabBarHidden" notification:NO];
-	[self replaceValue:NUMBOOL(NO) forKey:@"navBarHidden" notification:NO];
-	[super _configure];
+	RELEASE_TO_NIL(latch);
+	contextReady = YES;
+
+	if (navWindow) 
+	{
+		[self prepareForNavView:[self navController]];
+	}
+	else 
+	{
+		if (timeout)
+		{
+			[self open:nil];
+		}
+	}
 }
 
--(NSString*)apiName
-{
-    return @"Ti.UI.Window";
-}
-
-
--(void)dealloc
-{
-    RELEASE_TO_NIL(barImageView);
-    [super dealloc];
-}
-
--(void)boot:(BOOL)timeout args:args
-{
-    RELEASE_TO_NIL(latch);
-    if (timeout) {
-        if (![context evaluationError]) {
-            contextReady = YES;
-            [self open:args];
-        } else {
-            DebugLog(@"Could not boot context. Context has evaluation error");
-        }
-    }
-}
-
--(BOOL)optimizeSubviewInsertion
-{
-    return YES;
-}
-
--(NSMutableDictionary*)langConversionTable
-{
-	return [NSMutableDictionary dictionaryWithObjectsAndKeys:@"title",@"titleid",@"titlePrompt",@"titlepromptid",nil];
-}
-
-#pragma mark - TiWindowProtocol overrides
-
--(UIViewController*)hostingController;
-{
-    if (controller == nil) {
-        UIViewController* theController = [super hostingController];
-        [theController setHidesBottomBarWhenPushed:[TiUtils boolValue:[self valueForUndefinedKey:@"tabBarHidden"] def:NO]];
-        return theController;
-    }
-    return [super hostingController];
-}
+#pragma mark Public
 
 -(BOOL)_handleOpen:(id)args
 {
@@ -188,7 +143,8 @@
 	// happen after the JS context is fully up and ready
 	if (contextReady && context!=nil)
 	{
-		return [super _handleOpen:args];
+		[self fireFocus:YES];
+		return YES;
 	}
 	
 	//
@@ -213,20 +169,13 @@
 				[self _setBaseURL:url];
 				contextReady=NO;
 				context = [[KrollBridge alloc] initWithHost:[self _host]];
-				id theTabGroup = [tab tabGroup];
-				id theTab = (theTabGroup == nil)?nil:tab;
-				NSDictionary *values = [NSDictionary dictionaryWithObjectsAndKeys:self,@"currentWindow",theTabGroup,@"currentTabGroup",theTab,@"currentTab",nil];
-				NSDictionary *preload = [NSDictionary dictionaryWithObjectsAndKeys:values,@"UI",nil];
-				latch = [[TiUIWindowProxyLatch alloc] initWithTiWindow:self args:args];
+				NSDictionary *preload = [NSDictionary dictionaryWithObjectsAndKeys:self,@"currentWindow",[self.tab tabGroup],@"currentTabGroup",self.tab,@"currentTab",nil];
+				latch = [[TiUIWindowProxyLatch alloc]initWithWindow:self];
 				[context boot:latch url:url preload:preload];
 				if ([latch waitForBoot])
 				{
-                    if ([context evaluationError]) {
-                        DebugLog(@"Could not boot context. Context has evaluation error");
-                        return NO;
-                    }
-                    contextReady = YES;
-					return [super _handleOpen:args];
+					[self boot:NO];
+					return YES;
 				}
 				else 
 				{
@@ -236,83 +185,45 @@
 		}
 		else 
 		{
-			DebugLog(@"[ERROR] Url not supported in a window. %@",url);
+			NSLog(@"[ERROR] url not supported in a window. %@",url);
 		}
 	}
 	
-	return [super _handleOpen:args];
+	return YES;
 }
 
--(void) windowDidClose
+-(void)windowDidClose
 {
-    // Because other windows or proxies we have open and wish to continue functioning might be relying
-    // on our created context, we CANNOT explicitly shut down here.  Instead we should memory-manage
-    // contexts better so they stop when they're no longer in use.
-
-    // Sadly, today is not that day. Without shutdown, we leak all over the place.
-    if (context!=nil) {
-        NSMutableArray* childrenToRemove = [[NSMutableArray alloc] init];
-        pthread_rwlock_rdlock(&childrenLock);
-        for (TiViewProxy* child in children) {
-            if ([child belongsToContext:context]) {
-                [childrenToRemove addObject:child];
-            }
-        }
-        pthread_rwlock_unlock(&childrenLock);
-        [context performSelector:@selector(shutdown:) withObject:nil afterDelay:1.0];
-        RELEASE_TO_NIL(context);
-        
-        for (TiViewProxy* child in childrenToRemove) {
-            [self remove:child];
-        }
-        [childrenToRemove release];
-    }
-    [super windowDidClose];
+	if (context!=nil)
+	{
+		[context performSelector:@selector(shutdown:) withObject:nil afterDelay:1.0];
+		RELEASE_TO_NIL(context);
+	}
+	[super windowDidClose];
 }
 
 -(BOOL)_handleClose:(id)args
 {
-    if (oldBaseURL!=nil)
+	if (tab!=nil)
+	{
+		BOOL animate = args!=nil && [args count]>0 ? [TiUtils boolValue:@"animated" properties:[args objectAtIndex:0] def:YES] : YES;
+		[tab windowClosing:self animated:animate];
+	}
+	else
+	{
+		// if we don't have a tab, we need to fire blur
+		// events ourselves
+		[self fireFocus:NO];
+	}
+	// on close, reset our old base URL so that any subsequent
+	// re-opens will be correct
+	if (oldBaseURL!=nil)
 	{
 		[self _setBaseURL:oldBaseURL];
 	}
 	RELEASE_TO_NIL(oldBaseURL);
-	return [super _handleClose:args];
+	return YES;
 }
-
--(void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    [self willChangeSize];
-}
-
-- (void)viewWillAppear:(BOOL)animated;    // Called when the view is about to made visible. Default does nothing
-{
-    shouldUpdateNavBar = YES;
-	[self setupWindowDecorations];
-	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated;     // Called when the view has been fully transitioned onto the screen. Default does nothing
-{
-	[self updateTitleView];
-	[super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated; // Called when the view is dismissed, covered or otherwise hidden. Default does nothing
-{
-    shouldUpdateNavBar = NO;
-	[self cleanupWindowDecorations];
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated;  // Called after the view was dismissed, covered or otherwise hidden. Default does nothing
-{
-	[super viewDidDisappear:animated];
-}
-
-#pragma mark - UINavController, NavItem UI
-
 
 -(void)showNavBar:(NSArray*)args
 {
@@ -339,174 +250,62 @@
 	}
 }
 
--(void)setNavTintColor:(id)colorString
-{
-    NSString *color = [TiUtils stringValue:colorString];
-    [self replaceValue:color forKey:@"navTintColor" notification:NO];
-    if (![TiUtils isIOS7OrGreater]) {
-        return;
-    }
-    
-    TiThreadPerformOnMainThread(^{
-        if(controller != nil) {
-            TiColor * newColor = [TiUtils colorValue:color];
-            if (newColor == nil) {
-                //Get from TabGroup
-                newColor = [TiUtils colorValue:[[self tabGroup] valueForKey:@"navTintColor"]];
-            }
-            UINavigationBar * navBar = [[controller navigationController] navigationBar];
-            [navBar setTintColor:[newColor color]];
-            [self performSelector:@selector(refreshBackButton) withObject:nil afterDelay:0.0];
-        }
-        
-    }, NO);    
-}
-
 -(void)setBarColor:(id)colorString
 {
-    ENSURE_UI_THREAD(setBarColor,colorString);
-    NSString *color = [TiUtils stringValue:colorString];
-    [self replaceValue:color forKey:@"barColor" notification:NO];
-    if (shouldUpdateNavBar && controller!=nil && [controller navigationController] != nil)
-    {
-        TiColor * newColor = [TiUtils colorValue:color];
-        if (newColor == nil)
-        {
-            newColor =[TiUtils colorValue:[[self tabGroup] valueForKey:@"barColor"]];
-        }
+	ENSURE_UI_THREAD(setBarColor,colorString);
+	NSString *color = [TiUtils stringValue:colorString];
+	[self replaceValue:color forKey:@"barColor" notification:NO];
+	if (controller!=nil)
+	{
+		TiColor * newColor = [TiUtils colorValue:color];
+		if (newColor == nil)
+		{
+			newColor =[TiUtils colorValue:[[self tabGroup] valueForKey:@"barColor"]];
+		}
 
-        UIColor * barColor = [TiUtils barColorForColor:newColor];
-        UIBarStyle navBarStyle = [TiUtils barStyleForColor:newColor];
-
-        UINavigationBar * navBar = [[controller navigationController] navigationBar];
-        [navBar setBarStyle:barStyle];
-        if([TiUtils isIOS7OrGreater]) {
-            [navBar performSelector:@selector(setBarTintColor:) withObject:barColor];
-        } else {
-            [navBar setTintColor:barColor];
-        }
-        [self performSelector:@selector(refreshBackButton) withObject:nil afterDelay:0.0];
-    }
-}
-
--(void)setTitleAttributes:(id)args
-{
-    ENSURE_UI_THREAD(setTitleAttributes,args);
-    ENSURE_SINGLE_ARG_OR_NIL(args, NSDictionary);
-    [self replaceValue:args forKey:@"titleAttributes" notification:NO];
-    
-    if (args == nil) {
-        args = [[self tabGroup] valueForUndefinedKey:@"titleAttributes"];
-    }
-
-    NSMutableDictionary* theAttributes = nil;
-    if (args != nil) {
-        theAttributes = [NSMutableDictionary dictionary];
-        if ([args objectForKey:@"color"] != nil) {
-            UIColor* theColor = [[TiUtils colorValue:@"color" properties:args] _color];
-            if (theColor != nil) {
-                [theAttributes setObject:theColor forKey:([TiUtils isIOS7OrGreater] ? NSForegroundColorAttributeName : UITextAttributeTextColor)];
-            }
-        }
-        if ([args objectForKey:@"shadow"] != nil) {
-            NSShadow* shadow = [TiUtils shadowValue:[args objectForKey:@"shadow"]];
-            if (shadow != nil) {
-                if ([TiUtils isIOS7OrGreater]) {
-                    [theAttributes setObject:shadow forKey:NSShadowAttributeName];
-                } else {
-                    if (shadow.shadowColor != nil) {
-                        [theAttributes setObject:shadow.shadowColor forKey:UITextAttributeTextShadowColor];
-                    }
-                    NSValue *theValue = [NSValue valueWithUIOffset:UIOffsetMake(shadow.shadowOffset.width, shadow.shadowOffset.height)];
-                    [theAttributes setObject:theValue forKey:UITextAttributeTextShadowOffset];
-                }
-            }
-        }
-        
-        if ([args objectForKey:@"font"] != nil) {
-            UIFont* theFont = [[TiUtils fontValue:[args objectForKey:@"font"] def:nil] font];
-            if (theFont != nil) {
-                [theAttributes setObject:theFont forKey:([TiUtils isIOS7OrGreater] ? NSFontAttributeName : UITextAttributeFont)];
-            }
-        }
-        
-        if ([theAttributes count] == 0) {
-            theAttributes = nil;
-        }
-    }
-    
-    if (shouldUpdateNavBar && ([controller navigationController] != nil)) {
-        [[[controller navigationController] navigationBar] setTitleTextAttributes:theAttributes];
-    }
+		UINavigationController * ourNC = [controller navigationController];
+		[TiUtils applyColor:newColor toNavigationController:ourNC];
+		[self performSelector:@selector(_refreshBackButton) withObject:nil afterDelay:0.0];
+	}
 }
 
 -(void)updateBarImage
 {
-    if (controller == nil || [controller navigationController] == nil || !shouldUpdateNavBar) {
-        return;
-    }
-    
-    id barImageValue = [self valueForUndefinedKey:@"barImage"];
-    
-    UINavigationBar* ourNB = [[controller navigationController] navigationBar];
-    UIImage* theImage = nil;
-    if ([TiUtils isIOS7OrGreater]) {
-        //TIMOB-16490
-        theImage = [TiUtils toImage:barImageValue proxy:self];
-    } else {
-        //TIMOB-16338
-        theImage = [TiUtils toImage:barImageValue proxy:self size:[ourNB bounds].size];
-    }
-    
-    if (theImage == nil) {
-        [ourNB setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
-    } else {
-        UIImage* resizableImage = [theImage resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0) resizingMode:UIImageResizingModeStretch];
-        [ourNB setBackgroundImage:resizableImage forBarMetrics:UIBarMetricsDefault];
-        //You can only set up the shadow image with a custom background image.
-        id shadowImageValue = [self valueForUndefinedKey:@"shadowImage"];
-        theImage = [TiUtils toImage:shadowImageValue proxy:self];
-        
-        if (theImage != nil) {
-            UIImage* resizableImage = [theImage resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0) resizingMode:UIImageResizingModeStretch];
-            ourNB.shadowImage = resizableImage;
-        } else {
-            BOOL clipValue = [TiUtils boolValue:[self valueForUndefinedKey:@"hideShadow"] def:NO];
-            if (clipValue) {
-                //Set an empty Image.
-                ourNB.shadowImage = [[[UIImage alloc] init] autorelease];
-            } else {
-                ourNB.shadowImage = nil;
-            }
-        }
-    }
-    
+	UINavigationBar * ourNB = [[controller navigationController] navigationBar];
+	CGRect barFrame = [ourNB bounds];
+	UIImage * newImage = [TiUtils toImage:[self valueForUndefinedKey:@"barImage"]
+			proxy:self size:barFrame.size];
+
+	if (newImage == nil)
+	{
+		[barImageView removeFromSuperview];
+		RELEASE_TO_NIL(barImageView);
+		return;
+	}
+	
+	if (barImageView == nil)
+	{
+		barImageView = [[UIImageView alloc]initWithImage:newImage];
+	}
+	else
+	{
+		[barImageView setImage:newImage];
+	}
+	
+	[barImageView setFrame:barFrame];
+	
+	if ([[ourNB subviews] indexOfObject:barImageView] != 0)
+	{
+		[ourNB insertSubview:barImageView atIndex:0];
+	}
 }
 
 -(void)setBarImage:(id)value
 {
-	[self replaceValue:value forKey:@"barImage" notification:NO];
+	[self replaceValue:[self sanitizeURL:value] forKey:@"barImage" notification:NO];
 	if (controller!=nil)
 	{
-		TiThreadPerformOnMainThread(^{[self updateBarImage];}, NO);
-	}
-}
-
--(void)setShadowImage:(id)value
-{
-	[self replaceValue:value forKey:@"shadowImage" notification:NO];
-	if (controller!=nil)
-	{
-		TiThreadPerformOnMainThread(^{[self updateBarImage];}, NO);
-	}
-}
-
--(void)setHideShadow:(id)value
-{
-	[self replaceValue:value forKey:@"hideShadow" notification:NO];
-	if (controller!=nil)
-	{
-		TiThreadPerformOnMainThread(^{[self updateBarImage];}, NO);
+		[self performSelectorOnMainThread:@selector(updateBarImage) withObject:nil waitUntilDone:NO];
 	}
 }
 
@@ -516,168 +315,118 @@
 	[self replaceValue:value forKey:@"translucent" notification:NO];
 	if (controller!=nil)
 	{
-        BOOL def = [TiUtils isIOS7OrGreater] ? YES: NO;
-		[controller navigationController].navigationBar.translucent = [TiUtils boolValue:value def:def];
+		[controller navigationController].navigationBar.translucent = [TiUtils boolValue:value];
 	}
 }
 
--(void)updateNavButtons
+-(void)setOrientationModes:(id)value
 {
-    //Update LeftNavButton
-    NSDictionary* lProperties = [self valueForUndefinedKey:@"leftNavSettings"];
-    id leftNavButtons = [self valueForUndefinedKey:@"leftNavButtons"];
-    if (!IS_NULL_OR_NIL(leftNavButtons)) {
-        [self setLeftNavButtons:leftNavButtons withObject:lProperties];
-    } else {
-        leftNavButtons = [self valueForUndefinedKey:@"leftNavButton"];
-        [self setLeftNavButton:leftNavButtons withObject:lProperties];
-    }
-    //Update RightNavButton
-    NSDictionary* rProperties = [self valueForUndefinedKey:@"rightNavSettings"];
-    id rightNavButtons = [self valueForUndefinedKey:@"rightNavButtons"];
-    if (!IS_NULL_OR_NIL(rightNavButtons)) {
-        [self setRightNavButtons:rightNavButtons withObject:rProperties];
-    } else {
-        rightNavButtons = [self valueForUndefinedKey:@"rightNavButton"];
-        [self setRightNavButton:rightNavButtons withObject:rProperties];
-    }
-}
-
--(void)refreshRightNavButtons:(id)unused
-{
-    if (controller == nil || [controller navigationController] == nil) {
-        return; // No need to refresh
-    }
-    NSArray* theObjects = [self valueForUndefinedKey:@"rightNavButtons"];
-    NSDictionary* theProperties = [self valueForUndefinedKey:@"rightNavSettings"];
-    
-    ENSURE_TYPE_OR_NIL(theObjects, NSArray);
-    ENSURE_TYPE_OR_NIL(theProperties, NSDictionary);
-    
-    NSMutableArray* theItems = [[NSMutableArray alloc] init];
-    for (TiViewProxy* theProxy in theObjects) {
-        if ([theProxy supportsNavBarPositioning]) {
-            [theItems addObject:[theProxy barButtonItem]];
-        } else {
-            DebugLog(@"%@ does not support nav bar positioning", theProxy);
-        }
-    }
-    
-    BOOL animated = [TiUtils boolValue:@"animated" properties:theProperties def:NO];
-    
-    if ([theItems count] > 0) {
-        [controller.navigationItem setRightBarButtonItems:theItems animated:animated];
-    } else {
-        [controller.navigationItem setRightBarButtonItems:nil animated:animated];
-    }
-    [theItems release];
-}
-
--(void)setRightNavButtons:(id)arg withObject:(id)properties
-{
-    ENSURE_TYPE_OR_NIL(arg, NSArray);
-    ENSURE_TYPE_OR_NIL(properties, NSDictionary);
-    
-    NSArray* curValues = [self valueForUndefinedKey:@"rightNavButtons"];
-    ENSURE_TYPE_OR_NIL(curValues, NSArray);
-    
-    //Clean up current values
-    for (TiViewProxy* curProxy in curValues) {
-        if (![(NSArray*)arg containsObject:curProxy]) {
-            [curProxy removeBarButtonView];
-        }
-    }
-    
-    [self replaceValue:arg forKey:@"rightNavButtons" notification:NO];
-    [self replaceValue:properties forKey:@"rightNavSettings" notification:NO];
-    TiThreadPerformOnMainThread(^{
-        [self refreshRightNavButtons:nil];
-    }, NO);
-    
+	[self replaceValue:value forKey:@"orientationModes" notification:YES];
+	[[[TiApp app] controller] performSelectorOnMainThread:@selector(refreshOrientationModesIfNeeded:) withObject:self waitUntilDone:NO];
 }
 
 -(void)setRightNavButton:(id)proxy withObject:(id)properties
 {
-    [self replaceValue:proxy forKey:@"rightNavButton" notification:NO];
-    if (IS_NULL_OR_NIL(proxy)) {
-        [self setRightNavButtons:nil withObject:properties];
-    } else {
-        [self setRightNavButtons:[NSArray arrayWithObject:proxy] withObject:properties];
+	ENSURE_UI_THREAD_WITH_OBJ(setRightNavButton,proxy,properties);
+    if (properties == nil) {
+        properties = [self valueForKey:@"rightNavSettings"];
     }
-
-}
-
--(void)refreshLeftNavButtons:(id)unused
-{
-    if (controller == nil || [controller navigationController] == nil) {
-        return; // No need to refresh
+    else {
+        [self setValue:properties forKey:@"rightNavSettings"];
     }
-    NSArray* theObjects = [self valueForUndefinedKey:@"leftNavButtons"];
-    NSDictionary* theProperties = [self valueForUndefinedKey:@"leftNavSettings"];
-    
-    ENSURE_TYPE_OR_NIL(theObjects, NSArray);
-    ENSURE_TYPE_OR_NIL(theProperties, NSDictionary);
-    
-    NSMutableArray* theItems = [[NSMutableArray alloc] init];
-    for (TiViewProxy* theProxy in theObjects) {
-        if ([theProxy supportsNavBarPositioning]) {
-            [theItems addObject:[theProxy barButtonItem]];
-        } else {
-            DebugLog(@"%@ does not support nav bar positioning", theProxy);
-        }
-    }
-    
-    BOOL animated = [TiUtils boolValue:@"animated" properties:theProperties def:NO];
-    
-    if ([theItems count] > 0) {
-        [controller.navigationItem setLeftBarButtonItems:theItems animated:animated];
-    } else {
-        [controller.navigationItem setLeftBarButtonItems:nil animated:animated];
-    }
-    [theItems release];
-}
-
--(void)setLeftNavButtons:(id)arg withObject:(id)properties
-{
-    ENSURE_TYPE_OR_NIL(arg, NSArray);
-    ENSURE_TYPE_OR_NIL(properties, NSDictionary);
-    
-    NSArray* curValues = [self valueForUndefinedKey:@"leftNavButtons"];
-    ENSURE_TYPE_OR_NIL(curValues, NSArray);
-    
-    //Clean up current values
-    for (TiViewProxy* curProxy in curValues) {
-        if (![(NSArray*)arg containsObject:curProxy]) {
-            [curProxy removeBarButtonView];
-        }
-    }
-
-    [self replaceValue:arg forKey:@"leftNavButtons" notification:NO];
-    [self replaceValue:properties forKey:@"leftNavSettings" notification:NO];
-    TiThreadPerformOnMainThread(^{
-        [self refreshLeftNavButtons:nil];
-    }, NO);
-
+	
+	if (controller!=nil && 
+		[controller navigationController] != nil)
+	{
+		ENSURE_TYPE_OR_NIL(proxy,TiViewProxy);
+		[self replaceValue:proxy forKey:@"rightNavButton" notification:NO];
+		if (proxy==nil || [proxy supportsNavBarPositioning])
+		{
+			// detach existing one
+			UIBarButtonItem *item = controller.navigationItem.rightBarButtonItem;
+			if (item!=nil && [item isKindOfClass:[TiViewProxy class]])
+			{
+				[(TiViewProxy*)item removeBarButtonView];
+			}
+			if (proxy!=nil)
+			{
+				// add the new one
+				BOOL animated = [TiUtils boolValue:@"animated" properties:properties def:YES];
+				[controller.navigationItem setRightBarButtonItem:[proxy barButtonItem] animated:animated];
+				[self updateBarImage];
+			}
+			else 
+			{
+				controller.navigationItem.rightBarButtonItem = nil;
+			}
+		}
+		else
+		{
+			NSString *msg = [NSString stringWithFormat:@"%@ doesn't support positioning on the nav bar",proxy];
+			THROW_INVALID_ARG(msg);
+		}
+	}
+	else 
+	{
+		[self replaceValue:[[[TiComplexValue alloc] initWithValue:proxy properties:properties] autorelease] forKey:@"rightNavButton" notification:NO];
+	}
 }
 
 -(void)setLeftNavButton:(id)proxy withObject:(id)properties
 {
-    [self replaceValue:proxy forKey:@"leftNavButton" notification:NO];
-    if (IS_NULL_OR_NIL(proxy)) {
-        [self setLeftNavButtons:nil withObject:properties];
-    } else {
-        [self setLeftNavButtons:[NSArray arrayWithObject:proxy] withObject:properties];
+	ENSURE_UI_THREAD_WITH_OBJ(setLeftNavButton,proxy,properties);
+    if (properties == nil) {
+        properties = [self valueForKey:@"leftNavSettings"];
     }
+    else {
+        [self setValue:properties forKey:@"leftNavSettings"];
+    }
+    
+	if (controller!=nil && [controller navigationController] != nil)
+	{
+		ENSURE_TYPE_OR_NIL(proxy,TiViewProxy);
+		[self replaceValue:proxy forKey:@"leftNavButton" notification:NO];
+		if (proxy==nil || [proxy supportsNavBarPositioning])
+		{
+			// detach existing one
+			UIBarButtonItem *item = controller.navigationItem.leftBarButtonItem;
+			if (item!=nil && [item isKindOfClass:[TiViewProxy class]])
+			{
+				[(TiViewProxy*)item removeBarButtonView];
+			}
+			controller.navigationItem.leftBarButtonItem = nil;			
+			if (proxy!=nil)
+			{
+				// add the new one
+				BOOL animated = [TiUtils boolValue:@"animated" properties:properties def:YES];
+				[controller.navigationItem setLeftBarButtonItem:[proxy barButtonItem] animated:animated];
+				[self updateBarImage];
+			}
+			else 
+			{
+				controller.navigationItem.leftBarButtonItem = nil;
+			}
+		}
+		else
+		{
+			NSString *msg = [NSString stringWithFormat:@"%@ doesn't support positioning on the nav bar",proxy];
+			THROW_INVALID_ARG(msg);
+		}
+	}
+	else
+	{
+		[self replaceValue:[[[TiComplexValue alloc] initWithValue:proxy properties:properties] autorelease] forKey:@"leftNavButton" notification:NO];
+	}
 }
 
 -(void)setTabBarHidden:(id)value
 {
+	ENSURE_UI_THREAD_1_ARG(value);
 	[self replaceValue:value forKey:@"tabBarHidden" notification:NO];
-    TiThreadPerformOnMainThread(^{
-        if (controller != nil) {
-            [controller setHidesBottomBarWhenPushed:[TiUtils boolValue:value]];
-        }
-    }, NO);
+	if (controller!=nil)
+	{
+		[controller setHidesBottomBarWhenPushed:[TiUtils boolValue:value]];
+	}
 }
 
 -(void)hideTabBar:(id)value
@@ -690,7 +439,7 @@
 	[self setTabBarHidden:[NSNumber numberWithBool:NO]];
 }
 
--(void)refreshBackButton
+-(void)_refreshBackButton
 {
 	ENSURE_UI_THREAD_0_ARGS;
 	
@@ -705,7 +454,7 @@
 		return;
 	}
 
-	UIViewController * prevController = [controllerArray objectAtIndex:controllerPosition-1];
+	UIViewController * parentController = [controllerArray objectAtIndex:controllerPosition-1];
 	UIBarButtonItem * backButton = nil;
 
 	UIImage * backImage = [TiUtils image:[self valueForKey:@"backButtonTitleImage"] proxy:self];
@@ -716,17 +465,17 @@
 	else
 	{
 		NSString * backTitle = [TiUtils stringValue:[self valueForKey:@"backButtonTitle"]];
-		if ((backTitle == nil) && [prevController isKindOfClass:[TiViewController class]])
+		if ((backTitle == nil) && [parentController conformsToProtocol:@protocol(TiTabController)])
 		{
-			id tc = [(TiViewController*)prevController proxy];
-			backTitle = [TiUtils stringValue:[tc valueForKey:@"title"]];
+			id<TiTabController> tc = (id<TiTabController>)parentController;
+			backTitle = [TiUtils stringValue:[[tc window] valueForKey:@"title"]];
 		}
 		if (backTitle != nil)
 		{
 			backButton = [[UIBarButtonItem alloc] initWithTitle:backTitle style:UIBarButtonItemStylePlain target:nil action:nil];
 		}
 	}
-	[[prevController navigationItem] setBackBarButtonItem:backButton];
+	[[parentController navigationItem] setBackBarButtonItem:backButton];
 	[backButton release];
 }
 
@@ -736,7 +485,7 @@
 	[self replaceValue:proxy forKey:@"backButtonTitle" notification:NO];
 	if (controller!=nil)
 	{
-		[self refreshBackButton];	//Because this is actually a property of a DIFFERENT view controller,
+		[self _refreshBackButton];	//Because this is actually a property of a DIFFERENT view controller,
 		//we can't attach this until we're in the navbar stack.
 	}
 }
@@ -747,90 +496,50 @@
 	[self replaceValue:proxy forKey:@"backButtonTitleImage" notification:NO];
 	if (controller!=nil)
 	{
-		[self refreshBackButton];	//Because this is actually a property of a DIFFERENT view controller,
+		[self _refreshBackButton];	//Because this is actually a property of a DIFFERENT view controller, 
 		//we can't attach this until we're in the navbar stack.
 	}
-}
-
--(void)updateNavBar
-{
-    //Called from the view when the screen rotates. 
-    //Resize titleControl and barImage based on navbar bounds
-    if (!shouldUpdateNavBar || controller == nil || [controller navigationController] == nil) {
-        return; // No need to update the title if not in a nav controller
-    }
-    TiThreadPerformOnMainThread(^{
-        if ([[self valueForKey:@"titleControl"] isKindOfClass:[TiViewProxy class]]) {
-            [self updateTitleView];
-        }
-    }, NO);
 }
 
 -(void)updateTitleView
 {
 	UIView * newTitleView = nil;
 	
-	if (!shouldUpdateNavBar || controller == nil || [controller navigationController] == nil) {
+	if (controller == nil || [controller navigationController] == nil) {
 		return; // No need to update the title if not in a nav controller
 	}
 	
-    UINavigationItem * ourNavItem = [controller navigationItem];
-    UINavigationBar * ourNB = [[controller navigationController] navigationBar];
-    CGRect barFrame = [ourNB bounds];
-    CGSize availableTitleSize = CGSizeZero;
-    availableTitleSize.width = barFrame.size.width - (2*TI_NAVBAR_BUTTON_WIDTH);
-    availableTitleSize.height = barFrame.size.height;
+	UINavigationItem * ourNavItem = [controller navigationItem];
 
-    //Check for titlePrompt. Ugly hack. Assuming 50% for prompt height.
-    if (ourNavItem.prompt != nil) {
-        availableTitleSize.height /= 2.0f;
-        barFrame.origin.y = barFrame.size.height = availableTitleSize.height;
-    }
-    
-    TiViewProxy * titleControl = [self valueForKey:@"titleControl"];
+	TiViewProxy * titleControl = [self valueForKey:@"titleControl"];
 
-    UIView * oldView = [ourNavItem titleView];
-    if ([oldView isKindOfClass:[TiUIView class]]) {
-        TiViewProxy * oldProxy = (TiViewProxy *)[(TiUIView *)oldView proxy];
-        if (oldProxy == titleControl) {
-            //relayout titleControl
-            CGRect barBounds;
-            barBounds.origin = CGPointZero;
-            barBounds.size = SizeConstraintViewWithSizeAddingResizing(titleControl.layoutProperties, titleControl, availableTitleSize, NULL);
-            
-            [TiUtils setView:oldView positionRect:[TiUtils centerRect:barBounds inRect:barFrame]];
-            [oldView setAutoresizingMask:UIViewAutoresizingNone];
-            
-            //layout the titleControl children
-            [titleControl layoutChildren:NO];
-            
-            return;
-        }
-        [oldProxy removeBarButtonView];
-    }
+	UIView * oldView = [ourNavItem titleView];
+	if ([oldView isKindOfClass:[TiUIView class]])
+	{
+		TiViewProxy * oldProxy = (TiViewProxy *)[(TiUIView *)oldView proxy];
+		if (oldProxy == titleControl)
+		{
+			return;	//No need to update?
+		}
+		[oldProxy removeBarButtonView];
+	}
 
 	if ([titleControl isKindOfClass:[TiViewProxy class]])
 	{
-		newTitleView = [titleControl barButtonViewForSize:availableTitleSize];
+		newTitleView = [titleControl barButtonViewForSize:[TiUtils navBarTitleViewSize]];
 	}
 	else
 	{
 		NSURL * path = [TiUtils toURL:[self valueForKey:@"titleImage"] proxy:self];
 		//Todo: This should be [TiUtils navBarTitleViewSize] with the thumbnail scaling. For now, however, we'll go with auto.
 		UIImage *image = [[ImageLoader sharedLoader] loadImmediateImage:path withSize:CGSizeZero];
-		if (image!=nil) {
-			if ([oldView isKindOfClass:[UIImageView class]]) {
-				[(UIImageView*)oldView setImage:image];
-				newTitleView = oldView;
-			} else {
-				newTitleView = [[[UIImageView alloc] initWithImage:image] autorelease];
-			}
+		if (image!=nil)
+		{
+			newTitleView = [[[UIImageView alloc] initWithImage:image] autorelease];
 		}
 	}
 
-    if (oldView != newTitleView) {
-        [ourNavItem setTitleView:newTitleView];
-    }
+	[ourNavItem setTitleView:newTitleView];
 }
 
 
@@ -857,13 +566,13 @@
 
 -(void)setTitle:(NSString*)title_
 {
-    NSString *title = [TiUtils stringValue:title_];
-    [self replaceValue:title forKey:@"title" notification:NO];
-    TiThreadPerformOnMainThread(^{
-        if (shouldUpdateNavBar && controller != nil && [controller navigationController] != nil) {
-            controller.navigationItem.title = title;
-        }
-    }, NO);
+	ENSURE_UI_THREAD(setTitle,title_);
+	NSString *title = [TiUtils stringValue:title_];
+	[self replaceValue:title forKey:@"title" notification:NO];
+	if (controller!=nil && [controller navigationController] != nil)
+	{
+		controller.navigationItem.title = title;
+	}
 }
 
 -(void)setTitlePrompt:(NSString*)title_
@@ -879,77 +588,70 @@
 
 -(void)setToolbar:(id)items withObject:(id)properties
 {
-	ENSURE_TYPE_OR_NIL(items,NSArray);
-	if (properties == nil)
-	{
+	ENSURE_UI_THREAD_WITH_OBJ(setToolbar,items,properties);
+    if (properties == nil) {
         properties = [self valueForKey:@"toolbarSettings"];
     }
-    else 
-	{
+    else {
         [self setValue:properties forKey:@"toolbarSettings"];
     }
-	NSArray * oldarray = [self valueForUndefinedKey:@"toolbar"];
-	if((id)oldarray == [NSNull null])
+    
+	if (controller!=nil)
 	{
-		oldarray = nil;
-	}
-	for(TiViewProxy * oldProxy in oldarray)
-	{
-		if(![items containsObject:oldProxy])
+		ENSURE_TYPE_OR_NIL(items,NSArray);
+		[self replaceValue:items forKey:@"toolbar" notification:NO];
+		
+		// detatch the current ones
+		NSArray *existing = [controller toolbarItems];
+		UINavigationController * ourNC = [controller navigationController];
+		if (existing!=nil)
 		{
-			[self forgetProxy:oldProxy];
-		}
-	}
-	for (TiViewProxy *proxy in items)
-	{
-		[self rememberProxy:proxy];
-	}
-	[self replaceValue:items forKey:@"toolbar" notification:NO];
-	TiThreadPerformOnMainThread( ^{
-		if (shouldUpdateNavBar && controller!=nil && [controller navigationController] != nil)
-		{
-			NSArray *existing = [controller toolbarItems];
-			UINavigationController * ourNC = [controller navigationController];
-			if (existing!=nil)
+			for (id current in existing)
 			{
-				for (id current in existing)
+				if ([current isKindOfClass:[TiViewProxy class]])
 				{
-					if ([current respondsToSelector:@selector(proxy)])
-					{
-						TiViewProxy* p = (TiViewProxy*)[current performSelector:@selector(proxy)];
-						[p removeBarButtonView];
-					}
+					[(TiViewProxy*)current removeBarButtonView];
 				}
 			}
-			NSMutableArray * array = [[NSMutableArray alloc] initWithObjects:nil];
+		}
+		BOOL translucent = [TiUtils boolValue:@"translucent" properties:properties def:NO];
+		if (items!=nil && [items count] > 0)
+		{
+			NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:[items count]];
 			for (TiViewProxy *proxy in items)
 			{
-				if([proxy supportsNavBarPositioning])
+				if ([proxy supportsNavBarPositioning])
 				{
+					// detach existing one
 					UIBarButtonItem *item = [proxy barButtonItem];
 					[array addObject:item];
 				}
+				else
+				{
+					NSString *msg = [NSString stringWithFormat:@"%@ doesn't support positioning on the nav bar",proxy];
+					THROW_INVALID_ARG(msg);
+				}
 			}
-			hasToolbar = (array != nil && [array count] > 0) ? YES : NO ;
-			BOOL translucent = [TiUtils boolValue:@"translucent" properties:properties def:[TiUtils isIOS7OrGreater]];
-			BOOL animated = [TiUtils boolValue:@"animated" properties:properties def:hasToolbar];
-			TiColor* toolbarColor = [TiUtils colorValue:@"barColor" properties:properties];
-			UIColor* barColor = [TiUtils barColorForColor:toolbarColor];
+			BOOL animated = [TiUtils boolValue:@"animated" properties:properties def:YES];
 			[controller setToolbarItems:array animated:animated];
-			[ourNC setToolbarHidden:(hasToolbar == NO ? YES : NO) animated:animated];
+			[ourNC setToolbarHidden:NO animated:animated];
 			[ourNC.toolbar setTranslucent:translucent];
-			if ([TiUtils isIOS7OrGreater]) {
-				UIColor* tintColor = [[TiUtils colorValue:@"tintColor" properties:properties] color];
-				[ourNC.toolbar performSelector:@selector(setBarTintColor:) withObject:barColor];
-				[ourNC.toolbar setTintColor:tintColor];
-			} else {
-				[ourNC.toolbar setTintColor:barColor];
-			}
 			[array release];
-			
+			hasToolbar=YES;
 		}
-	},YES);
-	
+		else
+		{
+			BOOL animated = [TiUtils boolValue:@"animated" properties:properties def:NO];
+			[controller setToolbarItems:nil animated:animated];
+			[ourNC setToolbarHidden:YES animated:animated];
+			[ourNC.toolbar setTranslucent:translucent];
+			hasToolbar=NO;
+		}
+	}
+	else
+	{
+		[self replaceValue:[[[TiComplexValue alloc] initWithValue:items properties:properties] autorelease] forKey:@"toolbar" notification:NO];
+	}
 }
 
 
@@ -985,61 +687,95 @@ else{\
 }\
 }\
 
+-(void)viewDidAttach
+{
+	// we must do this before the tab is loaded for it to repaint correctly
+	// we also must do it in tabFocus below so that it reverts when we push off the stack
+	SETPROP(@"barColor",setBarColor);
+	SETPROP(@"barImage",setBarImage);
+	[super viewDidAttach];
+}
+
 -(void)setupWindowDecorations
-{
-    if ((controller == nil) || ([controller navigationController] == nil)) {
-        return;
-    }
-    
-    [[controller navigationController] setToolbarHidden:!hasToolbar animated:YES];
-    //Need to clear title for titleAttributes to apply correctly on iOS6.
-    [[controller navigationItem] setTitle:nil];
-    SETPROP(@"titleAttributes",setTitleAttributes);
-    SETPROP(@"title",setTitle);
-    SETPROP(@"titlePrompt",setTitlePrompt);
-    [self updateTitleView];
-    SETPROP(@"barColor",setBarColor);
-    SETPROP(@"navTintColor",setNavTintColor);
-    SETPROP(@"translucent",setTranslucent);
-    SETPROP(@"tabBarHidden",setTabBarHidden);
-    SETPROPOBJ(@"toolbar",setToolbar);
-    [self updateBarImage];
-    [self updateNavButtons];
-    [self refreshBackButton];
+{	
+	if (controller!=nil)
+	{
+		[[controller navigationController] setToolbarHidden:!hasToolbar animated:YES];
+	}
+	
+	SETPROP(@"title",setTitle);
+	SETPROP(@"titlePrompt",setTitlePrompt);
+	[self updateTitleView];
+	SETPROP(@"barColor",setBarColor);
+	SETPROP(@"translucent",setTranslucent);
 
-    id navBarHidden = [self valueForKey:@"navBarHidden"];
-    if (navBarHidden!=nil) {
-        id properties = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:@"animated"]];
-        if ([TiUtils boolValue:navBarHidden]) {
-            [self hideNavBar:properties];
-        }
-        else {
-            [self showNavBar:properties];
-        }
-    }
+	SETPROP(@"tabBarHidden",setTabBarHidden);
+
+	SETPROPOBJ(@"leftNavButton",setLeftNavButton);
+	SETPROPOBJ(@"rightNavButton",setRightNavButton);
+	SETPROPOBJ(@"toolbar",setToolbar);
+	SETPROP(@"barImage",setBarImage);
+	[self _refreshBackButton];
+	
+	id navBarHidden = [self valueForKey:@"navBarHidden"];
+	if (navBarHidden!=nil)
+	{
+		id properties = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:@"animated"]];
+		if ([TiUtils boolValue:navBarHidden])
+		{
+			[self hideNavBar:properties];
+		}
+		else
+		{
+			[self showNavBar:properties];
+		}
+	}
 }
 
--(void)cleanupWindowDecorations
+-(void)_tabBeforeFocus
 {
-    if ((controller == nil) || ([controller navigationController] == nil)) {
-        return;
-    }
-    NSArray* curValues = [self valueForUndefinedKey:@"leftNavButtons"];
-    ENSURE_TYPE_OR_NIL(curValues, NSArray);
-    for (TiViewProxy* curProxy in curValues) {
-        [curProxy removeBarButtonView];
-    }
-    
-    NSArray* curValues2 = [self valueForUndefinedKey:@"rightNavButtons"];
-    ENSURE_TYPE_OR_NIL(curValues2, NSArray);
-    for (TiViewProxy* curProxy in curValues2) {
-        [curProxy removeBarButtonView];
-    }
-
-    if (barImageView != nil) {
-        [barImageView removeFromSuperview];
-    }
+	if (focused==NO)
+	{
+		[self setupWindowDecorations];
+	}
+	[super _tabBeforeFocus];
 }
+
+-(void)_tabBeforeBlur
+{
+	[barImageView removeFromSuperview];
+	[super _tabBeforeBlur];
+}
+
+-(void)_tabFocus
+{
+	if (focused==NO)
+	{
+		// we can't fire focus here since we 
+		// haven't yet wired up the JS context at this point
+		// and listeners wouldn't be ready
+		[self fireFocus:YES];
+		[self setupWindowDecorations];
+	}
+	[super _tabFocus];
+}
+
+-(void)_tabBlur
+{
+	if (focused)
+	{
+		[self fireFocus:NO];
+		[barImageView removeFromSuperview];
+	}
+	[super _tabBlur];
+}
+
+-(void)_associateTab:(UIViewController*)controller_ navBar:(UINavigationController*)navbar_ tab:(TiProxy<TiTab>*)tab_ 
+{
+	[super _associateTab:controller_ navBar:navbar_ tab:tab_];
+	SETPROP(@"tabBarHidden",setTabBarHidden);
+}
+
 @end
 
 #endif

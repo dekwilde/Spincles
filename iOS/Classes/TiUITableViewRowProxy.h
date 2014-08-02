@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UITABLEVIEW
 
@@ -13,6 +15,14 @@
 @class TiUITableView;
 @class TiUITableViewSectionProxy;
 
+typedef enum  
+{
+    TiCellBackgroundViewPositionTop, 
+    TiCellBackgroundViewPositionMiddle, 
+    TiCellBackgroundViewPositionBottom,
+	TiCellBackgroundViewPositionSingleLine
+} TiCellBackgroundViewPosition;
+
 @interface TiUITableViewRowProxy : TiViewProxy <TiProxyDelegate>
 {
 @private
@@ -20,11 +30,8 @@
 	TiUITableView *table;
 	TiUITableViewSectionProxy *section;
 	TiDimension height;
-	TiDimension leftCap;
-	TiDimension topCap;
 	BOOL configuredChildren;
-	int dirtyRowFlags;
-	BOOL subviewIsAnimating;
+	
 	UIView * rowContainerView;
 	BOOL modifyingRow;
 	BOOL attaching;
@@ -35,25 +42,22 @@
 #pragma mark Public APIs
 
 @property(nonatomic,readonly)	NSString *tableClass;
-@property(nonatomic, readonly) BOOL reusable; // Readonly until reproxy/reuse implemented properly
 
 #pragma mark Framework
 
-@property(nonatomic,readwrite,assign) TiUITableView *table;
+@property(nonatomic,readwrite,retain) TiUITableView *table;
 @property(nonatomic,readwrite,assign) TiUITableViewSectionProxy *section;
 @property(nonatomic,readwrite,assign) NSInteger row;
-@property(nonatomic,readwrite,assign) TiUITableViewCell* callbackCell;
+@property(nonatomic,readwrite,retain) TiUITableViewCell* callbackCell;
 
--(void)prepareTableRowForReuse;
 -(void)initializeTableViewCell:(UITableViewCell*)cell;
+-(void)renderTableViewCell:(UITableViewCell*)cell;
 -(CGFloat)sizeWidthForDecorations:(CGFloat)oldWidth forceResizing:(BOOL)force;
 -(CGFloat)rowHeight:(CGFloat)width;
--(TiProxy *)touchedViewProxyInCell:(UITableViewCell *)targetCell atPoint:(CGPoint*)point;
+-(TiProxy *)touchedViewProxyInCell:(UITableViewCell *)targetCell;
 -(id)createEventObject:(id)initialObject;
 -(void)triggerAttach;
 -(void)updateRow:(NSDictionary*)data withObject:(NSDictionary*)properties;
--(UIView*) currentRowContainerView; //Private method :For internal use only.
--(void)triggerLayout; //Private method :For internal use only. Called from layoutSubviews of the cell.
 
 @end
 

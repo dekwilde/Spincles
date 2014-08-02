@@ -3,6 +3,8 @@
  * Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
+ * 
+ * WARNING: This is generated code. Modify at your own risk and without support.
  */
 #ifdef USE_TI_UIBUTTON
 
@@ -12,7 +14,10 @@
 #import "TiUtils.h"
 #import "ImageLoader.h"
 #import "TiButtonUtil.h"
-#import "TiUIView.h"
+
+const UIControlEvents highlightingTouches = UIControlEventTouchDown|UIControlEventTouchDragEnter;
+const UIControlEvents unHighlightingTouches = UIControlEventTouchCancel|UIControlEventTouchDragExit|UIControlEventTouchUpInside;
+
 
 @implementation TiUIButton
 
@@ -20,27 +25,11 @@
 
 -(void)dealloc
 {
-	[button removeTarget:self action:NULL forControlEvents:UIControlEventAllTouchEvents];
+	[button removeTarget:self action:@selector(clicked:) forControlEvents:UIControlEventTouchUpInside];
+	[button removeTarget:self action:@selector(highlightOn:) forControlEvents:highlightingTouches];
+	[button removeTarget:self action:@selector(highlightOff:) forControlEvents:unHighlightingTouches];
 	RELEASE_TO_NIL(button);
-	RELEASE_TO_NIL(viewGroupWrapper);
-	RELEASE_TO_NIL(backgroundImageCache)
-	RELEASE_TO_NIL(backgroundImageUnstretchedCache);
 	[super dealloc];
-}
-
--(UIView *) hitTest:(CGPoint)point withEvent:(UIEvent *)event {
-	UIView *superResult = [super hitTest:point withEvent:event];
-	
-	if(superResult == nil) {
-		return nil;
-	}
-	
-	if((viewGroupWrapper == superResult) || ([superResult isKindOfClass:[TiUIView class]] 
-	   && ![(TiUIView*)superResult touchEnabled])) {
-		return [self button];
-	}
-
-	return superResult;
 }
 
 -(BOOL)hasTouchableListener
@@ -52,8 +41,12 @@
 
 -(void)setHighlighting:(BOOL)isHiglighted
 {
-	for (TiUIView * thisView in [viewGroupWrapper subviews])
+	TiUIButtonProxy * ourProxy = (TiUIButtonProxy *)[self proxy];
+	
+	NSArray * proxyChildren = [ourProxy children];
+	for (TiViewProxy * thisProxy in proxyChildren)
 	{
+		TiUIView * thisView = [thisProxy view];
 		if ([thisView respondsToSelector:@selector(setHighlighted:)])
 		{
 			[(id)thisView setHighlighted:isHiglighted];
@@ -61,79 +54,51 @@
 	}
 }
 
--(void)updateBackgroundImage
+-(void)handleControlEvents:(UIControlEvents)events
 {
-	CGRect bounds = [self bounds];
-	[button setFrame:bounds];
-	if ((backgroundImageCache == nil) || (bounds.size.width == 0) || (bounds.size.height == 0)) {
-		[button setBackgroundImage:nil forState:UIControlStateNormal];
-		return;
+	eventAlreadyTriggered = YES;
+	if (events & highlightingTouches) {
+		[button setHighlighted:YES];
+		[self setHighlighting:YES];
 	}
-	CGSize imageSize = [backgroundImageCache size];
-	if((bounds.size.width>=imageSize.width) && (bounds.size.height>=imageSize.height)){
-		[button setBackgroundImage:backgroundImageCache forState:UIControlStateNormal];
-		return;
+	else if (events & unHighlightingTouches) {
+		[button setHighlighted:NO];
+		[self setHighlighting:NO];
 	}
-    //If the bounds are smaller than the image size render it in an imageView and get the image of the view.
-    //Should be pretty inexpensive since it happens rarely. TIMOB-9166
-    CGSize unstrechedSize = (backgroundImageUnstretchedCache != nil) ? [backgroundImageUnstretchedCache size] : CGSizeZero;
-    if (backgroundImageUnstretchedCache == nil || !CGSizeEqualToSize(unstrechedSize,bounds.size) ) {
-        UIImageView* theView = [[UIImageView alloc] initWithFrame:bounds];
-        [theView setImage:backgroundImageCache];
-        UIGraphicsBeginImageContextWithOptions(bounds.size, [theView.layer isOpaque], 0.0);
-        [theView.layer renderInContext:UIGraphicsGetCurrentContext()];
-        UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        RELEASE_TO_NIL(backgroundImageUnstretchedCache);
-        backgroundImageUnstretchedCache = [image retain];
-        [theView release];
-    }
-	[button setBackgroundImage:backgroundImageUnstretchedCache forState:UIControlStateNormal];	
+	eventAlreadyTriggered = NO;
+	
+	[super handleControlEvents:events];
+}
+
+-(IBAction)highlightOn:(id)sender
+{
+	[self setHighlighting:YES];
+	if (!eventAlreadyTriggered && [self.proxy _hasListeners:@"touchstart"])
+	{
+		[self.proxy fireEvent:@"touchstart" withObject:nil];
+	}
+}
+
+-(IBAction)highlightOff:(id)sender
+{
+	[self setHighlighting:NO];
+	if (!eventAlreadyTriggered && [self.proxy _hasListeners:@"touchend"])
+	{
+		[self.proxy fireEvent:@"touchend" withObject:nil];
+	}
 }
 
 -(void)frameSizeChanged:(CGRect)frame bounds:(CGRect)bounds
 {
-	[super frameSizeChanged:frame bounds:bounds];
-	[self updateBackgroundImage];
+	[TiUtils setView:self positionRect:CGRectIntegral([TiUtils viewPositionRect:self])];
+	[TiUtils setView:button positionRect:bounds];
 }
 
-- (void)controlAction:(id)sender forEvent:(UIEvent *)event
+-(void)clicked:(id)event
 {
-    UITouch *touch = [[event allTouches] anyObject];
-    NSString *fireEvent;
-    NSString * fireActionEvent = nil;
-    switch (touch.phase) {
-        case UITouchPhaseBegan:
-            if (touchStarted) {
-                return;
-            }
-            touchStarted = YES;
-            fireEvent = @"touchstart";
-            break;
-        case UITouchPhaseMoved:
-            fireEvent = @"touchmove";
-            break;
-        case UITouchPhaseEnded:
-            touchStarted = NO;
-            fireEvent = @"touchend";
-            if (button.highlighted) {
-                fireActionEvent = [touch tapCount] == 1 ? @"click" : ([touch tapCount] == 2 ? @"dblclick" : nil);
-            }
-            break;
-        case UITouchPhaseCancelled:
-            touchStarted = NO;
-            fireEvent = @"touchcancel";
-            break;
-        default:
-            return;
-    }
-    [self setHighlighting:button.highlighted];
-    NSMutableDictionary *evt = [NSMutableDictionary dictionaryWithDictionary:[TiUtils pointToDictionary:[touch locationInView:self]]];
-    if ((fireActionEvent != nil) && [self.proxy _hasListeners:fireActionEvent]) {
-        [self.proxy fireEvent:fireActionEvent withObject:evt];
-    }
-	if ([self.proxy _hasListeners:fireEvent]) {
-		[self.proxy fireEvent:fireEvent withObject:evt];
+	if ([self.proxy _hasListeners:@"click"])
+	{
+		[self.proxy fireEvent:@"click" withObject:nil];
 	}
 }
 
@@ -141,48 +106,22 @@
 {
 	if (button==nil)
 	{
-        BOOL hasImage = [self.proxy valueForKey:@"backgroundImage"]!=nil;
-		
-        UIButtonType defaultType = (hasImage==YES) ? UIButtonTypeCustom : UIButtonTypeRoundedRect;
+		id backgroundImage = [self.proxy valueForKey:@"backgroundImage"];
+		UIButtonType defaultType = backgroundImage!=nil ? UIButtonTypeCustom : UIButtonTypeRoundedRect;
 		style = [TiUtils intValue:[self.proxy valueForKey:@"style"] def:defaultType];
 		UIView *btn = [TiButtonUtil buttonWithType:style];
 		button = (UIButton*)[btn retain];
 		[self addSubview:button];
+		[TiUtils setView:button positionRect:self.bounds];
 		if (style==UIButtonTypeCustom)
 		{
 			[button setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
 		}
-		[button addTarget:self action:@selector(controlAction:forEvent:) forControlEvents:UIControlEventAllTouchEvents];
-		button.exclusiveTouch = YES;
-	}
-	if ((viewGroupWrapper != nil) && ([viewGroupWrapper	superview]!=button)) {
-		[viewGroupWrapper setFrame:[button bounds]];
-		[button addSubview:viewGroupWrapper];
+		[button addTarget:self action:@selector(clicked:) forControlEvents:UIControlEventTouchUpInside];
+		[button addTarget:self action:@selector(highlightOn:) forControlEvents:highlightingTouches];
+		[button addTarget:self action:@selector(highlightOff:) forControlEvents:unHighlightingTouches];
 	}
 	return button;
-}
-
-- (id)accessibilityElement
-{
-	return [self button];
-}
-
--(UIView *) viewGroupWrapper
-{
-	if (viewGroupWrapper == nil) {
-		viewGroupWrapper = [[UIView alloc] initWithFrame:[self bounds]];
-		[viewGroupWrapper setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
-	}
-	if (button != [viewGroupWrapper superview]) {
-		if (button != nil) {
-			[viewGroupWrapper setFrame:[button bounds]];
-			[button addSubview:viewGroupWrapper];
-		}
-		else {
-			[viewGroupWrapper removeFromSuperview];
-		}
-	}
-	return viewGroupWrapper;
 }
 
 #pragma mark Public APIs
@@ -212,7 +151,26 @@
 	if (image!=nil)
 	{
 		[[self button] setImage:image forState:UIControlStateNormal];
-		[(TiViewProxy *)[self proxy] contentsWillChange];
+		
+		// if the layout is undefined or auto, we need to take the size of the image
+		LayoutConstraint *layout = [(TiViewProxy *)[self proxy] layoutProperties];
+		BOOL reposition = NO;
+		
+		if (TiDimensionIsUndefined(layout->width) || TiDimensionIsAuto(layout->width))
+		{
+			layout->width.value = image.size.width;
+			layout->width.type = TiDimensionTypePixels;
+			reposition = YES;
+		}
+		if (TiDimensionIsUndefined(layout->height) || TiDimensionIsAuto(layout->height))
+		{
+			layout->height.value = image.size.height;
+			layout->height.type = TiDimensionTypePixels;
+		}
+		if (reposition)
+		{
+			[(TiViewProxy *)[self proxy] setNeedsReposition];
+		}
 	}
 	else
 	{
@@ -232,11 +190,8 @@
 
 -(void)setBackgroundImage_:(id)value
 {
-	[backgroundImageCache release];
-	RELEASE_TO_NIL(backgroundImageUnstretchedCache);
-	backgroundImageCache = [[self loadImage:value] retain];
+	[[self button] setBackgroundImage:[self loadImage:value] forState:UIControlStateNormal];
     self.backgroundImage = value;
-	[self updateBackgroundImage];
 }
 
 -(void)setBackgroundSelectedImage_:(id)value
@@ -247,11 +202,6 @@
 -(void)setBackgroundDisabledImage_:(id)value
 {
 	[[self button] setBackgroundImage:[self loadImage:value] forState:UIControlStateDisabled];
-}
-
--(void)setBackgroundFocusedImage_:(id)value
-{
-	[[self button] setBackgroundImage:[self loadImage:value] forState:UIControlStateSelected];
 }
 
 -(void)setBackgroundColor_:(id)value
@@ -306,59 +256,12 @@
 	}
 }
 
--(void)setDisabledColor_:(id)color
-{
-    if (color!=nil) {
-        TiColor *selColor = [TiUtils colorValue:color];
-        UIButton *b = [self button];
-        if (selColor!=nil) {
-            [b setTitleColor:[selColor _color] forState:UIControlStateDisabled];
-        }
-    }
-}
-
--(void)setShadowColor_:(id)color
-{
-    if (color==nil) {
-        [[self button] setTitleShadowColor:nil forState:UIControlStateNormal];
-    } else {
-        color = [TiUtils colorValue:color];
-        [[self button] setTitleShadowColor:[color color] forState:UIControlStateNormal];
-    }
-}
-
--(void)setShadowOffset_:(id)value
-{
-	CGPoint p = [TiUtils pointValue:value];
-	CGSize size = {p.x,p.y};
-	[[[self button] titleLabel] setShadowOffset:size];
-}
-
--(void)setTextAlign_:(id)align
-{
-	UIButton *b = [self button];
-	if ([align isEqual:@"left"])
-	{
-		b.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-		b.contentEdgeInsets = UIEdgeInsetsMake(0,10,0,0);
-	}
-	else if ([align isEqual:@"right"])
-	{
-		b.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-		b.contentEdgeInsets = UIEdgeInsetsMake(0,0,10,0);
-	}
-	else if ([align isEqual:@"center"])
-	{
-		b.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
-	}
-}
-
--(CGFloat)contentWidthForWidth:(CGFloat)value
+-(CGFloat)autoWidthForWidth:(CGFloat)value
 {
 	return [[self button] sizeThatFits:CGSizeMake(value, 0)].width;
 }
 
--(CGFloat)contentHeightForWidth:(CGFloat)value
+-(CGFloat)autoHeightForWidth:(CGFloat)value
 {
 	return [[self button] sizeThatFits:CGSizeMake(value, 0)].height;
 }
