@@ -31,6 +31,8 @@ var webview = Titanium.UI.createWebView({
                                         url:'../main.html',
                                         //height: 480,
                                         //width: 320,
+										top:0,
+										left:0,
                                         backgroundColor:'transparent'
                                         });
 webview.addEventListener('load', init);
@@ -72,7 +74,7 @@ function init(e) {
 		'init("' + values + '");'
 	);
     
-    Ti.API.info("init win =>  start");
+    Ti.API.info("1 - Start sequence: iprocessingwin.js, connect Titanium send to iprocessing.lib");
 }
 
 // iPhone events/functions *********************************************

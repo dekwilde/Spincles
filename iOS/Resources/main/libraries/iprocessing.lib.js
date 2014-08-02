@@ -77,27 +77,37 @@ function init(v) {
 	
 	// make a reference to Processing - should be the first instance
 	//p = Processing.instances[0];
-    p = Processing.getInstanceById("p5js");
-    debug("Start " + p);
-    // initialise variables
-	name						= values[0];
-	device						= values[1];
-	os							= values[2];
-	version						= values[3];
-	uuid						= values[4];
-	volume						= values[5]; 
-    proximity					= values[6];
-	p.orientation               = findOrientation(values[7]);
-	networkConnected            = values[8];
-	networkType                 = values[9];
-	networkAddress              = values[10];
-	state						= values[11];
-    
-    debug("Start " + v);
+	//p = processingInstances[0];   
+	
+	var tId,cnt=0;
+	tId=setInterval(function() {
+    	p = Processing.getInstanceById("pde");
+    	debug(cnt+':'+p);
+    	if (p) {
+	    	clearInterval(tId); 
+			debug("2 - Start sequence: load processing canvas " + p);
+		    // initialise variables
+			name						= values[0];
+			device						= values[1];
+			os							= values[2];
+			version						= values[3];
+			uuid						= values[4];
+			volume						= values[5]; 
+		    proximity					= values[6];
+			p.orientation               = findOrientation(values[7]);
+			networkConnected            = values[8];
+			networkType                 = values[9];
+			networkAddress              = values[10];
+			state						= values[11];
 
+		    debug("3 - Start sequence: Connect features to iprocessing.js: " + v);
 
-	// start iProcessing
-	start();
+			// start iProcessing
+			start();
+		} 
+  	},500);
+	
+
 }
 
 function start() {
