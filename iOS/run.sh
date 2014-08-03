@@ -20,7 +20,7 @@ echo "<head>" >> main.html
 echo "<script src=\"libraries/iprocessing.js\"></script>" >> main.html
 echo "<script src=\"libraries/iprocessing.lib.js\"></script>" >> main.html
 echo "</head>" >> main.html
-echo "<body style=\"margin:0px;padding:0px;background-color:transparent;-webkit-user-select:none;\">" >> main.html
+echo "<body style=\"margin:0;padding:0;background-color:transparent;-webkit-user-select:none;\">" >> main.html
 echo "<canvas id=\"pde\" style=\"background-color:transparent;\" data-processing-sources=\"$codeList\"></canvas>" >> main.html
  
 echo "</body>" >> main.html
