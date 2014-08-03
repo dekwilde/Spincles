@@ -1,10 +1,12 @@
-class ButtonClose {
+class ButtonStart {
     boolean overButton = false;
-    int pX = 285;
-    int pY = 25;
-    int dm = 15; 
     
-    ButtonClose() {  
+    int pX = width/2;
+    int pY = height/2;
+    int dw = 40;
+    int dh = 10;
+    
+    ButtonStart() {  
         smooth();
         rectMode(CENTER_RADIUS);
     }
@@ -19,22 +21,22 @@ class ButtonClose {
           // o "X"
           stroke(255);
         }
-        strokeWeight(1);
-        noFill();
-        line(pX-dm, pY-dm, pX+dm, pY+dm);
-        line(pX-dm, pY+dm, pX+dm, pY-dm);
+        fill(0);
+        rect(pX, pY, dw, dh);
+        fill(255);
+        text("Start", pX, pY);
         
         if (overButton == true) {
            background(0);
            pInfo = 480;    
            gameState = "Game";
-           println("close" + gameState);
+           println(gameState);
         }
     } 
     
     
     void checkButton() {
-          if (touch1X > pX-dm && touch1X < pX+dm && touch1Y > pY-dm && touch1Y < pY+dm) {
+          if (touch1X > pX-dw && touch1X < pX+dw && touch1Y > pY-dh && touch1Y < pY+dh) {
             overButton = true;   
           } else {
             overButton = false;

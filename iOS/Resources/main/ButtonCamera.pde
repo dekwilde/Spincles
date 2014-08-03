@@ -9,7 +9,7 @@ class ButtonCamera {
         smooth();
         rectMode(CENTER_RADIUS);
     }    
-    void frame() {
+    void draw() {
         checkButton();
           // Left buttom
         if (overButton) {

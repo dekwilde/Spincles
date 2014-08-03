@@ -56,20 +56,22 @@ float angleSpeedTouch = 0.0f;
 float angleRadiusTouch = 0.0f;
 float WeightSegmentTouch = 0.0f;
 
-
-boolean infoShow = false;
 boolean cameraShow = false;
 PImage infoImg;
 ButtonInfo btInfo;
+ButtonStart btStart;
 ButtonCamera btCamera;
 ButtonClose btClose;
 MenuSlider slider;
 float pInfo = 480;
 
+
+var gameState = "Intro";
+
 void setup() 
 {
-        //size(320, 480);
-        size(screenWidth, screenHeight);
+        size(320, 480);
+        //size(screenWidth, screenHeight);
         ctx = externals.context;        
         frameRate(30);
         //background(0);
@@ -77,6 +79,7 @@ void setup()
         infoImg= loadImage("infos.jpg");
   
         btInfo = new ButtonInfo();
+        btStart = new ButtonStart();
         btCamera = new ButtonCamera();
         btClose = new ButtonClose();
         slider = new MenuSlider();
@@ -110,7 +113,7 @@ void setup()
         ball = new Ball(bx, by, bs);
         iphone = new IPhone();
 
-	
+
         sound1 = iphone.loadSound("background.wav");
         sound1.play();
         sound1.loop();
@@ -137,19 +140,29 @@ void draw()
       gravityX = iphone.getAcceleration().x;
       gravityY = -iphone.getAcceleration().y;
       microfone = pow(iphone.getMicLevel(), 1) * mic_perc;
+  switch( gameState ) {      
+    case "Intro": // In case gameState = "Intro"
+      background(#FFCC00);
+      fill(0);
+      text("Welcome to", width/2, 30); 
+      text("Spincles", width/2, 60); 
       
-      if (infoShow) {
+      btStart.draw();
+      
+    break; // End of Case Statement
+    
+    case "InfoShow": // In case gameState = "Intro"
           image(infoImg, 0, pInfo);
         //tint(20);
           if (pInfo<1) {
               pInfo = 0;
-              slider.frame();
-              btClose.frame();
+              slider.draw();
+              btClose.draw();
 
           }
           pInfo = pInfo - pInfo/6;
-      } else {
-                
+    break; // End of Case Statement
+    case "Game": // In case gameState = "Intro"            
         delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
                 
         if (delay_mic>255) {
@@ -213,8 +226,8 @@ void draw()
         airY += easing;  
         y += dy * easing + nY*(microfone/3 + 5.2);
         
-        btInfo.frame();
-        btCamera.frame();
+        btInfo.draw();
+        btCamera.draw();
         location();
         compass.frame(targetDEGREE - compassDEGREE);
         
@@ -227,11 +240,7 @@ void draw()
         sound1.setVolume(microfone*10);
         //sound2.setVolume(delay_mic/1000);
         pi++;
-        
+    break; // End of Case Statement   
 
-    }
+  } //end switch
 }
-
-
-
-

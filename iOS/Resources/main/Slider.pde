@@ -15,7 +15,7 @@ class MenuSlider {
       rectMode(RADIUS);  
     }
     
-    void frame() {
+    void draw() {
       //Draw Line
       line(init, st_y, end, st_y);
       

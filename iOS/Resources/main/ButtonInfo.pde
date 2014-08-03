@@ -8,12 +8,12 @@ class ButtonInfo {
         smooth();
         rectMode(CENTER_RADIUS);
     }    
-    void frame() {
+    void draw() {
         checkButton();
           // Left buttom
         if (overButton == true) {
-          infoShow = true;
-          println("info " + infoShow);
+          gameState = "InfoShow";
+          println("info " + gameState);
           
           // circulo          
           noStroke();
@@ -55,4 +55,3 @@ class ButtonInfo {
           }
     }
 }
-
