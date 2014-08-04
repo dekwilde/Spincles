@@ -1,11 +1,12 @@
 class Tbody {
-    
+  float x, y;  
   Arm arms;  
    
-  Tbody(float x, float y, float rotator, float escala) {
-    
+  Tbody(float posX, float posY, float rotator, float escala) {
+    x = posX;
+    y = posY;
     stroke((0 + microfone*15), 80); 
-    translate(x, y);
+    translate(posX, posY);
     rotate(rotator);
     scale(escala);
     //

@@ -13,7 +13,7 @@ class ButtonInfo {
           // Left buttom
         if (overButton == true) {
           gameState = "InfoShow";
-          println("info " + gameState);
+          println("info");
           
           // circulo          
           noStroke();

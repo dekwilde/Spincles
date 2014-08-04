@@ -28,7 +28,7 @@ class ButtonClose {
            background(0);
            pInfo = 480;    
            gameState = "Game";
-           println("close" + gameState);
+           println("close");
         }
     } 
     

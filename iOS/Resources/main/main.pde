@@ -132,6 +132,8 @@ void setup()
         
         //setupThree();
         video = loadImage(iphone.getCamera());
+        
+        println("4 - Start sequence: main.pde setup(0)");
 }
 
 void draw() 

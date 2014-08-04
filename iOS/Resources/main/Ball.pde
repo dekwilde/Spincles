@@ -49,7 +49,7 @@ class Ball {
           
           
           if(!locked) { 
-              //stroke(255); 
+              //stroke(0); 
               //fill(0);
           } 
      } else {
@@ -65,6 +65,7 @@ class Ball {
   }
   
   void display() {
+    stroke(0);
     ellipse(x, y, diameter+diameter*microfone, diameter+diameter*microfone);
   }
 }
