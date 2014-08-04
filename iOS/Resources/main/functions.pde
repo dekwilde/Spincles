@@ -75,5 +75,17 @@ void shakeEvent()
   println("shaked");
 }
 
+void playloopBG() {
+  
+  if(frameCount == 1) {
+    sound1.play();
+    sound1.loop();
+  }
+  if(frameCount == 45) {
+    sound2.play();
+    sound2.loop();  
+  }
+}
+
 
 

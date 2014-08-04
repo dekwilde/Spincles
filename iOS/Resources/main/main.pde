@@ -74,7 +74,6 @@ void setup()
         //size(screenWidth, screenHeight);
         ctx = externals.context;        
         frameRate(30);
-        //background(0);
         
         infoImg= loadImage("infos.jpg");
   
@@ -88,12 +87,6 @@ void setup()
         PFont fontA = loadFont("SansSerif-10.vlw");
         textFont(fontA, 20);
         
-        //drawGradient();
-        
-        //noFill();
-        //noStroke();
-        //smooth();
-        //rectMode(CENTER_RADIUS);
   
         for(int i=0; i<numOfArms; i++) {
           rotation[i] = random(0, 360);
@@ -114,15 +107,10 @@ void setup()
         iphone = new IPhone();
 
 
-        sound1 = iphone.loadSound("background.wav");
-        sound1.play();
-        sound1.loop();
+        sound1 = iphone.loadSound("bg1.wav");
+        sound2 = iphone.loadSound("bg2.wav");
+
         
-        /*
-        sound2 = iphone.loadSound("soprar.wav");
-        sound2.play();
-        sound2.loop();
-        */
         
 
         iphone.startMicMonitor();
@@ -136,12 +124,8 @@ void setup()
         println("4 - Start sequence: main.pde setup(0)");
 }
 
-void draw() 
-{
-      // init vars DONT MOVE    
-      gravityX = iphone.getAcceleration().x;
-      gravityY = -iphone.getAcceleration().y;
-      microfone = pow(iphone.getMicLevel(), 1) * mic_perc;
+void draw() {
+  playloopBG();
   switch( gameState ) {      
     case "Intro": // In case gameState = "Intro"
       background(#FFCC00);
@@ -160,11 +144,14 @@ void draw()
               pInfo = 0;
               slider.draw();
               btClose.draw();
-
           }
           pInfo = pInfo - pInfo/6;
     break; // End of Case Statement
     case "Game": // In case gameState = "Intro"            
+        // init vars DONT MOVE    
+        gravityX = iphone.getAcceleration().x;
+        gravityY = -iphone.getAcceleration().y;
+        microfone = pow(iphone.getMicLevel(), 1) * mic_perc;                
         delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
                 
         if (delay_mic>255) {
@@ -227,14 +214,17 @@ void draw()
         float nY = noise(pi/10)*sin(noise(pi/10)*((height/2 - noise(pi/50)*(height))/10));
         airY += easing;  
         y += dy * easing + nY*(microfone/3 + 5.2);
-        
-        btInfo.draw();
-        btCamera.draw();
+
         //location();
         //pointCompass();
         //angleCompass = targetDEGREE - compassDEGREE;
         angleCompass = compassDEGREE;
         compass.draw();
+
+        
+        btInfo.draw();
+        btCamera.draw();
+
         
         
         float rotationT = noise(pi/500)*((dx*dy*easing)/450) + radians(iAngle) + microfone/40;

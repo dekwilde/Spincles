@@ -1,11 +1,11 @@
-// DRAW
+// TRIXEL
 int wCount = 4;
 int hCount = 3;
 int rad = 140; //triangle radius
 float mx, my; //mouse or object position middle;
 float twothird = 2.0/3.0; //triangle use
 
-//ENGINE
+//TRIXEL ENGINE
 int rangeCentroid = 10;
 float trixelX, trixelY;
 float angleCompass;
@@ -104,6 +104,7 @@ class Trixel {
   void draw() {
     
     stroke(255);
+    strokeWeight(1);
     noFill();
     if(checkCollision(mx,my,t)){
       if(range == 0) { //enemy

@@ -27,7 +27,7 @@ class ButtonStart {
         text("Start 12   ", pX, pY);
         
         if (overButton == true) {
-           background(0);
+           background(#FFCC00);
            pInfo = 480;    
            gameState = "Game";
            println(gameState);

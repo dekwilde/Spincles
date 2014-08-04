@@ -10275,13 +10275,11 @@
      * @see #join
      * @see #print
      */
-    p.println = function(message) {
-
-	// new code ##############################################################
-	debug(message); // also added l to parameters
-	return;
-	// #######################################################################  
-
+    p.println = function println(message, l) {
+			// new code ##############################################################
+			debug(message, l); // also added l to parameters
+			return;
+			// #######################################################################
       var bufferLen = logBuffer.length;
       if (bufferLen) {
         Processing.logger.log(logBuffer.join(""));
