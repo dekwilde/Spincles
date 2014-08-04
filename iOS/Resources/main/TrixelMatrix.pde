@@ -1,7 +1,7 @@
 // DRAW
 int wCount = 4;
 int hCount = 3;
-int rad = 80; //triangle radius
+int rad = 140; //triangle radius
 float mx, my; //mouse or object position middle;
 float twothird = 2.0/3.0; //triangle use
 
@@ -33,8 +33,8 @@ class TrixelMatrix {
     fill(0,255,0);
     ellipse(mx,my, 10, 10);
     popMatrix();
-    fill(0);
-    ellipse(0, 0, 5, 5);
+    fill(0,255,0);
+    line(0, 0, 0, 20); //point compass
   }
 }
 
@@ -79,7 +79,7 @@ class Trixel {
   Trixel(float i, float j, float r, int inv) {
       radius = r;
       x1 = (i-(wCount-1)/2)*radius;      
-      y1 = (j-(hCount-twothird)/2)*(radius + radius*twothird+5.25)+radius/2+5.25;
+      y1 = (j-(hCount-twothird)/2)*(radius + radius*twothird+radius*0.065625)+radius/2+radius*0.065625;
       
       float angle = (TWO_PI / 6) * inv;
       x2 = x1 + cos( angle ) * radius;
@@ -103,25 +103,27 @@ class Trixel {
     
   void draw() {
     
+    stroke(255);
+    noFill();
     if(checkCollision(mx,my,t)){
-      fill(255);
-      stroke(255);
+      if(range == 0) { //enemy
+        //tira vida  
+      }
+      if(range == 1) { //score
+        //da vida
+      }
     }
     else{
-      noFill();
-      stroke(255);
-      
+      //sem colisão, normal
     }
-    if(range == 0) {
+    if(range == 0) { //enemy
       fill(255);  
     }
-    
-    
-    t.drawTriangle();
-    
-    if(range == 1) {
+    if(range == 1) { //score
       ellipse(centroid.x, centroid.y, 10, 10);
     }
+    
+     t.drawTriangle();
   }
 
 

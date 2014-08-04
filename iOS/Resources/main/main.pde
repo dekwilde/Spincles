@@ -128,7 +128,7 @@ void setup()
         iphone.startMicMonitor();
         iphone.startAccelerometer();
         iphone.startCompass();
-        iphone.startLocation();
+        //iphone.startLocation();
         
         //setupThree();
         video = loadImage(iphone.getCamera());
@@ -230,9 +230,10 @@ void draw()
         
         btInfo.draw();
         btCamera.draw();
-        location();
-        pointCompass();
-        angleCompass = targetDEGREE - compassDEGREE;
+        //location();
+        //pointCompass();
+        //angleCompass = targetDEGREE - compassDEGREE;
+        angleCompass = compassDEGREE;
         compass.draw();
         
         

@@ -24,7 +24,7 @@ class ButtonStart {
         fill(0);
         rect(pX, pY, dw, dh);
         fill(255);
-        text("Start 9   ", pX, pY);
+        text("Start 12   ", pX, pY);
         
         if (overButton == true) {
            background(0);

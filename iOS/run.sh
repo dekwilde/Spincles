@@ -21,7 +21,7 @@ echo "<script src=\"libraries/iprocessing.js\"></script>" >> main.html
 echo "<script src=\"libraries/iprocessing.lib.js\"></script>" >> main.html
 echo "</head>" >> main.html
 echo "<body style=\"margin:0;padding:0;background-color:transparent;-webkit-user-select:none;\">" >> main.html
-echo "<canvas id=\"pde\" style=\"background-color:transparent;\" data-processing-sources=\"$codeList\"></canvas>" >> main.html
+echo "<canvas id=\"pde\" style=\"position:absolute; top:0; left:0; width:100%; height:100%; background-color:transparent;\" data-processing-sources=\"$codeList\"></canvas>" >> main.html
  
 echo "</body>" >> main.html
 echo "</html>" >> main.html
