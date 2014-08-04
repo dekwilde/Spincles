@@ -1,13 +1,14 @@
-// TRIXEL
-int wCount = 8;
-int hCount = 7;
+// DRAW
+int wCount = 4;
+int hCount = 3;
 int rad = 80; //triangle radius
 float mx, my; //mouse or object position middle;
 float twothird = 2.0/3.0; //triangle use
 
-//TRIXEL ENGINE
+//ENGINE
 int rangeCentroid = 10;
 float trixelX, trixelY;
+float angleCompass;
 
 
 class TrixelMatrix {
@@ -20,7 +21,8 @@ class TrixelMatrix {
   }
   
   void draw() {
-    r = r + speed;  
+    //r = r + speed; 
+    r = angleCompass; 
     d = dist(width/2, height/2, trixelX, trixelY);
     mx = d*cos(radians(-r));
     my = d*sin(radians(-r));

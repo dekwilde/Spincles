@@ -4,7 +4,7 @@ class Tcompass {
   Tcompass() {
     trixelMtx = new TrixelMatrix();
   }
-  void draw(angleCompass) {
+  void draw() {
     trixelX = targetX;
     trixelY = targetY;
     

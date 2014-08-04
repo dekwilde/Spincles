@@ -10,7 +10,7 @@ int interval = 5000;
    float targetLG = -48.170929;
    float currentLT;
    float currentLG;
-   float compassDEGREE;
+   float compassDEGREE, targetDEGREE;
 
 void location() {
    int currentTime = millis();
@@ -27,7 +27,6 @@ void location() {
         println("location LT:" + lt + " LG:" + lg + " AL:" +al + " HD:" + hd + " SP:" + sp);
 
     }
-    pointCompass();
     //fill(0); 
     //text("location LT:" + lt + " LG:" + lg + " AL:" +al + " HD:" + hd + " SP:" + sp, 10, 40);
 
