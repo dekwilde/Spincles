@@ -130,6 +130,7 @@ void draw() {
     case "Intro": // In case gameState = "Intro"
       background(#FFCC00);
       fill(0);
+      textAlign(CENTER);
       text("Welcome to", width/2, 30); 
       text("Spincles", width/2, 60); 
       

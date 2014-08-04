@@ -2,7 +2,7 @@ class ButtonCamera {
     boolean overButton = false;
     boolean pressButton = false;
     int pX = 20;
-    int pY = 460;
+    int pY = 20;
     int dm = 12;   
     
     ButtonCamera() {  

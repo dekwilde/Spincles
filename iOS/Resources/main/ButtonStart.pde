@@ -4,7 +4,7 @@ class ButtonStart {
     int pX = width/2;
     int pY = height/2;
     int dw = 40;
-    int dh = 10;
+    int dh = 20;
     
     ButtonStart() {  
         smooth();
@@ -24,7 +24,8 @@ class ButtonStart {
         fill(0);
         rect(pX, pY, dw, dh);
         fill(255);
-        text("Start 12   ", pX, pY);
+        textAlign(CENTER);
+        text("Start 14", pX, pY);
         
         if (overButton == true) {
            background(#FFCC00);

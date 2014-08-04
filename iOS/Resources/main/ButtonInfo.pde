@@ -1,7 +1,7 @@
 class ButtonInfo {
     boolean overButton = false;
-    int pX = 300;
-    int pY = 460;
+    int pX = width - 20;
+    int pY = 20;
     int dm = 12;   
     
     ButtonInfo() {  
