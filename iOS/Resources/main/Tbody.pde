@@ -1,9 +1,9 @@
 class Tbody {
-  
+    
   Arm arms;  
    
   Tbody(float x, float y, float rotator, float escala) {
-
+    
     stroke((0 + microfone*15), 80); 
     translate(x, y);
     rotate(rotator);

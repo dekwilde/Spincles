@@ -229,7 +229,7 @@ void draw()
         btInfo.draw();
         btCamera.draw();
         location();
-        compass.frame(targetDEGREE - compassDEGREE);
+        compass.draw(targetDEGREE - compassDEGREE);
         
         
         float rotationT = noise(pi/500)*((dx*dy*easing)/450) + radians(iAngle) + microfone/40;

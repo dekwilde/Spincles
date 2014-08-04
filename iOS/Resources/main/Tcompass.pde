@@ -1,19 +1,13 @@
 class Tcompass {  
   Tcompass() {
-    smooth();
-
+    mtrixel = new TrixelMatrix();
   }
-  void frame(angleCompass) {
+  void draw(angleCompass) {
     pushMatrix();
-    translate(160, 240); 
-    rotate(radians(angleCompass));
-    
-    //println(angleCompass);
-    noFill();
-    stroke(0);
-    ellipse(0, 0, 250, 250);
-    fill(0);
-    ellipse(-125, 0, 15, 15);
+    translate(width/2, height/2);
+    float a = atan2(ball.x-height/2, ball.y-width/2);
+    rotate(a);
+    mtrixel.draw();
     popMatrix();
   }  
 }
