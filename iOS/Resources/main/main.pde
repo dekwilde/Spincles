@@ -101,7 +101,7 @@ void setup()
         bx = width/2;
         by = height/2;
         iAngle = 0;
-        iScale = 1.0;
+        iScale = 0.6;
         
         ball = new Ball(bx, by, bs);
         iphone = new IPhone();
@@ -110,14 +110,7 @@ void setup()
         sound1 = iphone.loadSound("bg1.wav");
         sound2 = iphone.loadSound("bg2.wav");
 
-        
-        
 
-        iphone.startMicMonitor();
-        iphone.startAccelerometer();
-        iphone.startCompass();
-        //iphone.startLocation();
-        
         //setupThree();
         video = loadImage(iphone.getCamera());
         
@@ -127,7 +120,7 @@ void setup()
 void draw() {
   playloopBG();
   switch( gameState ) {      
-    case "Intro": 
+    case "Intro":
       background(#FFCC00);
       fill(0);
       textAlign(CENTER);
@@ -236,8 +229,6 @@ void draw() {
         body = new Tbody(x, y, rotationT, iScale);
         //+ noise(pi/10)*2)
         
-        sound1.setVolume(microfone*10);
-        sound2.setVolume(microfone*10);
         pi++;
     break; // End of Case Statement   
 

@@ -77,14 +77,27 @@ void shakeEvent()
 
 void playloopBG() {
   
-  if(frameCount == 1) {
-    sound1.play();
-    sound1.loop();
-  }
-  if(frameCount == 45) {
-    sound2.play();
-    sound2.loop();  
-  }
+    if(frameCount == 1) {
+        sound1.play();
+        sound1.loop();
+    }
+    if(frameCount == 45) {
+        sound2.play();
+        sound2.loop();  
+    }
+
+    //sound1.setVolume(microfone*10);
+    //sound2.setVolume(microfone*10);
+
+}
+void startGame() {
+    iphone.startMicMonitor();
+    iphone.startAccelerometer();
+    iphone.startCompass();
+    //iphone.startLocation();
+    
+    gameState = "Game";
+    println(gameState);
 }
 
 

@@ -73,8 +73,9 @@ static MicController *sharedListener = nil;
 		recorder.meteringEnabled = YES;
 		[recorder record];
 		//levelTimer = [NSTimer scheduledTimerWithTimeInterval: 0.03 target: self selector: @selector(levelTimerCallback:) userInfo: nil repeats: YES];
-	} else
-		NSLog([error description]);
+	} else {
+		//NSLog([error description]);
+    }
 }
 - (void)stop {
 	[recorder release];

@@ -14,11 +14,9 @@ class ButtonStart {
     void draw() {
         checkButton();
               // Left buttom
-        if (overButton == true) {          
-          // o "X"
+        if (overButton == true) {
           stroke(#ffcc00);          
         } else {
-          // o "X"
           stroke(255);
         }
         fill(0);
@@ -28,10 +26,8 @@ class ButtonStart {
         text("Start 16", pX, pY);
         
         if (overButton == true) {
-           background(#FFCC00);
-           pInfo = 480;    
-           gameState = "Game";
-           println(gameState);
+           overButton = false;
+           startGame();
         }
     } 
     
