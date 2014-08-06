@@ -17,7 +17,7 @@ done
 
 echo "<html>" > main.html
 echo "<head>" >> main.html
-echo "<script src=\"libraries/iprocessing.js\"></script>" >> main.html
+echo "<script src=\"libraries/iprocessing.1.0.0.js\"></script>" >> main.html
 echo "<script src=\"libraries/iprocessing.lib.js\"></script>" >> main.html
 echo "</head>" >> main.html
 echo "<body style=\"margin:0;padding:0;background-color:transparent;-webkit-user-select:none;\">" >> main.html

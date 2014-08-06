@@ -9,6 +9,7 @@ float twothird = 2.0/3.0; //triangle use
 int rangeCentroid = 10;
 float trixelX, trixelY;
 float angleCompass;
+float delaySpeedCompass = 10;
 
 
 class TrixelMatrix {
@@ -22,7 +23,7 @@ class TrixelMatrix {
   
   void draw() {
     //r = r + speed; 
-    r = angleCompass; 
+    r = r + (angleCompass - r)/delaySpeedCompass;
     d = dist(width/2, height/2, trixelX, trixelY);
     mx = d*cos(radians(-r));
     my = d*sin(radians(-r));

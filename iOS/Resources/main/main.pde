@@ -121,7 +121,7 @@ void setup()
         //setupThree();
         video = loadImage(iphone.getCamera());
         
-        println("4 - Start sequence: main.pde setup(0)");
+        println("4 - Start sequence: main.pde setup()");
 }
 
 void draw() {
@@ -180,7 +180,7 @@ void draw() {
             colorB = 0;
         }
         
-        //println(microfone);
+        println("microfone " + microfone);
                
         if (cameraShow) {  
             Camera();
@@ -194,8 +194,8 @@ void draw() {
         
         
         ball.move();
-	ball.touch();
-	//ball.display();        
+        ball.touch();
+        ball.display();
         
         
         for(int i=0; i<numOfArms; i++) {
@@ -220,6 +220,9 @@ void draw() {
         //pointCompass();
         //angleCompass = targetDEGREE - compassDEGREE;
         angleCompass = compassDEGREE;
+        println("compass " + compassDEGREE);
+        
+
         compass.draw();
 
         
@@ -234,7 +237,7 @@ void draw() {
         //+ noise(pi/10)*2)
         
         sound1.setVolume(microfone*10);
-        //sound2.setVolume(delay_mic/1000);
+        sound2.setVolume(microfone*10);
         pi++;
     break; // End of Case Statement   
 

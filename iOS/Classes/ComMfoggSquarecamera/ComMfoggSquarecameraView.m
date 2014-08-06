@@ -544,7 +544,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
            
 
             // # commenting out to see if we need to do this : (maybe for older devices) 
-            videoDataOutput.minFrameDuration = CMTimeMake(1, 15);
+            //videoDataOutput.minFrameDuration = CMTimeMake(1, 15);
 
  
             [self.captureSession addOutput:videoDataOutput];

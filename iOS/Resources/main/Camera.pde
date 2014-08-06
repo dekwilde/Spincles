@@ -1,9 +1,8 @@
 PImage video;
-color track;
-int closestX = 0;
-int closestY = 0;
-  
-int loc = 0;
+
+int index = 0;
+int brightestX = 0; // X-coordinate of the brightest video pixel
+int brightestY = 0; // Y-coordinate of the brightest video pixel
 
 boolean loadCamera = false;
 
@@ -13,9 +12,6 @@ void Camera() {
   checkCamera = iphone.checkCamera();
   if (checkCamera && !loadCamera) {
     println("requestImage: " + iphone.getCamera());
-    track = color(20);
-    //prevFrame.copy(video,0,0,video.width,video.height,0,0,video.width,video.height);
-    //prevFrame.updatePixels();
     video = requestImage(iphone.getCamera());
     loadCamera = true;
   } //end if checkCamera
@@ -24,32 +20,32 @@ void Camera() {
   
   
   if (video.width == 0) {
-    println("loading");
+    println("loading Image");
   } else if (video.width == -1) {
     println("error load image");
   } else {
     if(loadCamera) {
-      println("loaded Camera");      
-      video.loadPixels();      
-      loc = 0;
-      float closestDiff = 200.0f;
-      for (int cx = 0; cx < video.width; cx ++ ) {
-        for (int cy = 0; cy < video.height; cy ++ ) {
-          color current = video.pixels[loc];
-           
-          
-          float r1 = red(current); float g1 = green(current); float b1 = blue(current);
-          float r2 = red(track); float g2 = green(track); float b2 = blue(track);
-          float d = dist(r1,g1,b1,r2,g2,b2);
-                     
-          if (d < closestDiff) {
-            closestDiff = d;
-            closestX = cx;
-            closestY = cy;
+      println("ready Image");      
+      float brightestValue = 0; // Brightness of the brightest video pixel
+      // Search for the brightest pixel: For each row of pixels in the video image and
+      // for each pixel in the yth row, compute each pixel's index in the video
+      video.loadPixels();
+      for (int y = 0; y < video.height; y++) {
+        for (int x = 0; x < video.width; x++) {
+          // Get the color stored in the pixel
+          int pixelValue = video.pixels[index];
+          // Determine the brightness of the pixel
+          float pixelBrightness = brightness(pixelValue);
+          // If that value is brighter than any previous, then store the
+          // brightness of that pixel, as well as its (x,y) location
+          if (pixelBrightness > brightestValue) {
+            brightestValue = pixelBrightness;
+            brightestY = y;
+            brightestX = x;
           }
-          loc++;
+          index++;
         }
-      }
+      }  
             
       loadCamera = false;
       iphone.updateSquare();
@@ -60,6 +56,7 @@ void Camera() {
   // Draw a large, yellow circle at the brightest pixel
   image(video, 0, 0, video.width, video.height);
   noStroke();
-  fill(200,0,0);
-  ellipse(closestX*10-40, closestY*10-100, 20, 20);
+  fill(0,0,255);
+  ellipse(brightestX*10-40, brightestY*10-100, 50, 50);
 }
+
