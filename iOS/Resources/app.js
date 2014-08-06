@@ -1,4 +1,3 @@
-Titanium.UI.iPhone.hideStatusBar();
 Titanium.UI.setBackgroundColor('#FFCC00');
 var window = Titanium.UI.createWindow({url:'main/libraries/iprocessingwin.js'});
  

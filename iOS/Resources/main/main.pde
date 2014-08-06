@@ -127,7 +127,7 @@ void setup()
 void draw() {
   playloopBG();
   switch( gameState ) {      
-    case "Intro": // In case gameState = "Intro"
+    case "Intro": 
       background(#FFCC00);
       fill(0);
       textAlign(CENTER);
@@ -138,7 +138,7 @@ void draw() {
       
     break; // End of Case Statement
     
-    case "InfoShow": // In case gameState = "Intro"
+    case "InfoShow":
           image(infoImg, 0, pInfo);
         //tint(20);
           if (pInfo<1) {
@@ -148,7 +148,7 @@ void draw() {
           }
           pInfo = pInfo - pInfo/6;
     break; // End of Case Statement
-    case "Game": // In case gameState = "Intro"            
+    case "Game":
         // init vars DONT MOVE    
         gravityX = iphone.getAcceleration().x;
         gravityY = -iphone.getAcceleration().y;

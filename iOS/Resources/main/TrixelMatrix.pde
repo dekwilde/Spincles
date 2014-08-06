@@ -9,7 +9,7 @@ float twothird = 2.0/3.0; //triangle use
 int rangeCentroid = 10;
 float trixelX, trixelY;
 float angleCompass;
-float delaySpeedCompass = 10;
+float delaySpeedCompass = 20;
 
 
 class TrixelMatrix {

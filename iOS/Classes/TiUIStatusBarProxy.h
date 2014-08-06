@@ -20,6 +20,7 @@
 @property(nonatomic,readonly)	NSNumber *GRAY;
 @property(nonatomic,readonly)	NSNumber *OPAQUE_BLACK;
 @property(nonatomic,readonly)	NSNumber *TRANSLUCENT_BLACK;
+@property(nonatomic,readonly)	NSNumber *LIGHT_CONTENT;
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_3_2
 @property(nonatomic,readonly)	NSNumber *ANIMATION_STYLE_NONE;
