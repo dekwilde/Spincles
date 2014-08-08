@@ -77,11 +77,13 @@ void shakeEvent()
 
 void playloopBG() {
   
-    if(frameCount == 1) {
+    int m = round(millis()/1000);
+    
+    if(m == 1) {
         sound1.play();
         sound1.loop();
     }
-    if(frameCount == 45) {
+    if(m == 4) {
         sound2.play();
         sound2.loop();  
     }

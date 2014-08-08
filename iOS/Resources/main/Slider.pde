@@ -12,7 +12,6 @@ class MenuSlider {
     MenuSlider() {  
       st_x = 160;
       st_y = 100;
-      rectMode(RADIUS);  
     }
     
     void draw() {

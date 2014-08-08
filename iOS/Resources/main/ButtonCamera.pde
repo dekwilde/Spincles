@@ -1,13 +1,13 @@
 class ButtonCamera {
     boolean overButton = false;
     boolean pressButton = false;
+    int dm = 20;
     int pX = 20;
-    int pY = 20;
-    int dm = 12;   
+    int pY = height -dm - 20;
+;   
     
     ButtonCamera() {  
-        smooth();
-        rectMode(CENTER_RADIUS);
+        
     }    
     void draw() {
         checkButton();
@@ -17,21 +17,17 @@ class ButtonCamera {
           overButton = false;
           cameraShow = true;
           println("camera " + cameraShow);
-          iphone.squareCamera();
-          // circulo          
+          iphone.squareCamera();    
           noStroke();
           fill(255);
-          rect(pX, pY, 8, 8);
-          
-          
+ 
         } else {
           // circulo
           stroke(0);
           strokeWeight(1);
-          noFill();
-          rect(pX, pY, 8, 8);
-          
+          noFill();    
         }
+        rect(pX, pY, dm, dm);
     }
     void checkButton() {   
           if (!pressButton && touch1X > pX-dm && touch1X < pX+dm && touch1Y > pY-dm && touch1Y < pY+dm) {

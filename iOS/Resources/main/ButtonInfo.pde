@@ -1,12 +1,11 @@
 class ButtonInfo {
     boolean overButton = false;
-    int pX = width - 20;
-    int pY = 20;
-    int dm = 12;   
+    int dm = 20;   
+    int pX = width - dm - 10;
+    int pY = height - dm - 10;
+
     
     ButtonInfo() {  
-        smooth();
-        rectMode(CENTER_RADIUS);
     }    
     void draw() {
         checkButton();
@@ -15,36 +14,27 @@ class ButtonInfo {
           gameState = "InfoShow";
           println("info");
           
+          textAlign(CENTER);
+          
           // circulo          
           noStroke();
           fill(0);
-          ellipse(pX, pY, 16, 16);
+          ellipse(pX, pY, dm, dm);
           
-          // o "i"
-          noStroke();
-          fill(#ffcc00);
-          rect(pX, pY+2, 1, 4);
+          fill(255);
+          text("i", pX, pY+dm/2);
           
-          //ping do i
-          noStroke();
-          fill(#ffcc00);
-          ellipse(pX, pY-4, 2, 2);
         } else {
           // circulo
           stroke(0);
           strokeWeight(1);
           noFill();
-          ellipse(pX, pY, 16, 16);
+          ellipse(pX, pY, dm, dm);
           
-          // o "i"
-          noStroke();
           fill(0);
-          rect(pX, pY+2, 1, 4);
+          text("i", pX, pY+dm/2);
           
-          //ping do i
-          noStroke();
-          fill(0);
-          ellipse(pX, pY-4, 2, 2);
+
         }
     }
     void checkButton() {

@@ -58,11 +58,15 @@ float WeightSegmentTouch = 0.0f;
 
 boolean cameraShow = false;
 PImage infoImg;
+
 ButtonInfo btInfo;
 ButtonStart btStart;
+ButtonAgain btAgain;
 ButtonCamera btCamera;
 ButtonClose btClose;
 MenuSlider slider;
+ScoreInfo scoreInfo;
+
 float pInfo = 480;
 
 
@@ -70,18 +74,24 @@ var gameState = "Intro";
 
 void setup() 
 {
-        size(320, 480);
-        //size(screenWidth, screenHeight);
+        //size(320, 480);
+        size(screen.width, screen.height);
+        //rectMode(CENTER_RADIUS);
+        rectMode(CORNER); 
         ctx = externals.context;        
         frameRate(30);
+        //smooth();
         
         infoImg= loadImage("infos.jpg");
   
         btInfo = new ButtonInfo();
         btStart = new ButtonStart();
+        btAgain = new ButtonAgain();
         btCamera = new ButtonCamera();
         btClose = new ButtonClose();
         slider = new MenuSlider();
+        scoreInfo = new ScoreInfo();
+
         compass = new Tcompass();
         
         PFont fontA = loadFont("SansSerif-10.vlw");
@@ -120,6 +130,18 @@ void setup()
 void draw() {
   playloopBG();
   switch( gameState ) {      
+
+    case "Over":
+      background(#FFCC00);
+      fill(0);
+      textAlign(CENTER);
+      text("GAME", width/2, 30);
+      text("OVER", width/2, 60); 
+      
+      btAgain.draw();
+      
+    break; // End of Case Statement
+
     case "Intro":
       background(#FFCC00);
       fill(0);
@@ -132,7 +154,9 @@ void draw() {
     break; // End of Case Statement
     
     case "InfoShow":
-          image(infoImg, 0, pInfo);
+          fill(0, 0, 0, 20);
+          rect(0,0,width,height);
+          image(infoImg, width/2-320/2, pInfo+height/2-480/2);
         //tint(20);
           if (pInfo<1) {
               pInfo = 0;
@@ -141,6 +165,7 @@ void draw() {
           }
           pInfo = pInfo - pInfo/6;
     break; // End of Case Statement
+    
     case "Game":
         // init vars DONT MOVE    
         gravityX = iphone.getAcceleration().x;
@@ -221,6 +246,8 @@ void draw() {
         
         btInfo.draw();
         btCamera.draw();
+        scoreInfo.draw();
+
 
         
         

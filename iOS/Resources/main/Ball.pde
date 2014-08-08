@@ -67,7 +67,8 @@ class Ball {
   void display() {
     pushMatrix();
     stroke(0,255,0);
-    ellipse(x, y, diameter+diameter*microfone, diameter+diameter*microfone);
+    noFill();
+    ellipse(x, y, diameter, diameter);
     popMatrix();
   }
 }

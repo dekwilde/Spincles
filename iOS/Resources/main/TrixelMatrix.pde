@@ -4,12 +4,13 @@ int hCount = 3;
 int rad = 140; //triangle radius
 float mx, my; //mouse or object position middle;
 float twothird = 2.0/3.0; //triangle use
-
-//TRIXEL ENGINE
-int rangeCentroid = 10;
 float trixelX, trixelY;
 float angleCompass;
 float delaySpeedCompass = 20;
+
+//TRIXEL ENGINE
+int rangeCentroid = 10;
+
 
 
 class TrixelMatrix {
@@ -67,6 +68,10 @@ class GridTrixel {
 
 
 
+
+
+
+
 class Trixel {
   Triangle t;
   float x1, y1, x2, y2, x3, y3;
@@ -109,10 +114,10 @@ class Trixel {
     noFill();
     if(checkCollision(mx,my,t)){
       if(range == 0) { //enemy
-        //tira vida  
+        score = score - 1;
       }
       if(range == 1) { //score
-        //da vida
+        score = score + 2;
       }
     }
     else{
@@ -151,6 +156,8 @@ class Trixel {
   
 }
 
+
+
 class Triangle {
   float point1x;
   float point1y;
@@ -172,6 +179,10 @@ class Triangle {
     triangle(point1x, point1y, point2x, point2y, point3x, point3y);
   }
 }
+
+
+
+
 
 
 class XY

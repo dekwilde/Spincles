@@ -1,13 +1,13 @@
-class ButtonStart {
+class ButtonAgain {
     boolean overButton = false;
     
     int pX = width/2;
     int pY = height/2;
-    int dw = 40;
-    int dh = 20;
+    int dw = 60;
+    int dh = 15;
     
-    ButtonStart() {  
-      
+    ButtonAgain() {
+        smooth();
     }
     
     void draw() {
@@ -22,11 +22,12 @@ class ButtonStart {
         rect(pX, pY, dw, dh);
         fill(255);
         textAlign(CENTER);
-        text("Start 16", pX, pY);
+        text("Try Again", pX, pY);
         
         if (overButton == true) {
-           overButton = false;
-           startGame();
+            overButton = false;
+            gameState = "Game";
+            println(gameState);
         }
     } 
     

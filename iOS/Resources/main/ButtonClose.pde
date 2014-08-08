@@ -5,8 +5,7 @@ class ButtonClose {
     int dm = 15; 
     
     ButtonClose() {  
-        smooth();
-        rectMode(CENTER_RADIUS);
+      
     }
     
     void draw() {

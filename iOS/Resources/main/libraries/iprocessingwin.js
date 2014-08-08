@@ -29,8 +29,12 @@ win.add(mainCamera);
 
 var webview = Titanium.UI.createWebView({
                                         url:'../main.html',
-                                        width: 320,
-										height: 480,
+//                                        width:Ti.UI.SIZE,
+//                                        height:Ti.UI.SIZE,
+//                                        contentWidth:Ti.UI.SIZE,
+//                                        contentHeight:Ti.UI.SIZE,
+                                        width:320,
+                                        height:480,
 										top:0,
 										left:0,
                                         backgroundColor:'transparent'
