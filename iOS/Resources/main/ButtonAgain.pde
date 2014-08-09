@@ -26,8 +26,7 @@ class ButtonAgain {
         
         if (overButton == true) {
             overButton = false;
-            gameState = "Game";
-            println(gameState);
+            resetGame();
         }
     } 
     

@@ -11,7 +11,7 @@ class ScoreInfo {
 
   
     ScoreInfo() {
-        score = 30;      
+      //Setuo do botão 
     }
     
     void draw() {

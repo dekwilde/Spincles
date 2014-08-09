@@ -97,9 +97,14 @@ void startGame() {
     iphone.startAccelerometer();
     iphone.startCompass();
     //iphone.startLocation();
-    
+    score = 30;
     gameState = "Game";
-    println(gameState);
+    println(gameState); 
+}
+void resetGame() {
+    score = 30;
+    gameState = "Game";
+    println(gameState);   
 }
 
 

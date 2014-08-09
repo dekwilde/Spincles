@@ -74,8 +74,8 @@ var gameState = "Intro";
 
 void setup() 
 {
-        //size(320, 480);
-        size(screen.width, screen.height);
+        size(320, 480);
+        //size(screen.width, screen.height);
         //rectMode(CENTER_RADIUS);
         rectMode(CORNER); 
         ctx = externals.context;        

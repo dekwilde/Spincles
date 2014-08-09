@@ -1,4 +1,4 @@
-// TRIXEL
+//LAYOUT and ANIMATION
 int wCount = 4;
 int hCount = 3;
 int rad = 140; //triangle radius
@@ -8,8 +8,12 @@ float trixelX, trixelY;
 float angleCompass;
 float delaySpeedCompass = 20;
 
-//TRIXEL ENGINE
+//ENGINE GAME
 int rangeCentroid = 10;
+int changeTimeRange = 10;
+int changeTimeRand = 10;
+int changeTimeRandRange = 200;
+
 
 
 
@@ -77,12 +81,16 @@ class Trixel {
   float x1, y1, x2, y2, x3, y3;
   float radius;
   int range;
-  
+  int changeTrix = 0;
+  int changeTime;
   XY a,b,c;
   XY centroid;
+  
 
   
   Trixel(float i, float j, float r, int inv) {
+      
+      changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
       radius = r;
       x1 = (i-(wCount-1)/2)*radius;      
       y1 = (j-(hCount-twothird)/2)*(radius + radius*twothird+radius*0.065625)+radius/2+radius*0.065625;
@@ -109,30 +117,52 @@ class Trixel {
     
   void draw() {
     
+    
+    changeTrix = changeTrix + 1;
+    if(changeTrix>changeTime) { //warnning
+      //int m = millis();
+      //fill(0, 0, 0, m % 255);
+      fill(255,255,255,int(random(255)));
+      if(changeTrix>changeTime+20) { //actived
+        resetTrix();
+      }
+    } else {
+      noFill();
+    }
     stroke(255);
     strokeWeight(1);
-    noFill();
+    
     if(checkCollision(mx,my,t)){
       if(range == 0) { //enemy
         score = score - 1;
+        resetTrix();
       }
       if(range == 1) { //score
         score = score + 2;
+        resetTrix();
+        
       }
     }
     else{
-      //sem colisão, normal
+      //sem ação, normal criar temporizador randomico para trocar de tempo em tempo
     }
     if(range == 0) { //enemy
       fill(255);  
     }
     if(range == 1) { //score
+      
       ellipse(centroid.x, centroid.y, 10, 10);
+      
     }
     
      t.drawTriangle();
   }
 
+  void resetTrix() {
+    range = int(random(rangeCentroid));
+    changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
+    changeTrix = 0;  
+  }
 
   boolean checkCollision(float x, float y, Triangle t) {
     float tArea,t1Area,t2Area,t3Area;
