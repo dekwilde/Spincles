@@ -43,7 +43,7 @@ class Particle{
   float myDiameter= 2;
   float distance = 60;
   float delay = random(0.001, 0.01);
-  float elastic = 0.96;
+  float elastic = 0.98;
   int life =0, lifeTime = 50+int(random(200));
   boolean death = false;
   String tp;

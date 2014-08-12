@@ -30,12 +30,12 @@ class TrixelMatrix {
   void draw() {
     //r = r + speed;
 
-    dgr = abs(radians(angleCompass) - PI)*2;
+    dgr = abs(radians(angleCompass) - PI)*PI;
     r += (dgr - r)*easing;
     
     
-    //println("degrees " + angleCompass);
-    println("radians " + r);
+    println("degrees " + angleCompass);
+    //println("radians " + r);
     d = dist(width/2, height/2, trixelX, trixelY);
     mx = d*cos(-r);
     my = d*sin(-r);
@@ -90,6 +90,8 @@ class Trixel {
   int range;
   int changeTrix = 0;
   int changeTime;
+  boolean activeTrix = false;
+  float aniTrix;
   XY a,b,c;
   XY centroid;
   
@@ -123,35 +125,6 @@ class Trixel {
   }
     
   void draw() {
-        
-    if(checkCollision(mx,my,t)){
-      if(range == 0) { //enemy
-        fill(255,255,255,int(random(255)));
-        hurt();
-        score = score - 1;
-        println("score " + score);
-        resetTrix();
-        trixBAD.num = 0;
-      }
-      if(range == 1) { //score
-        fill(255,255,255,int(random(255)));
-        score = score + 2;
-        println("score " + score);
-        resetTrix();
-        trixGOOD.num = 0;
-        
-      }
-    }
-    else{
-      //sem ação, normal criar temporizador randomico para trocar de tempo em tempo
-    }
-    if(range == 0) { //enemy
-      fill(255);  
-    }
-    if(range == 1) { //score
-      troid();
-    }
-    
     changeTrix = changeTrix + 1;
     if(changeTrix>changeTime) { //warnning
       fill(255,255,255,int(random(255)));
@@ -162,6 +135,45 @@ class Trixel {
       noFill();
     }
     
+    if(range == 0) { //enemy
+      fill(255);  
+    }
+    if(range == 1) { //score
+      troid();
+    }
+    
+
+    
+    
+    if(checkCollision(mx,my,t)){
+      if(range == 0) { //enemy
+        //rotate(random(10));
+        score = score - 1;
+        fill(int(random(255)),int(random(100)));
+        if(!activeTrix) {
+          activeTrix = true;
+          aniTrix = changeTrix;
+        }
+        if(changeTrix>aniTrix+5){
+          hurt();
+          println("score " + score);
+          resetTrix();
+          trixBAD.num = 0;
+        }
+      }
+      if(range == 1) { //score
+        score = score + 2;
+        println("score " + score);
+        resetTrix();
+        trixGOOD.num = 0;
+        
+      }
+    } else {
+      activeTrix = false;
+    }
+    
+    
+    
     stroke(255);
     strokeWeight(1);
     t.drawTriangle();
@@ -171,6 +183,7 @@ class Trixel {
     range = int(random(rangeCentroid));
     changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
     changeTrix = 0;
+    activeTrix = false;
   }
   
   void troid() {
@@ -178,6 +191,7 @@ class Trixel {
     fill(0);
     stroke(0); 
     ellipse(centroid.x, centroid.y, 10, 10);
+    noFill();
   }
   
 

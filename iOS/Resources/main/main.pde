@@ -7,7 +7,7 @@ float gravityY = 0;
 
 float bx;
 float by;
-int bs = 120;
+int bs = 60;
 boolean bover = false;
 boolean locked = false;
 float bdifx = 0.0; 
