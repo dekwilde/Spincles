@@ -7,11 +7,12 @@ class Tcompass {
     trixelMtx = new TrixelMatrix();
   }
   void draw() {
-    trixelX = targetX;
-    trixelY = targetY;
+    //trixelX += (spinX - trixelX)*easing;
+    //trixelY += (spinY - trixelY)*easing;
     
-    //pX = pX + (trixelX - pX)/(delaySpeedCompass/2);
-    //pY = pY + (trixelY - pY)/(delaySpeedCompass/2);
+    trixelX = spinX;
+    trixelY = spinY;
+    
 
     pushMatrix();
     translate(width/2, height/2);

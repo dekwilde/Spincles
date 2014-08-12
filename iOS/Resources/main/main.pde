@@ -41,9 +41,8 @@ float radius = 0.0f;
 float easing = 0.05f;
 float x, y;
 float targetX, targetY;
+float spinX, spinY;
 float pi = 0;
-float airX = 0.0;
-float airY = 0.0;
 
 float [] rotation = new float[numOfArms];
 float [] angleRadius = new float[numOfArms];
@@ -93,6 +92,8 @@ void setup()
         scoreInfo = new ScoreInfo();
 
         compass = new Tcompass();
+        trixBAD = new TrixParticle("bad");
+        trixGOOD = new TrixParticle("good");
         
         PFont fontA = loadFont("SansSerif-10.vlw");
         textFont(fontA, 20);
@@ -119,6 +120,8 @@ void setup()
 
         sound1 = iphone.loadSound("bg1.wav");
         sound2 = iphone.loadSound("bg2.wav");
+        sound1.setVolume(100);
+        sound2.setVolume(100);
 
 
         //setupThree();
@@ -198,7 +201,7 @@ void draw() {
             colorB = 0;
         }
         
-        println("microfone " + microfone);
+        //println("microfone " + microfone);
                
         if (cameraShow) {  
             Camera();
@@ -224,24 +227,25 @@ void draw() {
         targetX = ball.x;
         float dx = targetX - x;
         float nX = noise(pi/10)*cos(noise(pi/10)*((width/2 - noise(pi/50)*(width))/10));
-        airX += easing;
         x += dx * easing + nX*(microfone/3 + 5.2);
+        spinX = x;
         
         //targetY = mouseY;
         targetY = ball.y;
         float dy = targetY - y;
         float nY = noise(pi/10)*sin(noise(pi/10)*((height/2 - noise(pi/50)*(height))/10));
-        airY += easing;  
         y += dy * easing + nY*(microfone/3 + 5.2);
+        spinY = y;
 
         //location();
         //pointCompass();
         //angleCompass = targetDEGREE - compassDEGREE;
         angleCompass = compassDEGREE;
-        println("compass " + compassDEGREE);
         
 
         compass.draw();
+        trixBAD.draw();
+        trixGOOD.draw();
 
         
         btInfo.draw();

@@ -51,12 +51,7 @@ void touch1Moved() {
 void touch1Stopped() {  
   if (touch1X > bx-bs && touch1X < bx+bs && 
 	touch1Y > by-bs && touch1Y < by+bs) {
-  
-         angleSpeedTouch =  random(0.02, 0.14);
-         angleRadiusTouch = angleRadiusTouch + random(-3.0, 3.0);
-         WeightSegmentTouch =  random(4.0, 10.0);
-         //println("touch_on"); 
-         
+         //hurt();
   }
   
   // click info var
@@ -70,27 +65,36 @@ void touch1Stopped() {
   locked = false;
 }
 
-void shakeEvent()
-{
+void hurt() {
+  angleSpeedTouch =  random(0.02, 0.14);
+  angleRadiusTouch = angleRadiusTouch + random(-3.0, 3.0);
+  WeightSegmentTouch =  random(4.0, 10.0);  
+}
+
+void shakeEvent() {
   println("shaked");
 }
 
+boolean playSound1 = false;
+boolean playSound2 = false;
 void playloopBG() {
   
     int m = round(millis()/1000);
     
-    if(m == 1) {
-        sound1.play();
-        sound1.loop();
+    if(!playSound1) {
+      playSound1 = true;
+      sound1.play();
+      sound1.loop();
+      println("sound1");
     }
-    if(m == 4) {
+    if(m == 3) {
+      if(!playSound2) {
+        playSound2 = true;
         sound2.play();
-        sound2.loop();  
+        sound2.loop();
+        println("sound2");
+      }  
     }
-
-    //sound1.setVolume(microfone*10);
-    //sound2.setVolume(microfone*10);
-
 }
 void startGame() {
     iphone.startMicMonitor();

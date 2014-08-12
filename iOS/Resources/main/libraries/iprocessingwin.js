@@ -484,7 +484,7 @@ var updateSquareTimer = null;
 function squareCamera() {
 
     var SquareCamera = require('com.mfogg.squarecamera');
-    Ti.API.info("module is => " + SquareCamera);
+    Ti.API.info("2 - startSquareCamera => " + SquareCamera);
     cameraView = SquareCamera.createView({
                                          top: 0,
                                          height: 480,
@@ -532,11 +532,14 @@ function squareCamera() {
                                 var filename = "cam.png";
                                 var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
                                 f.write(image);
+                                
+                                Ti.API.debug("9 - takeCamera: " + filename);
+                                
                                 p(
                                   'cameraCaptured("' + filename + '");'
                                   );
                                 
-                                Ti.API.debug("takeCamera success: " + filename);
+                                
                                 });
     
     // Take Photo Button
@@ -613,12 +616,13 @@ function squareCamera() {
     //mainCamera.add(switch_camera);
     
     
-    //updateSquareTimer = setTimeout(updateSquare, 2000);
+    updateSquareTimer = setTimeout(updateSquare, 2000); //start all the sequence...
     
 }
 function updateSquare() {
     //cameraView.takePhoto();
-    //cameraView.takeCamera();
+    Ti.API.debug("7 - updateSquare");
+    cameraView.takeCamera(); //most important function
 }
 
 

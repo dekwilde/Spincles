@@ -501,7 +501,7 @@ function cameraCaptured(f) {
     if(f) {
         cam = f;
         checkCam = true;
-        debug("cameraCaptured: " + cam);
+        debug("10 - cameraCaptured: " + cam);
     }
 }
 
@@ -772,6 +772,8 @@ IPhone = function IPhone(processing) {
     ip.squareCamera = function(e) {
 		if (e == null){ var edit = false; } else { var edit = e; }
 		Titanium.App.fireEvent('squareCamera', {data:edit});
+        debug("1 - fireEvent iphone.SquareCamera() to >>> TitaniumApp squareCamera");
+        
 	};
     ip.updateSquare = function() {
         checkCam = false;
@@ -780,10 +782,13 @@ IPhone = function IPhone(processing) {
 
 	ip.getCamera = function() {
 		var d = new Date();
+        debug("3 - getCamera: " + cam);
         return cam + "?rand=" + d.getTime();
+        
 	};
     ip.checkCamera = function() {
         return checkCam;
+        
 	};
 	
 	// keyboard ----------------------------------------------------

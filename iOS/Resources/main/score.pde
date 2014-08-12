@@ -22,7 +22,6 @@ class ScoreInfo {
         score = 100;
       }
       
-      println("score " + score);
       
       pushMatrix();
       scale(1.0);

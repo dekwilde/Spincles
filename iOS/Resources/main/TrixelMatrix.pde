@@ -20,6 +20,7 @@ int changeTimeRandRange = 200;
 class TrixelMatrix {
   GridTrixel gridtrixel;
   float r = 0.0; //rotation var
+  float dgr;
   float d; // distance mouse to center, mouse middle
   float speed = 1; //speed for rotation
   TrixelMatrix() {
@@ -27,19 +28,25 @@ class TrixelMatrix {
   }
   
   void draw() {
-    //r = r + speed; 
-    r = r + (angleCompass - r)/delaySpeedCompass;
+    //r = r + speed;
+
+    dgr = abs(radians(angleCompass) - PI)*2;
+    r += (dgr - r)*easing;
+    
+    
+    //println("degrees " + angleCompass);
+    println("radians " + r);
     d = dist(width/2, height/2, trixelX, trixelY);
-    mx = d*cos(radians(-r));
-    my = d*sin(radians(-r));
+    mx = d*cos(-r);
+    my = d*sin(-r);
   
     pushMatrix();
-    rotate(radians(r));
+    rotate(r);
     gridtrixel.draw();
     fill(0,255,0);
-    ellipse(mx,my, 10, 10);
+    ellipse(mx,my, 30, 30); // target position
     popMatrix();
-    fill(0,255,0);
+    stroke(0,255,0);
     line(0, 0, 0, 20); //point compass
   }
 }
@@ -116,30 +123,22 @@ class Trixel {
   }
     
   void draw() {
-    
-    
-    changeTrix = changeTrix + 1;
-    if(changeTrix>changeTime) { //warnning
-      //int m = millis();
-      //fill(0, 0, 0, m % 255);
-      fill(255,255,255,int(random(255)));
-      if(changeTrix>changeTime+20) { //actived
-        resetTrix();
-      }
-    } else {
-      noFill();
-    }
-    stroke(255);
-    strokeWeight(1);
-    
+        
     if(checkCollision(mx,my,t)){
       if(range == 0) { //enemy
+        fill(255,255,255,int(random(255)));
+        hurt();
         score = score - 1;
+        println("score " + score);
         resetTrix();
+        trixBAD.num = 0;
       }
       if(range == 1) { //score
+        fill(255,255,255,int(random(255)));
         score = score + 2;
+        println("score " + score);
         resetTrix();
+        trixGOOD.num = 0;
         
       }
     }
@@ -150,19 +149,37 @@ class Trixel {
       fill(255);  
     }
     if(range == 1) { //score
-      
-      ellipse(centroid.x, centroid.y, 10, 10);
-      
+      troid();
     }
     
-     t.drawTriangle();
+    changeTrix = changeTrix + 1;
+    if(changeTrix>changeTime) { //warnning
+      fill(255,255,255,int(random(255)));
+      if(changeTrix>changeTime+20) { //actived
+        resetTrix();
+      }
+    } else {
+      noFill();
+    }
+    
+    stroke(255);
+    strokeWeight(1);
+    t.drawTriangle();
   }
 
   void resetTrix() {
     range = int(random(rangeCentroid));
     changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
-    changeTrix = 0;  
+    changeTrix = 0;
   }
+  
+  void troid() {
+    stroke(0);
+    fill(0);
+    stroke(0); 
+    ellipse(centroid.x, centroid.y, 10, 10);
+  }
+  
 
   boolean checkCollision(float x, float y, Triangle t) {
     float tArea,t1Area,t2Area,t3Area;

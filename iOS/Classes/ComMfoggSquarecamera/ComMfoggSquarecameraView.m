@@ -254,7 +254,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 
 - (void)takeCamera:(id)args
 {
-    NSLog(@"[INFO] takeCamera ... ");
+    NSLog(@"[DEBUG] 8 - takeCamera");
     
     AVCaptureConnection *stillImageConnection = nil;
     
@@ -354,7 +354,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection
 {
-    NSLog(@"[INFO] captureOutPut ... ");
+    //NSLog(@"[INFO] captureOutput");
 
     
     UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
