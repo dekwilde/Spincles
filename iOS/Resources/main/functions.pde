@@ -101,14 +101,31 @@ void startGame() {
     iphone.startAccelerometer();
     iphone.startCompass();
     //iphone.startLocation();
-    score = 30;
-    gameState = "Game";
-    println(gameState); 
+    recordScore = iphone.loadState();
+    resetGame();
 }
 void resetGame() {
-    score = 30;
-    gameState = "Game";
-    println(gameState);   
+  energy = 30;
+  score = 0;
+  gameState = "Game";
+  println(gameState);   
+}
+void gameOver() {
+  //First time score
+  if(recordScore != null) {
+    //check if the score is a new record
+    if(score>recordScore) {
+      scoreResult = "New Record";
+      recordScore = score;
+      iphone.saveState(score);
+    } else {
+      scoreResult = "Record " + (String)recordScore;
+    }
+  } else {
+    recordScore = score;
+    iphone.saveState(score);
+  } 
+  gameState = "Over";
 }
 
 

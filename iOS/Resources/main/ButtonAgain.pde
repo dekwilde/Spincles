@@ -21,6 +21,7 @@ class ButtonAgain {
         fill(0);
         rect(pX, pY, dw, dh);
         fill(255);
+        textFont(fontText, 14);
         textAlign(CENTER);
         text("Try Again", pX, pY);
         

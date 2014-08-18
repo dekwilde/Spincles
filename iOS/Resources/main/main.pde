@@ -1,11 +1,10 @@
-/* @pjs transparent="true"; font="data/cubic.ttf"; */
+/* @pjs transparent="true"; font="data/cubic.ttf, data/pixelart.ttf"; */
 
-PFont fontA;
+PFont fontTitle, fontText;
 
-float spring = 0.5;
+float spring = 0.2;
 float gravityX = 0;
 float gravityY = 0;
-
 float bx;
 float by;
 int bs = 60;
@@ -40,7 +39,8 @@ int numOfArms = 10;
 float SegWeightPor = 1.9f;
 float radius = 0.0f;
 float easing = 0.05f;
-float x, y;
+float x = width/2; 
+float y = height/2;
 float targetX, targetY;
 float spinX, spinY;
 float pi = 0;
@@ -83,9 +83,8 @@ void setup()
         //smooth();
         
         infoImg= loadImage("infos.jpg");
-        fontA = loadFont("data/cubic.ttf");
-        textFont(fontA, 20);
-        println(fontA);
+        fontTitle = loadFont("data/cubic.ttf");        
+        fontText = loadFont("data/pixelart.ttf");
 
         btInfo = new ButtonInfo();
         btStart = new ButtonStart();
@@ -140,9 +139,15 @@ void draw() {
     case "Over":
       background(#FFCC00);
       fill(0);
+      textFont(fontTitle, 20);
       textAlign(CENTER);
-      text("GAME", width/2, 30);
-      text("OVER", width/2, 60); 
+      text("GAME", width/2, 60);
+      text("OVER", width/2, 90);
+      
+      textFont(fontText, 16);
+      text("score", width/2, 140);
+      text(score, width/2, 160);
+      text(scoreResult, width/2, 180);
       
       btAgain.draw();
       
@@ -152,6 +157,7 @@ void draw() {
     case "Win":
       background(#FFCC00);
       fill(0);
+      textFont(fontTitle, 20);
       textAlign(CENTER);
       text("YOU", width/2, 30);
       text("WIN", width/2, 60); 
@@ -163,6 +169,7 @@ void draw() {
     case "Intro":
       background(#FFCC00);
       fill(0);
+      textFont(fontTitle, 20);
       textAlign(CENTER);
       text("Welcome to", width/2, 30); 
       text("Spincles", width/2, 60); 

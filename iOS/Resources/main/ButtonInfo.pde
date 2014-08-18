@@ -14,6 +14,7 @@ class ButtonInfo {
           gameState = "InfoShow";
           println("info");
           
+          textFont(fontText, 20);
           textAlign(CENTER);
           
           // circulo          
@@ -32,6 +33,7 @@ class ButtonInfo {
           ellipse(pX, pY, dm, dm);
           
           fill(0);
+          textFont(fontText, 20);
           text("i", pX, pY+dm/2);
           
 

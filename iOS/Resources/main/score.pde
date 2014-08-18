@@ -1,5 +1,7 @@
 int score = 0;
-
+int energy = 0;
+String scoreResult = "";
+int recordScore;
 class ScoreInfo {
 
     
@@ -15,15 +17,13 @@ class ScoreInfo {
     }
     
     void draw() {
-      if(score < 0) {
-          gameState = "Over";   
+      if(energy < 0) {
+          gameOver();
       }
       
       
-      
-      if(score>100) {
-        gameState = "Win";
-        score = 100;
+      if(energy>100) {
+        energy = 100;
       }
       
       
@@ -36,7 +36,7 @@ class ScoreInfo {
       
       fill(0);
       noStroke();
-      rect(px, py, score, dh);
+      rect(px, py, energy, dh);
       
       stroke(255);
 
@@ -45,9 +45,9 @@ class ScoreInfo {
       line(px+80, py+ dh/5, px+80, py+ dh - dh/5);    
     
       popMatrix();
-      
+      textFont(fontText, 14);
       textAlign(RIGHT);
-      text(score, px - 10, py+10);        
+      text(score, px-5, py+10);        
 
     }
 

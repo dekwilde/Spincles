@@ -41,7 +41,7 @@ class Particle{
   float xspeed = 0;
   float yspeed = 0;
   float myDiameter= 2;
-  float distance = 60;
+  float distance = 90;
   float delay = random(0.001, 0.01);
   float elastic = 0.98;
   int life =0, lifeTime = 50+int(random(200));

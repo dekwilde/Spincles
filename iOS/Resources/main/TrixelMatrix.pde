@@ -13,6 +13,7 @@ int rangeCentroid = 10;
 int changeTimeRange = 10;
 int changeTimeRand = 10;
 int changeTimeRandRange = 200;
+int activeEnemyRange = 3;
 
 
 
@@ -138,7 +139,7 @@ class Trixel {
     if(range == 0) { //enemy
       fill(255);  
     }
-    if(range == 1) { //score
+    if(range == 1) { //life
       troid();
     }
     
@@ -148,22 +149,23 @@ class Trixel {
     if(checkCollision(mx,my,t)){
       if(range == 0) { //enemy
         //rotate(random(10));
-        score = score - 1;
+        energy = energy - 1;
         fill(int(random(255)),int(random(100)));
         if(!activeTrix) {
           activeTrix = true;
           aniTrix = changeTrix;
         }
-        if(changeTrix>aniTrix+5){
+        if(changeTrix>aniTrix+activeEnemyRange){
           hurt();
-          println("score " + score);
+          println("energy " + energy);
           resetTrix();
           trixBAD.num = 0;
         }
       }
       if(range == 1) { //score
-        score = score + 2;
-        println("score " + score);
+        energy = energy + 2;
+        score = score + 1;
+        println("energy " + energy);
         resetTrix();
         trixGOOD.num = 0;
         
