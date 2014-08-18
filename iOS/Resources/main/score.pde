@@ -18,7 +18,11 @@ class ScoreInfo {
       if(score < 0) {
           gameState = "Over";   
       }
+      
+      
+      
       if(score>100) {
+        gameState = "Win";
         score = 100;
       }
       
@@ -38,10 +42,12 @@ class ScoreInfo {
 
       line(px+10, py+dh/2, px+80, py+dh/2);
       line(px+10, py+ dh/5, px+10, py+ dh - dh/5);
-      line(px+80, py+ dh/5, px+80, py+ dh - dh/5);     
+      line(px+80, py+ dh/5, px+80, py+ dh - dh/5);    
+    
       popMatrix();
       
-        
+      textAlign(RIGHT);
+      text(score, px - 10, py+10);        
 
     }
 

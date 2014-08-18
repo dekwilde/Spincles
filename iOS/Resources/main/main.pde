@@ -1,5 +1,6 @@
-/* @pjs transparent="true"; */
+/* @pjs transparent="true"; font="data/cubic.ttf"; */
 
+PFont fontA;
 
 float spring = 0.5;
 float gravityX = 0;
@@ -82,7 +83,10 @@ void setup()
         //smooth();
         
         infoImg= loadImage("infos.jpg");
-  
+        fontA = loadFont("data/cubic.ttf");
+        textFont(fontA, 20);
+        println(fontA);
+
         btInfo = new ButtonInfo();
         btStart = new ButtonStart();
         btAgain = new ButtonAgain();
@@ -95,8 +99,7 @@ void setup()
         trixBAD = new TrixParticle("bad");
         trixGOOD = new TrixParticle("good");
         
-        PFont fontA = loadFont("SansSerif-10.vlw");
-        textFont(fontA, 20);
+
         
   
         for(int i=0; i<numOfArms; i++) {
@@ -140,6 +143,18 @@ void draw() {
       textAlign(CENTER);
       text("GAME", width/2, 30);
       text("OVER", width/2, 60); 
+      
+      btAgain.draw();
+      
+    break; // End of Case Statement
+    
+    
+    case "Win":
+      background(#FFCC00);
+      fill(0);
+      textAlign(CENTER);
+      text("YOU", width/2, 30);
+      text("WIN", width/2, 60); 
       
       btAgain.draw();
       
