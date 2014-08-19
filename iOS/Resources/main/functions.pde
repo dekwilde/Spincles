@@ -102,13 +102,16 @@ void startGame() {
     iphone.startCompass();
     //iphone.startLocation();
     recordScore = iphone.loadState();
+    iphone.squareCamera();
     resetGame();
 }
 void resetGame() {
   energy = 30;
   score = 0;
   gameState = "Game";
-  println(gameState);   
+  println(gameState);
+  sound1.setVolume(100);
+  sound2.setVolume(100);  
 }
 void gameOver() {
   //First time score

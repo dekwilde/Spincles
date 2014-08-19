@@ -67,7 +67,7 @@ ButtonClose btClose;
 MenuSlider slider;
 ScoreInfo scoreInfo;
 
-float pInfo = 480;
+float pInfo = height;
 
 
 var gameState = "Intro";
@@ -201,40 +201,18 @@ void draw() {
         if (delay_mic>255) {
             delay_mic = 255;
         }
+
+        colorR = 255; // + microfone*20;
+        colorG = 204; // + microfone*25;
+        colorB = 0;   // + microfone*20;
+   
+
+        Camera();
+        fill(colorR, colorG, colorB, 255 - delay_mic);
+        noStroke();        
+        rect(0,0,width,height);
         
-        
-        if (delay_mic<128) {
-            colorR = 255; // + microfone*20;
-            colorG = 204; // + microfone*25;
-            colorB = 0;   // + microfone*20;
-        } else {
-            colorR = 0;
-            colorG = 0;
-            colorB = 0;
-        }
-        
-        if (colorR>255) {
-            colorR = 0;
-        }
-        if (colorG>255) {
-            colorG = 0;
-        }
-        if (colorB>255) {
-            colorB = 0;
-        }
-        
-        //println("microfone " + microfone);
-               
-        if (cameraShow) {  
-            Camera();
-        } else { // end if cameraShow
-          fill(colorR, colorG, colorB, 255 - delay_mic);
-          noStroke();        
-          rect(0,0,width,height);
-        }
-        
-        //Three();
-        
+        //Three();        
         
         ball.move();
         ball.touch();

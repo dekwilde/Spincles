@@ -50,7 +50,7 @@ var state = null;
 
 var volume = null;
 var micLevel = null;
-var cam = "cam.png";
+var cam = "cam.tga";
 var checkCam = false;
 
 var proximity = null;

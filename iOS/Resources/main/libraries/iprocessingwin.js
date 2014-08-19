@@ -439,7 +439,7 @@ function openCamera(e) {
 	Titanium.Media.showCamera({
 		success: function(event) {
 			var image = event.media;
-			var filename = "cam.png";
+			var filename = "cam.tga";
 			var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
 			f.write(image);
 			p(
@@ -529,11 +529,11 @@ function squareCamera() {
                                 var image = e.media;
                                 
                                 //image = image.imageAsResized(360,480);
-                                var filename = "cam.png";
+                                var filename = "cam.tga";
                                 var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
                                 f.write(image);
                                 
-                                Ti.API.debug("9 - takeCamera: " + filename);
+                                Ti.API.debug("9 - takeCamera: " + image);
                                 
                                 p(
                                   'cameraCaptured("' + filename + '");'
@@ -620,8 +620,8 @@ function squareCamera() {
     
 }
 function updateSquare() {
-    //cameraView.takePhoto();
     Ti.API.debug("7 - updateSquare");
+    //cameraView.takePhoto();
     cameraView.takeCamera(); //most important function
 }
 

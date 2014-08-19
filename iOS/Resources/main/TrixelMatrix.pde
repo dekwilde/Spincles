@@ -35,7 +35,7 @@ class TrixelMatrix {
     r += (dgr - r)*easing;
     
     
-    println("degrees " + angleCompass);
+    //println("degrees " + angleCompass);
     //println("radians " + r);
     d = dist(width/2, height/2, trixelX, trixelY);
     mx = d*cos(-r);

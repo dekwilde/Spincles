@@ -254,7 +254,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 
 - (void)takeCamera:(id)args
 {
-    NSLog(@"[DEBUG] 8 - takeCamera");
+    NSLog(@"[Obj-C] 8 - takeCamera");
     
     AVCaptureConnection *stillImageConnection = nil;
     
@@ -326,12 +326,12 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
          [self.proxy fireEvent:@"success" withObject:event];
          
          
-         // [imageBlob release];
-         // [image release];
-         // [croppedImage release];
+         //[imageBlob release];
+         //[image release];
+         //[croppedImage release];
          
          // keep it running for now - since we didn't replace it with an image
-         // [self.captureSession stopRunning];
+         //[self.captureSession stopRunning];
          
          // what are we doing with the potential error value?
          // proably should be sending an event if it's not nil... or something.
@@ -354,7 +354,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection
 {
-    //NSLog(@"[INFO] captureOutput");
+    NSLog(@"[INFO] captureOutput");
 
     
     UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];

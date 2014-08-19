@@ -30,8 +30,8 @@ void Camera() {
       
       
       
-      //VIDEO ENGINE START
       println("6 - loaded image - ready Pixels Image");
+      /*
       float brightestValue = 0; // Brightness of the brightest video pixel
       // Search for the brightest pixel: For each row of pixels in the video image and
       // for each pixel in the yth row, compute each pixel's index in the video
@@ -52,7 +52,8 @@ void Camera() {
           index++;
         }
       } 
-      //VIDEO ENGIENE START     
+      */
+           
      
      
      
@@ -69,6 +70,6 @@ void Camera() {
   image(video, 0, 0, width, height);
   noStroke();
   fill(0,0,255);
-  ellipse(brightestX*10-40, brightestY*10-100, 50, 50);
+  ellipse(brightestX*10, brightestY*10, 50, 50);
 }
 
