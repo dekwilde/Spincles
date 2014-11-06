@@ -30,7 +30,7 @@ float startEscala;
 
 float microfone = 0;
 float delay_mic = 0;
-float mic_perc = 50;
+float mic_perc = 1;
 
 
 int dim = 1300;
@@ -64,7 +64,7 @@ float WeightSegmentTouch = 0.0f;
 
 void setup() 
 {
-        size(800,600, OPENGL);
+        size(150,600, OPENGL);
         mySyphon = new JSyphonServer();
         mySyphon.test();
         mySyphon.initWithName("Transcreen");
@@ -100,7 +100,7 @@ void setup()
         bx = width/2;
         by = height/2;
         iAngle = 0;
-        iScale = 0.8;
+        iScale = 0.4;
         
         ball = new Ball(bx, by, bs);
 }

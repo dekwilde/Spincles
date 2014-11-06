@@ -50,7 +50,7 @@ var state = null;
 
 var volume = null;
 var micLevel = null;
-var cam = "cam.tga";
+var cam = "cam.jpg";
 var checkCam = false;
 
 var proximity = null;
@@ -783,7 +783,8 @@ IPhone = function IPhone(processing) {
 	ip.getCamera = function() {
 		var d = new Date();
         debug("3 - getCamera: " + cam);
-        return cam + "?rand=" + d.getTime();
+        //return cam + "?rand=" + d.getTime();
+        return cam;
         
 	};
     ip.checkCamera = function() {

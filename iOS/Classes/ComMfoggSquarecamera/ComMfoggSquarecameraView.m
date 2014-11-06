@@ -344,16 +344,19 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 
 
 
-
+////////////////////////////////////////////////////////////////// CAPTURE OUTPUT //////////////////////////////////////////////////////////////////////
 
 
 #pragma mark -
 #pragma mark AVCaptureSession delegate
+
 // Delegate routine that is called when a sample buffer was written
 - (void)captureOutput:(AVCaptureOutput *)captureOutput
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection
 {
+
+    /*
     NSLog(@"[INFO] captureOutput");
 
     
@@ -403,11 +406,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     // HURRAH!
     [self.proxy fireEvent:@"success" withObject:event];
-    
-    
-    
+     
+    */
     
 }
+
+
+
+
+
+
+
 
 // Create a UIImage from sample buffer data
 - (UIImage *) imageFromSampleBuffer:(CMSampleBufferRef) sampleBuffer
@@ -454,6 +463,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     return (image);
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

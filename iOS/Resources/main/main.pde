@@ -1,13 +1,13 @@
-/* @pjs transparent="true"; font="data/cubic.ttf, data/pixelart.ttf"; */
+/* @pjs transparent="true"; font="data/cubic.ttf, data/pixelart.ttf"; preload="data/cam.png"; */
 
 PFont fontTitle, fontText;
 
 float spring = 0.2;
-float gravityX = 0;
-float gravityY = 0;
+float gravityX = 0.0;
+float gravityY = 0.0;
 float bx;
 float by;
-int bs = 60;
+int bs = 120;
 boolean bover = false;
 boolean locked = false;
 float bdifx = 0.0; 
@@ -85,6 +85,7 @@ void setup()
         infoImg= loadImage("infos.jpg");
         fontTitle = loadFont("data/cubic.ttf");        
         fontText = loadFont("data/pixelart.ttf");
+        
 
         btInfo = new ButtonInfo();
         btStart = new ButtonStart();
@@ -127,7 +128,7 @@ void setup()
 
 
         //setupThree();
-        video = loadImage(iphone.getCamera());
+        video = loadImage("cam.png");
         
         println("4 - Start sequence: main.pde setup()");
 }
@@ -195,6 +196,9 @@ void draw() {
         // init vars DONT MOVE    
         gravityX = iphone.getAcceleration().x;
         gravityY = -iphone.getAcceleration().y;
+        
+        println("x: " + gravityX + " " + "y: " + gravityY);
+
         microfone = pow(iphone.getMicLevel(), 1) * mic_perc;                
         delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
                 
@@ -206,8 +210,8 @@ void draw() {
         colorG = 204; // + microfone*25;
         colorB = 0;   // + microfone*20;
    
-
-        Camera();
+		ctx.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
+        //Camera();
         fill(colorR, colorG, colorB, 255 - delay_mic);
         noStroke();        
         rect(0,0,width,height);
@@ -249,7 +253,7 @@ void draw() {
 
         
         btInfo.draw();
-        btCamera.draw();
+        //btCamera.draw();
         scoreInfo.draw();
 
 

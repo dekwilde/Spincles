@@ -3,7 +3,7 @@ class Ball {
   float vx = 0;
   float vy = 0;
   
-  float left = 100, right = 700, bottom = 100, top = 500;
+  float left = 40, right = 110, bottom = 100, top = 500;
   float xMax = 10, yMax = 5;
   float x = 400, y = 300;
   float xLimit, yLimit, xSpeed, ySpeed, xDelta, yDelta; 

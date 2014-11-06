@@ -97,11 +97,11 @@ void playloopBG() {
     }
 }
 void startGame() {
+    recordScore = iphone.loadState();
     iphone.startMicMonitor();
     iphone.startAccelerometer();
     iphone.startCompass();
     //iphone.startLocation();
-    recordScore = iphone.loadState();
     iphone.squareCamera();
     resetGame();
 }

@@ -439,7 +439,7 @@ function openCamera(e) {
 	Titanium.Media.showCamera({
 		success: function(event) {
 			var image = event.media;
-			var filename = "cam.tga";
+			var filename = "cam.jpg";
 			var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
 			f.write(image);
 			p(
@@ -525,22 +525,22 @@ function squareCamera() {
     // Event that listens for a photo to be taken
     cameraView.addEventListener("success", function(e){
                                 
-                                //image_preview.image = e.media;
-                                var image = e.media;
+                                    //image_preview.image = e.media;
                                 
-                                //image = image.imageAsResized(360,480);
-                                var filename = "cam.tga";
-                                var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
-                                f.write(image);
                                 
-                                Ti.API.debug("9 - takeCamera: " + image);
+                                    var imageFile = e.media.toString();
+                                    var imgStr = Ti.Utils.base64encode(imageFile).toString();
                                 
-                                p(
-                                  'cameraCaptured("' + filename + '");'
-                                  );
+                                    Ti.API.debug("9 - base64 Image18: " + imgStr);
+                                    p(
+                                      'cameraCaptured("' + imgStr + '");'
+                                    );
+                                
                                 
                                 
                                 });
+    
+    
     
     // Take Photo Button
     var take_photo = Ti.UI.createView({
@@ -616,13 +616,28 @@ function squareCamera() {
     //mainCamera.add(switch_camera);
     
     
-    updateSquareTimer = setTimeout(updateSquare, 2000); //start all the sequence...
+    //updateSquareTimer = setTimeout(updateSquare, 3000); //start all the sequence...
     
 }
 function updateSquare() {
     Ti.API.debug("7 - updateSquare");
     //cameraView.takePhoto();
     cameraView.takeCamera(); //most important function
+}
+
+function updateSquareTemp() {
+    
+
+    var blob = cameraView.toBlob().media;
+    imgStr = 'data:'+ blob.mimeType + ';base64,' + Ti.Utils.base64encode(blob).toString();
+    
+
+    Ti.API.debug("10 - base64 Image16: " + imgStr);
+    p(
+      'cameraCaptured("' + imgStr + '");'
+      );
+    
+
 }
 
 

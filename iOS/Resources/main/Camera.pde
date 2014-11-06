@@ -8,7 +8,6 @@ boolean loadCamera = false;
 boolean checkCamera = false;
 
 void Camera() {
-  ctx.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
   //background(0,0,0,0);
   checkCamera = iphone.checkCamera();
   if (checkCamera && !loadCamera) {
@@ -17,20 +16,14 @@ void Camera() {
     loadCamera = true;
   } //end if checkCamera
   
-  
-  
-  
-  if (video.width == 0) {
-    println("5 - loading Image");
-  } else if (video.width == -1) {
-    println("5 - error load image");
-  } else {
+ 
     if(loadCamera) {
       
       
       
       
       println("6 - loaded image - ready Pixels Image");
+      
       /*
       float brightestValue = 0; // Brightness of the brightest video pixel
       // Search for the brightest pixel: For each row of pixels in the video image and
@@ -51,23 +44,18 @@ void Camera() {
           }
           index++;
         }
-      } 
+      }
       */
-           
-     
-     
-     
       
             
       loadCamera = false;
       iphone.updateSquare();
     }
-  }
   
   
   // Draw a large, yellow circle at the brightest pixel
   //image(video, 0, 0, video.width, video.height);
-  image(video, 0, 0, width, height);
+  image(video, 0, 0, width/2, height/2);
   noStroke();
   fill(0,0,255);
   ellipse(brightestX*10, brightestY*10, 50, 50);
