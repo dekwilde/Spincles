@@ -1,4 +1,4 @@
-Titanium.UI.setBackgroundColor('#FFCC00');
+Titanium.UI.setBackgroundColor('#000000');
 var window = Titanium.UI.createWindow({url:'main/libraries/iprocessingwin.js'});
  
 window.navBarHidden = true;

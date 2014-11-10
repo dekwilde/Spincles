@@ -44,3 +44,41 @@ class Arm {
       line(0, 0, LengthSeg, 0);
   } 
 }
+
+
+function spinclesDraw() {
+  ///////////////////////////////////////////////// Spincles draw /////////////////////////////////////////////////////////
+  
+  for(int i=0; i<numOfArms; i++) {
+    angle[i] = angle[i] + angleSpeed[i] + microfone/250 + angleSpeedTouch;
+  }
+  
+  //targetX = mouseX;
+  targetX = ball.x;
+  float dx = targetX - x;
+  float nX = noise(pi/10)*cos(noise(pi/10)*((width/2 - noise(pi/50)*(width))/10));
+  x += dx * easing + nX*(microfone/3 + 5.2);
+  spinX = x;
+  
+  //targetY = mouseY;
+  targetY = ball.y;
+  float dy = targetY - y;
+  float nY = noise(pi/10)*sin(noise(pi/10)*((height/2 - noise(pi/50)*(height))/10));
+  y += dy * easing + nY*(microfone/3 + 5.2);
+  spinY = y;
+
+  //location();
+  //pointCompass();
+  //angleCompass = targetDEGREE - compassDEGREE;
+  angleCompass = compassDEGREE + gestureRotation;
+
+  //println("angleCompass: " + angleCompass);
+          
+  rotationT = noise(pi/500)*((dx*dy*easing)/450) + radians(iAngle) + microfone/40;
+  
+  body = new Tbody(x, y, rotationT, iScale);
+  //+ noise(pi/10)*2)
+  
+  pi++;
+}
+

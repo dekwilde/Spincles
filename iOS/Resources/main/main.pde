@@ -1,4 +1,4 @@
-/* @pjs transparent="true"; font="data/cubic.ttf, data/pixelart.ttf"; preload="data/cam.png"; */
+/* @pjs transparent="true"; font="data/cubic.ttf, data/pixelart.ttf"; preload="data/logo.png"; */
 
 PFont fontTitle, fontText;
 
@@ -34,6 +34,9 @@ PSound sound1, sound2, sound3, sound4;
 Tbody body;
 TCompass compass;
 
+int scW, scH;
+int wCount, hCount;
+
 int numSegment = 4;
 int numOfArms = 10;
 float SegWeightPor = 1.9f;
@@ -55,9 +58,14 @@ float [] segLength = new float[numOfArms];
 float angleSpeedTouch = 0.0f;
 float angleRadiusTouch = 0.0f;
 float WeightSegmentTouch = 0.0f;
+float rotationT = 0.0;
 
 boolean cameraShow = false;
-PImage infoImg;
+PImage infoImg, logoImg;
+
+float initColorAlpha = 0.0;
+float endColorAlpha = 0.0;
+float initPosY = 0.0;
 
 ButtonInfo btInfo;
 ButtonStart btStart;
@@ -74,15 +82,36 @@ var gameState = "Intro";
 
 void setup() 
 {
-        size(320, 480);
-        //size(screen.width, screen.height);
+        //size(320, 480);
+        scW = screen.width;
+        scH = screen.height;
+        
+        size(scW, scH);
+        
+        if(scW>320 && scH>480) {
+          wCount = 9;
+          hCount = 7;
+        } else {
+          wCount = 4;
+          hCount = 3;
+        }
+        
+        println("wCount: " + wCount + ", hCount: " + hCount);
+        
+        
+        
         //rectMode(CENTER_RADIUS);
-        rectMode(CORNER); 
+        rectMode(CORNER);
+        imageMode(CENTER);
         ctx = externals.context;        
         frameRate(30);
         //smooth();
         
-        infoImg= loadImage("infos.jpg");
+        
+        initPosY = height + 100;
+        
+        infoImg = loadImage("infos.jpg");
+        logoImg = loadImage("logo.png");
         fontTitle = loadFont("data/cubic.ttf");        
         fontText = loadFont("data/pixelart.ttf");
         
@@ -128,7 +157,7 @@ void setup()
 
 
         //setupThree();
-        video = loadImage("cam.png");
+        //video = loadImage("cam.png");
         
         println("4 - Start sequence: main.pde setup()");
 }
@@ -137,11 +166,36 @@ void draw() {
   playloopBG();
   switch( gameState ) {      
 
+    case "Intro":
+      initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
+      background(255, 204, 0, initColorAlpha);
+      fill(0);
+      textFont(fontTitle, 10);
+      textAlign(CENTER);
+      text("Welcome to", width/2, height/2-80); 
+      image(logoImg, width/2, height/2);
+      
+      if(initColorAlpha>220) {
+        initPosY = initPosY + (0 - initPosY)/10;
+        pushMatrix();
+        translate(0, initPosY);
+        btStart.draw();
+        popMatrix();
+      }
+      
+      
+    break; // End of Case Statement
+    
+    
     case "Over":
-      background(#FFCC00);
+    
+      initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
+    
+      background(255, 204, 0, initColorAlpha);
       fill(0);
       textFont(fontTitle, 20);
       textAlign(CENTER);
+      imageMode(CENTER);
       text("GAME", width/2, 60);
       text("OVER", width/2, 90);
       
@@ -156,7 +210,9 @@ void draw() {
     
     
     case "Win":
-      background(#FFCC00);
+      initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
+    
+      background(255, 204, 0, initColorAlpha);
       fill(0);
       textFont(fontTitle, 20);
       textAlign(CENTER);
@@ -167,22 +223,10 @@ void draw() {
       
     break; // End of Case Statement
 
-    case "Intro":
-      background(#FFCC00);
-      fill(0);
-      textFont(fontTitle, 20);
-      textAlign(CENTER);
-      text("Welcome to", width/2, 30); 
-      text("Spincles", width/2, 60); 
-      
-      btStart.draw();
-      
-    break; // End of Case Statement
-    
     case "InfoShow":
           fill(0, 0, 0, 20);
           rect(0,0,width,height);
-          image(infoImg, width/2-320/2, pInfo+height/2-480/2);
+          image(infoImg, width/2, pInfo+height/2);
         //tint(20);
           if (pInfo<1) {
               pInfo = 0;
@@ -192,13 +236,19 @@ void draw() {
           pInfo = pInfo - pInfo/6;
     break; // End of Case Statement
     
+    case "Tutorial":
+    
+    
+    break; // End of Case Statement
+    
     case "Game":
         // init vars DONT MOVE    
         gravityX = iphone.getAcceleration().x;
         gravityY = -iphone.getAcceleration().y;
         
         println("x: " + gravityX + " " + "y: " + gravityY);
-
+        println("Mic: " + iphone.getMicLevel());
+        
         microfone = pow(iphone.getMicLevel(), 1) * mic_perc;                
         delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
                 
@@ -210,7 +260,7 @@ void draw() {
         colorG = 204; // + microfone*25;
         colorB = 0;   // + microfone*20;
    
-		ctx.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
+	ctx.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
         //Camera();
         fill(colorR, colorG, colorB, 255 - delay_mic);
         noStroke();        
@@ -223,30 +273,6 @@ void draw() {
         ball.display();
         
         
-        for(int i=0; i<numOfArms; i++) {
-          angle[i] = angle[i] + angleSpeed[i] + microfone/250 + angleSpeedTouch;
-        }
-        
-        //targetX = mouseX;
-        targetX = ball.x;
-        float dx = targetX - x;
-        float nX = noise(pi/10)*cos(noise(pi/10)*((width/2 - noise(pi/50)*(width))/10));
-        x += dx * easing + nX*(microfone/3 + 5.2);
-        spinX = x;
-        
-        //targetY = mouseY;
-        targetY = ball.y;
-        float dy = targetY - y;
-        float nY = noise(pi/10)*sin(noise(pi/10)*((height/2 - noise(pi/50)*(height))/10));
-        y += dy * easing + nY*(microfone/3 + 5.2);
-        spinY = y;
-
-        //location();
-        //pointCompass();
-        //angleCompass = targetDEGREE - compassDEGREE;
-        angleCompass = compassDEGREE;
-        
-
         compass.draw();
         trixBAD.draw();
         trixGOOD.draw();
@@ -255,17 +281,24 @@ void draw() {
         btInfo.draw();
         //btCamera.draw();
         scoreInfo.draw();
-
-
+        
+        spinclesDraw();
         
         
-        float rotationT = noise(pi/500)*((dx*dy*easing)/450) + radians(iAngle) + microfone/40;
         
-        body = new Tbody(x, y, rotationT, iScale);
-        //+ noise(pi/10)*2)
         
-        pi++;
     break; // End of Case Statement   
 
   } //end switch
 }
+
+
+
+
+
+
+
+
+
+
+

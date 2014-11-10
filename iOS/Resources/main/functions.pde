@@ -48,6 +48,7 @@ void touch1Moved() {
   }
 }
 
+
 void touch1Stopped() {  
   if (touch1X > bx-bs && touch1X < bx+bs && 
 	touch1Y > by-bs && touch1Y < by+bs) {
@@ -105,6 +106,8 @@ void startGame() {
     iphone.squareCamera();
     resetGame();
 }
+
+
 void resetGame() {
   energy = 30;
   score = 0;
@@ -113,6 +116,8 @@ void resetGame() {
   sound1.setVolume(100);
   sound2.setVolume(100);  
 }
+
+
 void gameOver() {
   //First time score
   if(recordScore != null) {
@@ -131,5 +136,7 @@ void gameOver() {
   gameState = "Over";
 }
 
-
+void gameWin() {
+  //
+}
 

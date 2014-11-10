@@ -23,10 +23,30 @@ class ScoreInfo {
       
       
       if(energy>100) {
-        energy = 100;
+        gameWin();
       }
-      
-      
+        
+      if(energy>25 && energy<29) {
+        numSegment = 4;
+        numOfArms = 8;  
+      } 
+      else if(energy>20 && energy<24) {
+        numSegment = 3;
+        numOfArms = 7;  
+      }
+      else if(energy>15 && energy<19) {
+        numSegment = 3;
+        numOfArms = 5;  
+      }
+      else if(energy>10 && energy<14) {
+        numSegment = 3;
+        numOfArms = 5;  
+      }
+      else if(energy>5 && energy<9) {
+        numSegment = 2;
+        numOfArms = 3;  
+      }
+
       pushMatrix();
       scale(1.0);
       
