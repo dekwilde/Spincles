@@ -78,7 +78,7 @@ void shakeEvent() {
 
 boolean playSound1 = false;
 boolean playSound2 = false;
-void playloopBG() {
+void soundLoopBG() {
   
     int m = round(millis()/1000);
     
@@ -97,6 +97,21 @@ void playloopBG() {
       }  
     }
 }
+
+
+void drawBG() {
+  colorR = 255; // + microfone*20;
+  colorG = 204; // + microfone*25;
+  colorB = 0;   // + microfone*20;
+   
+  ctx.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
+  //Camera();
+  fill(colorR, colorG, colorB, 255 - delay_mic);
+  noStroke();        
+  rect(0,0,width,height);
+}
+
+
 void startGame() {
     recordScore = iphone.loadState();
     iphone.startMicMonitor();
@@ -120,7 +135,10 @@ void resetGame() {
 
 void gameOver() {
   //First time score
-  if(recordScore != null) {
+  if(recordScore) {
+    recordScore = score;
+    iphone.saveState(score);
+  } else {
     //check if the score is a new record
     if(score>recordScore) {
       scoreResult = "New Record";
@@ -129,9 +147,6 @@ void gameOver() {
     } else {
       scoreResult = "Record " + (String)recordScore;
     }
-  } else {
-    recordScore = score;
-    iphone.saveState(score);
   } 
   gameState = "Over";
 }

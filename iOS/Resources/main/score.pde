@@ -25,7 +25,11 @@ class ScoreInfo {
       if(energy>100) {
         gameWin();
       }
-        
+
+      if(energy>=30) {
+        numSegment = 4;
+        numOfArms = 10;  
+      }         
       if(energy>25 && energy<29) {
         numSegment = 4;
         numOfArms = 8;  

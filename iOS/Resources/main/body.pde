@@ -66,13 +66,6 @@ function spinclesDraw() {
   float nY = noise(pi/10)*sin(noise(pi/10)*((height/2 - noise(pi/50)*(height))/10));
   y += dy * easing + nY*(microfone/3 + 5.2);
   spinY = y;
-
-  //location();
-  //pointCompass();
-  //angleCompass = targetDEGREE - compassDEGREE;
-  angleCompass = compassDEGREE + gestureRotation;
-
-  //println("angleCompass: " + angleCompass);
           
   rotationT = noise(pi/500)*((dx*dy*easing)/450) + radians(iAngle) + microfone/40;
   

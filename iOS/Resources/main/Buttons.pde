@@ -54,9 +54,10 @@ class ButtonAgain {
     boolean overButton = false;
     
     int pX = width/2;
-    int pY = height/2;
-    int dw = 60;
-    int dh = 15;
+    int pY = height/2+100;
+    int dw = 120;
+    int dh = 40;
+    int fSize = 20;
     
     ButtonAgain() {
         smooth();
@@ -70,12 +71,11 @@ class ButtonAgain {
         } else {
           stroke(255);
         }
-        fill(0);
-        rect(pX, pY, dw, dh);
-        fill(255);
-        textFont(fontText, 14);
-        textAlign(CENTER);
-        text("Try Again", pX, pY);
+        noFill();
+        rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
+        fill();
+        textFont(fontText, fSize);
+        text("TRY AGAIN", pX, pY);
         
         if (overButton == true) {
             overButton = false;
@@ -120,7 +120,6 @@ class ButtonStart {
         rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
         fill();
         textFont(fontText, fSize);
-        textAlign(CENTER);
         text("Start", pX, pY);
         
         if (overButton == true) {
@@ -157,7 +156,7 @@ class ButtonInfo {
           println("info");
           
           textFont(fontText, 20);
-          textAlign(CENTER);
+          
           
           // circulo          
           noStroke();

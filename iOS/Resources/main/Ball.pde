@@ -71,4 +71,11 @@ class Ball {
     ellipse(x, y, diameter, diameter);
     popMatrix();
   }
+  
+  void draw() {
+    ball.move();
+    ball.touch();
+    ball.display();
+  }
+  
 }

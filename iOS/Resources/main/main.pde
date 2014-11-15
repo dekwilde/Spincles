@@ -1,4 +1,4 @@
-/* @pjs transparent="true"; font="data/cubic.ttf, data/pixelart.ttf"; preload="data/logo.png"; */
+/* @pjs transparent="true"; font="data/cubic.ttf, data/pixelart.ttf, data/hexagonica.ttf;"; preload="data/logo.png"; */
 
 PFont fontTitle, fontText;
 
@@ -78,10 +78,9 @@ ScoreInfo scoreInfo;
 float pInfo = height;
 
 
-var gameState = "Intro";
+var gameState = "Over";
 
-void setup() 
-{
+void setup() {
         //size(320, 480);
         scW = screen.width;
         scH = screen.height;
@@ -103,6 +102,7 @@ void setup()
         //rectMode(CENTER_RADIUS);
         rectMode(CORNER);
         imageMode(CENTER);
+        textAlign(CENTER);
         ctx = externals.context;        
         frameRate(30);
         //smooth();
@@ -112,7 +112,7 @@ void setup()
         
         infoImg = loadImage("infos.jpg");
         logoImg = loadImage("logo.png");
-        fontTitle = loadFont("data/cubic.ttf");        
+        fontTitle = loadFont("data/hexagonica.ttf");        
         fontText = loadFont("data/pixelart.ttf");
         
 
@@ -163,7 +163,7 @@ void setup()
 }
 
 void draw() {
-  playloopBG();
+  soundLoopBG();
   switch( gameState ) {      
 
     case "Intro":
@@ -171,7 +171,7 @@ void draw() {
       background(255, 204, 0, initColorAlpha);
       fill(0);
       textFont(fontTitle, 10);
-      textAlign(CENTER);
+      
       text("Welcome to", width/2, height/2-80); 
       image(logoImg, width/2, height/2);
       
@@ -188,41 +188,26 @@ void draw() {
     
     
     case "Over":
-    
+      
+      int Talign = 40;
       initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
-    
       background(255, 204, 0, initColorAlpha);
       fill(0);
-      textFont(fontTitle, 20);
-      textAlign(CENTER);
-      imageMode(CENTER);
-      text("GAME", width/2, 60);
-      text("OVER", width/2, 90);
+      textFont(fontTitle, 40);
+      text("GAME", width/2, 80+Talign);
+      textFont(fontTitle, 48);
+      text("OVER", width/2, 160+Talign);
       
       textFont(fontText, 16);
-      text("score", width/2, 140);
-      text(score, width/2, 160);
-      text(scoreResult, width/2, 180);
+      text("score", width/2, 200+Talign);
+      text(score, width/2, 220+Talign);
+      text(scoreResult, width/2, 260+Talign);
       
       btAgain.draw();
       
     break; // End of Case Statement
     
     
-    case "Win":
-      initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
-    
-      background(255, 204, 0, initColorAlpha);
-      fill(0);
-      textFont(fontTitle, 20);
-      textAlign(CENTER);
-      text("YOU", width/2, 30);
-      text("WIN", width/2, 60); 
-      
-      btAgain.draw();
-      
-    break; // End of Case Statement
-
     case "InfoShow":
           fill(0, 0, 0, 20);
           rect(0,0,width,height);
@@ -236,43 +221,19 @@ void draw() {
           pInfo = pInfo - pInfo/6;
     break; // End of Case Statement
     
-    case "Tutorial":
+    case "Level 0":
     
     
     break; // End of Case Statement
     
     case "Game":
-        // init vars DONT MOVE    
-        gravityX = iphone.getAcceleration().x;
-        gravityY = -iphone.getAcceleration().y;
-        
-        println("x: " + gravityX + " " + "y: " + gravityY);
-        println("Mic: " + iphone.getMicLevel());
-        
-        microfone = pow(iphone.getMicLevel(), 1) * mic_perc;                
-        delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
-                
-        if (delay_mic>255) {
-            delay_mic = 255;
-        }
+        acceMic();
 
-        colorR = 255; // + microfone*20;
-        colorG = 204; // + microfone*25;
-        colorB = 0;   // + microfone*20;
-   
-	ctx.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
-        //Camera();
-        fill(colorR, colorG, colorB, 255 - delay_mic);
-        noStroke();        
-        rect(0,0,width,height);
+        drawBG();
         
         //Three();        
         
-        ball.move();
-        ball.touch();
-        ball.display();
-        
-        
+        ball.draw();        
         compass.draw();
         trixBAD.draw();
         trixGOOD.draw();
@@ -282,9 +243,8 @@ void draw() {
         //btCamera.draw();
         scoreInfo.draw();
         
+ 
         spinclesDraw();
-        
-        
         
         
     break; // End of Case Statement   

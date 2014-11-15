@@ -28,6 +28,22 @@ class Tcompass {
     trixelMtx = new TrixelMatrix();
   }
   void draw() {
+    
+    
+    //location();
+    //pointCompass();
+    //angleCompass = targetDEGREE - compassDEGREE;
+    
+    if (compassDEGREE > 360) {
+      compassDEGREE = compassDEGREE - 360;
+    }
+    if (compassDEGREE < 0) {
+      compassDEGREE = 360 + compassDEGREE;
+    }
+    angleCompass = compassDEGREE + iAngle;
+    
+    
+    
     //trixelX += (spinX - trixelX)*easing;
     //trixelY += (spinY - trixelY)*easing;
     
@@ -66,7 +82,9 @@ class TrixelMatrix {
   void draw() {
     //r = r + speed;
 
-    dgr = abs(radians(angleCompass) - PI)*PI;
+    
+    
+    dgr = radians(angleCompass);
     //r += (dgr - r)*easing;
     float a = atan2(trixelY-height/2, trixelX-width/2);
     r = dgr - a;
