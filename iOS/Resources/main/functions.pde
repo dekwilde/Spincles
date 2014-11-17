@@ -104,8 +104,17 @@ void drawBG() {
   colorG = 204; // + microfone*25;
   colorB = 0;   // + microfone*20;
    
-  ctx.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect
+ 
   //Camera();
+  
+  delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
+        
+  if (delay_mic>255) {
+    delay_mic = 255;
+  } else {
+    ctx.clearRect(0,0,width,height);// part of the canvasAPI that creates a clear rect  
+  }
+  
   fill(colorR, colorG, colorB, 255 - delay_mic);
   noStroke();        
   rect(0,0,width,height);
@@ -120,6 +129,7 @@ void startGame() {
     //iphone.startLocation();
     iphone.squareCamera();
     resetGame();
+
 }
 
 

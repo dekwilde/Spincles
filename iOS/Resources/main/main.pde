@@ -103,7 +103,7 @@ void setup() {
         rectMode(CORNER);
         imageMode(CENTER);
         textAlign(CENTER);
-        ctx = externals.context;        
+        ctx = externals.context;   
         frameRate(30);
         //smooth();
         
@@ -236,7 +236,7 @@ void draw() {
     case "Game":
         acceMic();
 
-        drawBG();
+        //drawBG();
         
         //Three();        
         

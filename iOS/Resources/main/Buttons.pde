@@ -1,17 +1,16 @@
 class MenuSlider {
-   
     float st_x;
     float st_y;
     int st_s = 30;
     float st_difx = 0.0; 
     float st_dify = 0.0; 
-    float init = 35;
-    float end = 285;
+    float init = width/2 - 160 + 35;
+    float end = width/2 - 160 + 285;
     
     
     MenuSlider() {  
       st_x = 160;
-      st_y = 100;
+      st_y = height/2 -240 + 100;
     }
     
     void draw() {
@@ -192,8 +191,8 @@ class ButtonInfo {
 
 class ButtonClose {
     boolean overButton = false;
-    int pX = 285;
-    int pY = 25;
+    int pX = width/2 - 160 + 285;
+    int pY = height/2 - 240 + 25;
     int dm = 15; 
     
     ButtonClose() {  

@@ -99,11 +99,11 @@ class TrixelMatrix {
     pushMatrix();
     rotate(r);
     gridtrixel.draw();
-    fill(0,255,0);
-    ellipse(mx,my, 30, 30); // target position
+    //fill(0,255,0);
+    //ellipse(mx,my, 30, 30); // target position
     popMatrix();
-    stroke(0,255,0);
-    line(0, 0, 0, 20); //point compass
+    //stroke(0,255,0);
+    //line(0, 0, 0, 20); //point compass
   }
 }
 

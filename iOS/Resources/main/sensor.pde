@@ -82,11 +82,7 @@ void acceMic() {
   println("Mic: " + iphone.getMicLevel());
   
   microfone = pow(iphone.getMicLevel(), 1) * mic_perc;                
-  delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
-        
-  if (delay_mic>255) {
-    delay_mic = 255;
-  }
+
 }
 
 
