@@ -78,7 +78,7 @@ ScoreInfo scoreInfo;
 float pInfo = height;
 
 
-var gameState = "Over";
+var gameState = "Intro";
 
 void setup() {
         //size(320, 480);
@@ -193,15 +193,22 @@ void draw() {
       initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
       background(255, 204, 0, initColorAlpha);
       fill(0);
+      
+      textAlign(CENTER);
       textFont(fontTitle, 40);
       text("GAME", width/2, 80+Talign);
       textFont(fontTitle, 48);
       text("OVER", width/2, 160+Talign);
       
-      textFont(fontText, 16);
+      textFont(fontText);
+      textSize(16);
       text("score", width/2, 200+Talign);
-      text(score, width/2, 220+Talign);
-      text(scoreResult, width/2, 260+Talign);
+      textSize(36);
+      text(score, width/2, 230+Talign);
+      textSize(16);
+      text(scoreResult, width/2, 270+Talign);
+      textSize(36);
+      text(recordScore, width/2, 300+Talign);
       
       btAgain.draw();
       

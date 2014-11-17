@@ -135,17 +135,17 @@ void resetGame() {
 
 void gameOver() {
   //First time score
-  if(recordScore) {
+  if(!recordScore) {
     recordScore = score;
-    iphone.saveState(score);
+    iphone.saveState(recordScore);
   } else {
     //check if the score is a new record
     if(score>recordScore) {
       scoreResult = "New Record";
       recordScore = score;
-      iphone.saveState(score);
+      iphone.saveState(recordScore);
     } else {
-      scoreResult = "Record " + (String)recordScore;
+      scoreResult = "Last Record";
     }
   } 
   gameState = "Over";

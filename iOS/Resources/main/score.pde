@@ -69,9 +69,12 @@ class ScoreInfo {
       line(px+80, py+ dh/5, px+80, py+ dh - dh/5);    
     
       popMatrix();
+      
+      pushMatrix();
       textFont(fontText, 14);
       textAlign(RIGHT);
-      text(score, px-5, py+10);        
+      text(score, px-5, py+10); 
+      popMatrix();      
 
     }
 

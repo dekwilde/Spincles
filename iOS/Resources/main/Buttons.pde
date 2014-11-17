@@ -54,7 +54,7 @@ class ButtonAgain {
     boolean overButton = false;
     
     int pX = width/2;
-    int pY = height/2+100;
+    int pY = height/2+160;
     int dw = 120;
     int dh = 40;
     int fSize = 20;
