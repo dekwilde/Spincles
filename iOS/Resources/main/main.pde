@@ -66,7 +66,11 @@ PImage infoImg, logoImg;
 float initColorAlpha = 0.0;
 float endColorAlpha = 0.0;
 float initPosY = 0.0;
+int initColor = 255;
+float tween = 0.0;
 
+
+// Interface
 ButtonInfo btInfo;
 ButtonStart btStart;
 ButtonAgain btAgain;
@@ -74,11 +78,15 @@ ButtonCamera btCamera;
 ButtonClose btClose;
 MenuSlider slider;
 ScoreInfo scoreInfo;
-
 float pInfo = height;
 
 
-var gameState = "Intro";
+
+// Transitions
+IntroGame introgame;
+
+var gameState = "Start";
+var gameTransions = "Null";
 
 void setup() {
         //size(320, 480);
@@ -128,6 +136,9 @@ void setup() {
         trixBAD = new TrixParticle("bad");
         trixGOOD = new TrixParticle("good");
         
+        // Transitions
+        introgame = new IntroGame();
+        
 
         
   
@@ -165,98 +176,52 @@ void setup() {
 void draw() {
   soundLoopBG();
   switch( gameState ) {      
-
-    case "Intro":
-      initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
-      background(255, 204, 0, initColorAlpha);
-      fill(0);
-      textFont(fontTitle, 10);
-      
-      text("Welcome to", width/2, height/2-80); 
-      image(logoImg, width/2, height/2);
-      
-      if(initColorAlpha>220) {
-        initPosY = initPosY + (0 - initPosY)/10;
-        pushMatrix();
-        translate(0, initPosY);
-        btStart.draw();
-        popMatrix();
-      }
-      
-      
-    break; // End of Case Statement
-    
+    case "Start":
+      stateStart();
+    break;
     
     case "Over":
-      
-      int Talign = 40;
-      initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
-      background(255, 204, 0, initColorAlpha);
-      fill(0);
-      
-      textAlign(CENTER);
-      textFont(fontTitle, 40);
-      text("GAME", width/2, 80+Talign);
-      textFont(fontTitle, 48);
-      text("OVER", width/2, 160+Talign);
-      
-      textFont(fontText);
-      textSize(16);
-      text("score", width/2, 200+Talign);
-      textSize(36);
-      text(score, width/2, 230+Talign);
-      textSize(16);
-      text(scoreResult, width/2, 270+Talign);
-      textSize(36);
-      text(recordScore, width/2, 300+Talign);
-      
-      btAgain.draw();
-      
-    break; // End of Case Statement
+      stateOver();
+    break;
     
     
     case "InfoShow":
-          fill(0, 0, 0, 20);
-          rect(0,0,width,height);
-          image(infoImg, width/2, pInfo+height/2);
-        //tint(20);
-          if (pInfo<1) {
-              pInfo = 0;
-              slider.draw();
-              btClose.draw();
-          }
-          pInfo = pInfo - pInfo/6;
-    break; // End of Case Statement
+      stateInfoShow();
+    break;
     
-    case "Level 0":
-    
-    
-    break; // End of Case Statement
-    
+    case "Intro":
+      introgame.draw();
+    break;
+        
     case "Game":
-        acceMic();
+      stateGame();  
+    break;  
+  } //end gameState
+  
+  
+  switch( gameTransions ) {      
+    case "Null":
+      tween = 0.0;
+    break;
+    
+    case "Flash":
+      tween = tween +(initColor-tween)/10;
+      if(tween>(initColor-1)) {
+        gameTransions = "Null";
+      }
+      pushMatrix();
+      rotate(0);
+      translate(0,0);
+      scale(1.0);
+      fill(255, 255-tween);
+      noStroke();        
+      rect(0,0,width,height);   
+      popMatrix();
 
-        //drawBG();
-        
-        //Three();        
-        
-        ball.draw();        
-        compass.draw();
-        trixBAD.draw();
-        trixGOOD.draw();
-
-        
-        btInfo.draw();
-        //btCamera.draw();
-        scoreInfo.draw();
-        
- 
-        spinclesDraw();
-        
-        
-    break; // End of Case Statement   
-
+    break;
+    
   } //end switch
+  
 }
 
 

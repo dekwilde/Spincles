@@ -123,7 +123,7 @@ class ButtonStart {
         
         if (overButton == true) {
            overButton = false;
-           startGame();
+           gameState = "Intro";
         }
     } 
     

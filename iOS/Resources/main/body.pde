@@ -3,6 +3,7 @@ class Tbody {
   Arm arms;  
    
   Tbody(float posX, float posY, float rotator, float escala) {
+    pushMatrix();
     x = posX;
     y = posY;
     stroke((0 + microfone*15), 80); 
@@ -18,7 +19,7 @@ class Tbody {
       //rotate(PI/(numOfArms/2));
       //rotate(random(PI));
     }
-    
+    popMatrix();
   }
 }
 

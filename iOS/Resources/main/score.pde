@@ -79,3 +79,23 @@ class ScoreInfo {
     }
 
 }
+
+void setScore() {
+    //First time score
+  if(!recordScore || recordScore == null || recordScore == "null") {
+    recordScore = score;
+    iphone.saveState(recordScore);
+    scoreResult = "New Record";
+  } else {
+    //check if the score is a new record
+    if(score>recordScore) {
+      scoreResult = "New Record";
+      recordScore = score;
+      iphone.saveState(recordScore);
+    } else {
+      scoreResult = "Last Record";
+    }
+  } 
+}
+
+

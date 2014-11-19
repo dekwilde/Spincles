@@ -233,12 +233,7 @@ class Trixel {
     } else {
       activeTrix = false;
     }
-    
-    
-    
-    stroke(255);
-    strokeWeight(1);
-    t.drawTriangle();
+    t.draw();
   }
 
   void resetTrix() {
@@ -298,7 +293,9 @@ class Triangle {
     this.point3y = point3y;        
   }
   
-  void drawTriangle() {
+  void draw() {
+    stroke(#ffffff);
+    strokeWeight(1);
     triangle(point1x, point1y, point2x, point2y, point3x, point3y);
   }
 }

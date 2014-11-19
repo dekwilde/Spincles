@@ -1,15 +1,3 @@
-IntroGame introgame;
-void setup() {
-  size(320,480,P2D);
-  introgame = new IntroGame();
-}
-
-void draw() {
-
-  introgame.draw();
-
-}
-
 class IntroGame {
 
   float x1, y1, x2, y2, x3, y3;
@@ -36,6 +24,7 @@ class IntroGame {
     y3 = y1 + (sin(atan2(y2-y1,x2-x1)-PI/3) * dist(x1,y1,x2,y2));
     
     
+    
     pushMatrix();
     translate(width/2, height/2);  
     scale(scaleTri);
@@ -49,18 +38,15 @@ class IntroGame {
     scaleTri = scaleTri-scaleTri*acce;
     if(scaleTri<0.1) {
      scaleTri = scaleInit;
-     if(acce<0.98) {
-       acce = acce + acce*0.15;
+     if(acce<0.99) {
+       acce = acce + acce*0.5;
      } else {
        fill(0);
        rect(0,0,width,height);
-       noLoop();
+       startGame();
      }
     } 
     
-    
+
   }
 }
-
-
-
