@@ -1,8 +1,12 @@
-/* @pjs transparent="true"; font="data/cubic.ttf, data/pixelart.ttf, data/hexagonica.ttf;"; preload="data/logo.png"; */
+/* 
+@pjs transparent="true"; 
+font="data/cubic.ttf, data/pixelart.ttf, data/hexagonica.ttf;"; 
+preload="data/logo.png"; 
+*/
 
 PFont fontTitle, fontText;
 
-float spring = 0.2;
+float spring = 0.02;
 float gravityX = 0.0;
 float gravityY = 0.0;
 float bx;
@@ -30,7 +34,11 @@ int dim = 1300;
 
 Ball ball;
 IPhone iphone;
-PSound sound1, sound2, sound3, sound4;
+
+
+boolean playSoundBG1 = false;
+boolean playSoundBG2 = false;
+PSound soundBG1, soundBG2, soundLoopBG, soundTransIN, soundTransOUT, soundStartUP, soundGlitch, soundClick, soundMagnetic;
 Tbody body;
 TCompass compass;
 
@@ -40,8 +48,8 @@ int wCount, hCount;
 int numSegment = 4;
 int numOfArms = 10;
 float SegWeightPor = 1.9f;
-float radius = 0.0f;
-float easing = 0.05f;
+float radius = 0.00;
+float easing = 0.20;
 float x = width/2; 
 float y = height/2;
 float targetX, targetY;
@@ -67,6 +75,7 @@ float initColorAlpha = 0.0;
 float endColorAlpha = 0.0;
 float initPosY = 0.0;
 int initColor = 255;
+float alphaBG = 0.0;
 float tween = 0.0;
 
 
@@ -87,6 +96,7 @@ IntroGame introgame;
 
 var gameState = "Start";
 var gameTransions = "Null";
+var gameSound = "Intro";
 
 void setup() {
         //size(320, 480);
@@ -159,12 +169,19 @@ void setup() {
         
         ball = new Ball(bx, by, bs);
         iphone = new IPhone();
-
-
-        sound1 = iphone.loadSound("bg1.wav");
-        sound2 = iphone.loadSound("bg2.wav");
-        sound1.setVolume(100);
-        sound2.setVolume(100);
+        
+        soundMagnetic   = iphone.loadSound("magnetic.wav");
+        soundClick      = iphone.loadSound("click.wav");
+        soundGlitch     = iphone.loadSound("world_glitch.wav");
+        soundStartUP    = iphone.loadSound("module_startup.wav");
+        soundTransIN    = iphone.loadSound("transIn.wav");
+        soundTransOUT   = iphone.loadSound("transOut.wav");
+        soundLoopBG     = iphone.loadSound("loop1.wav");
+        soundBG1        = iphone.loadSound("bg1.wav");
+        soundBG2        = iphone.loadSound("bg2.wav");
+        
+        soundBG1.setVolume(20);
+        soundBG2.setVolume(20);
 
 
         //setupThree();
@@ -174,7 +191,6 @@ void setup() {
 }
 
 void draw() {
-  soundLoopBG();
   switch( gameState ) {      
     case "Start":
       stateStart();
@@ -221,6 +237,41 @@ void draw() {
     break;
     
   } //end switch
+  
+  
+  switch( gameSound ) {      
+    case "Null":
+      //
+    break;
+    case "Intro":
+      int m = round(millis()/1000);
+      
+      if(!playSoundBG1) {
+        playSoundBG1 = true;
+        soundBG1.play();
+        soundBG1.loop();
+        println("soundBG1");
+      }
+      if(m == 4) {
+        if(!playSoundBG2) {
+          playSoundBG2 = true;
+          soundBG2.play();
+          soundBG2.loop();
+          gameSound = "Null";
+          println("soundBG2");
+        }  
+      }
+    break;
+    
+    case "Game":
+      soundBG1.stop();
+      soundBG2.stop();
+      soundLoopBG.play();
+      soundLoopBG.loop();
+      gameSound = "Null";
+    break;
+    
+  }
   
 }
 

@@ -111,7 +111,7 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
 {
 	if (self = [super init])
 	{
-        defaultSessionMode = kAudioSessionCategory_SoloAmbientSound;
+        defaultSessionMode = kAudioSessionCategory_PlayAndRecord;
 		count = 0;
 		lock = [[NSLock alloc] init];
 	}
@@ -225,7 +225,7 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
 {
     if (mode == kAudioSessionCategory_RecordAudio) {
         // Default is to use solo ambient
-        mode = kAudioSessionCategory_SoloAmbientSound;
+        mode = kAudioSessionCategory_PlayAndRecord;
     }
 	AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(mode), &mode);
 }

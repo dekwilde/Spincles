@@ -76,28 +76,6 @@ void shakeEvent() {
   println("shaked");
 }
 
-boolean playSound1 = false;
-boolean playSound2 = false;
-void soundLoopBG() {
-  
-    int m = round(millis()/1000);
-    
-    if(!playSound1) {
-      playSound1 = true;
-      sound1.play();
-      sound1.loop();
-      println("sound1");
-    }
-    if(m == 4) {
-      if(!playSound2) {
-        playSound2 = true;
-        sound2.play();
-        sound2.loop();
-        println("sound2");
-      }  
-    }
-}
-
 
 void drawBG() {
   colorR = 255; // + microfone*20;
@@ -107,15 +85,15 @@ void drawBG() {
  
   //Camera();
   
-  delay_mic = delay_mic + (microfone*15 - delay_mic/4)/10;
+  alphaBG = alphaBG + (microfone*15 - alphaBG/4)/10;
         
-  if (delay_mic>255) {
-    ctx.clearRect(0,0,width,height);
-    fill(colorR, colorG, colorB, 255-delay_mic);
+  if (alphaBG>255) {
+    ctx.rect(0,0,width,height);
+    fill(colorR, colorG, colorB, 255-alphaBG);
     noStroke();        
     rect(0,0,width,height); 
   } else {
-    fill(colorR, colorG, colorB, delay_mic);
+    fill(colorR, colorG, colorB, alphaBG);
     noStroke();        
     rect(0,0,width,height); 
   }
@@ -138,9 +116,8 @@ void resetGame() {
   score = 0;
   gameState = "Game";
   gameTransions = "Flash";
+  gameSound = "Game";
   println(gameState);
-  sound1.setVolume(100);
-  sound2.setVolume(100);  
 }
 
 
@@ -160,8 +137,32 @@ void stateStart() {
   fill(0);
   textFont(fontTitle, 10);
   
-  text("Welcome to", width/2, height/2-80); 
+  text("Welcome to", width/2, height/2-50); 
   image(logoImg, width/2, height/2);
+  
+  
+  textFont(fontText, 10);
+  text("headphone required", width/2, height/2-170-initPosY);
+  // headhpone
+  pushMatrix();
+  noFill();
+  strokeWeight(3);
+  translate(width/2, height/2-140-initPosY);
+  scale(0.4);
+  rotate(-QUARTER_PI/2+PI);
+  arc(0, 0, 80, 80, 0, PI+QUARTER_PI, OPEN);
+  
+  rotate(+QUARTER_PI/2-PI);
+  fill(0);
+  strokeWeight(3);
+  ellipse(25,15,15,30);
+  ellipse(-25,15,15,30);
+  
+  ellipse(33,15,10,10);
+  ellipse(-33,15,10,10);
+  popMatrix();
+  
+  
   
   if(initColorAlpha>220) {
     initPosY = initPosY + (0 - initPosY)/10;
@@ -170,6 +171,11 @@ void stateStart() {
     btStart.draw();
     popMatrix();
   }
+  
+  
+
+  
+  
 }
 
 void stateOver() {

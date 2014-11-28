@@ -101,6 +101,7 @@ function volumeChange(e) {
 function updateMicMonitor() {
 	p(
 		'updateMicLevel(' + Titanium.Media.averageMicrophonePower + ');'
+        //'updateMicLevel(' + Titanium.Media.peakMicrophonePower + ');'
 	);
 }
 

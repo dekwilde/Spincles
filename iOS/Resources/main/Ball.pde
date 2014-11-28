@@ -1,6 +1,7 @@
 class Ball {
   float x, y;
   float diameter;
+  float gravity = 1.0;
   float vx = 0;
   float vy = 0;
   Ball(float xin, float yin, float din) {
@@ -14,8 +15,8 @@ class Ball {
         bx = x;
         by = y;
         
-        vx += gravityX;
-        vy += gravityY;
+        vx += gravityX*gravity;
+        vy += gravityY*gravity;
         x += vx;
         y += vy;
         if (x + diameter/2 > width) {
@@ -58,9 +59,6 @@ class Ball {
           bover = false;
     }
     
-    angleSpeedTouch = angleSpeedTouch / 1.02;
-    angleRadiusTouch = angleRadiusTouch / 1.008;
-    WeightSegmentTouch = WeightSegmentTouch / 1.08;
     //println("touch_off"); 
   }
   
@@ -75,7 +73,7 @@ class Ball {
   void draw() {
     ball.move();
     ball.touch();
-    //ball.display();
+    ball.display();
   }
   
 }

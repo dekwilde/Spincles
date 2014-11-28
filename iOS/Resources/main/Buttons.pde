@@ -35,7 +35,8 @@ class MenuSlider {
       
       if (touch1X > st_x-st_s && touch1X < st_x+st_s && 
         touch1Y > st_y-st_s && touch1Y < st_y+st_s) {
-             st_x = touch1X;  
+           st_x = touch1X;
+           soundClick.play();
          } else {
            st_x = st_x;
       }
@@ -78,6 +79,7 @@ class ButtonAgain {
         
         if (overButton == true) {
             overButton = false;
+            soundClick.play();
             resetGame();
         }
     } 
@@ -123,7 +125,9 @@ class ButtonStart {
         
         if (overButton == true) {
            overButton = false;
+           soundClick.play();
            gameState = "Intro";
+           gameTransions = "Flash";
         }
     } 
     
@@ -152,11 +156,8 @@ class ButtonInfo {
           // Left buttom
         if (overButton == true) {
           gameState = "InfoShow";
-          println("info");
-          
+          soundClick.play();
           textFont(fontText, 20);
-          
-          
           // circulo          
           noStroke();
           fill(0);
@@ -217,6 +218,7 @@ class ButtonClose {
         if (overButton == true) {
            background(0);
            pInfo = 480;    
+           soundClick.play();
            gameState = "Game";
            println("close");
         }

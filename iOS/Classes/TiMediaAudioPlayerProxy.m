@@ -220,7 +220,7 @@ MAKE_SYSTEM_PROP(STATE_PAUSED,AS_PAUSED);
     UInt32 newMode = [mode unsignedIntegerValue]; // Close as we can get to UInt32
     if (newMode == kAudioSessionCategory_RecordAudio) {
         NSLog(@"Invalid mode for audio player... setting to default.");
-        newMode = kAudioSessionCategory_SoloAmbientSound;
+        newMode = kAudioSessionCategory_PlayAndRecord;
     }
     sessionMode = newMode;
 }

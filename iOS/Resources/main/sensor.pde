@@ -1,16 +1,16 @@
 int lastTime = 0;
 int interval = 5000;
-   float lt;
-   float lg;
-   float al;
-   float hd;
-   float sp;
-   
-   float targetLT = -21.793933;
-   float targetLG = -48.170929;
-   float currentLT;
-   float currentLG;
-   float compassDEGREE, targetDEGREE;
+float lt;
+float lg;
+float al;
+float hd;
+float sp;
+ 
+float targetLT = -21.793933;
+float targetLG = -48.170929;
+float currentLT;
+float currentLG;
+float compassDEGREE, targetDEGREE;
 
 void location() {
    int currentTime = millis();

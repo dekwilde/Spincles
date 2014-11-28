@@ -22,32 +22,28 @@ class ScoreInfo {
       }
       
       
-      if(energy>100) {
-        gameWin();
-      }
-
-      if(energy>=30) {
+      if(energy>=25) {
         numSegment = 4;
         numOfArms = 10;  
       }         
-      if(energy>25 && energy<29) {
+      else if(energy>20 && energy<24) {
         numSegment = 4;
         numOfArms = 8;  
       } 
-      else if(energy>20 && energy<24) {
+      else if(energy>15 && energy<19) {
         numSegment = 3;
         numOfArms = 7;  
       }
-      else if(energy>15 && energy<19) {
-        numSegment = 3;
-        numOfArms = 5;  
-      }
       else if(energy>10 && energy<14) {
         numSegment = 3;
-        numOfArms = 5;  
+        numOfArms = 6;  
       }
       else if(energy>5 && energy<9) {
         numSegment = 2;
+        numOfArms = 5;  
+      }
+      else if(energy>1 && energy<4) {
+        numSegment = 1;
         numOfArms = 3;  
       }
 

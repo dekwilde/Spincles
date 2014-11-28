@@ -11,7 +11,7 @@ int rangeCentroid = 10;
 int changeTimeRange = 10;
 int changeTimeRand = 10;
 int changeTimeRandRange = 200;
-int activeEnemyRange = 3;
+int activeEnemyRange = 1;
 
 
 TrixParticle trixBAD;
@@ -210,6 +210,8 @@ class Trixel {
       if(range == 0) { //enemy
         //rotate(random(10));
         energy = energy - 1;
+        soundGlitch.play();
+        
         fill(int(random(255)),int(random(100)));
         if(!activeTrix) {
           activeTrix = true;
@@ -226,6 +228,8 @@ class Trixel {
         energy = energy + 2;
         score = score + 1;
         println("energy " + energy);
+        soundMagnetic.play();
+        gameTransions = "Flash";
         resetTrix();
         trixGOOD.num = 0;
         

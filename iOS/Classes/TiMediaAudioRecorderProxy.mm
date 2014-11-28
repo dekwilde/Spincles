@@ -144,7 +144,7 @@
 		recorder->StopRecord();
 		
 		// place the session back in playback mode; reset to default category
-		[[TiMediaAudioSession sharedSession] playback:kAudioSessionCategory_SoloAmbientSound];
+		[[TiMediaAudioSession sharedSession] playback:kAudioSessionCategory_PlayAndRecord];
 		
 		return file;
 	}
@@ -200,7 +200,7 @@
     UInt32 newMode = [mode unsignedIntegerValue]; // Close as we can get to UInt32
     if (newMode != kAudioSessionCategory_RecordAudio && newMode != kAudioSessionCategory_PlayAndRecord) {
         NSLog(@"Invalid mode for audio recorder... setting to default.");
-        newMode = kAudioSessionCategory_RecordAudio;
+        newMode = kAudioSessionCategory_PlayAndRecord;
     }
     sessionMode = newMode;
 }
