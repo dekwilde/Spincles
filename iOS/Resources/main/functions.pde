@@ -68,8 +68,9 @@ void touch1Stopped() {
 
 void hurt() {
   angleSpeedTouch =  random(0.02, 0.14);
-  angleRadiusTouch = angleRadiusTouch + random(-3.0, 3.0);
-  WeightSegmentTouch =  random(4.0, 10.0);  
+  angleRadiusTouch = random(-3.0, 3.0);
+  WeightSegmentTouch = random(4.0, 10.0);  
+  hurtRange = 500;
 }
 
 void shakeEvent() {
@@ -82,20 +83,25 @@ void drawBG() {
   colorG = 204; // + microfone*25;
   colorB = 0;   // + microfone*20;
    
- 
-  //Camera();
+  tweenBG = tweenBG + ((microfone+hurtRange)*15 - tweenBG/4)/10;
   
-  alphaBG = alphaBG + (microfone*15 - alphaBG/4)/10;
+  if(tweenBG>255) {
+    alphaBG = 255;  
+  } else {
+    alphaBG = tweenBG; 
+  }
         
-  if (alphaBG>255) {
+  if (alphaBG>128) {
     ctx.rect(0,0,width,height);
+    //background(colorR, colorG, colorB, alphaBG);
     fill(colorR, colorG, colorB, 255-alphaBG);
     noStroke();        
-    rect(0,0,width,height); 
+    rect(0,0,width,height);  
   } else {
-    fill(colorR, colorG, colorB, alphaBG);
-    noStroke();        
-    rect(0,0,width,height); 
+    background(colorR, colorG, colorB, alphaBG*2);
+    //fill(colorR, colorG, colorB, 255-alphaBG);
+    //noStroke();        
+    //rect(0,0,width,height); 
   }
   
 }
@@ -107,7 +113,7 @@ void startGame() {
     iphone.startAccelerometer();
     iphone.startCompass();
     //iphone.startLocation();
-    iphone.squareCamera();
+    //iphone.squareCamera();
     resetGame();
 
 }

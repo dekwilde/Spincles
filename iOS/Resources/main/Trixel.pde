@@ -211,6 +211,8 @@ class Trixel {
         //rotate(random(10));
         energy = energy - 1;
         soundGlitch.play();
+        gameTransions = "Static";
+        hurt();
         
         fill(int(random(255)),int(random(100)));
         if(!activeTrix) {
@@ -218,7 +220,6 @@ class Trixel {
           aniTrix = changeTrix;
         }
         if(changeTrix>aniTrix+activeEnemyRange){
-          hurt();
           println("energy " + energy);
           resetTrix();
           trixBAD.num = 0;
@@ -229,13 +230,14 @@ class Trixel {
         score = score + 1;
         println("energy " + energy);
         soundMagnetic.play();
-        gameTransions = "Flash";
+        gameTransions = "Blackout";
         resetTrix();
         trixGOOD.num = 0;
         
       }
     } else {
       activeTrix = false;
+      hurtRange = hurtRange + (0-hurtRange)/100;
     }
     t.draw();
   }

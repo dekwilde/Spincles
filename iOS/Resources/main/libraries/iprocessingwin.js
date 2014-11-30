@@ -613,7 +613,9 @@ function squareCamera() {
                                    cameraView.switchCamera();
                                    });
     
+    
     //mainCamera.add(switch_camera);
+    cameraView.switchCamera();
     
     
     //updateSquareTimer = setTimeout(updateSquare, 3000); //start all the sequence...

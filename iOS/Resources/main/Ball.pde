@@ -73,7 +73,7 @@ class Ball {
   void draw() {
     ball.move();
     ball.touch();
-    ball.display();
+    //ball.display();
   }
   
 }

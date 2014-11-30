@@ -1,8 +1,4 @@
-/* 
-@pjs transparent="true"; 
-font="data/cubic.ttf, data/pixelart.ttf, data/hexagonica.ttf;"; 
-preload="data/logo.png"; 
-*/
+/* @pjs transparent="true"; font="data/cubic.ttf, data/pixelart.ttf, data/hexagonica.ttf;"; preload="data/logo.png"; */
 
 PFont fontTitle, fontText;
 
@@ -76,8 +72,10 @@ float endColorAlpha = 0.0;
 float initPosY = 0.0;
 int initColor = 255;
 float alphaBG = 0.0;
+float tweenBG = 0.0;
 float tween = 0.0;
 
+float hurtRange = 0.0;
 
 // Interface
 ButtonInfo btInfo;
@@ -180,10 +178,8 @@ void setup() {
         soundBG1        = iphone.loadSound("bg1.wav");
         soundBG2        = iphone.loadSound("bg2.wav");
         
-        soundBG1.setVolume(20);
-        soundBG2.setVolume(20);
 
-
+        iphone.squareCamera();
         //setupThree();
         //video = loadImage("cam.png");
         
@@ -233,8 +229,41 @@ void draw() {
       noStroke();        
       rect(0,0,width,height);   
       popMatrix();
-
     break;
+    
+   case "Static":
+      tween = tween +(initColor-tween)/2;
+      if(tween>(initColor-1)) {
+        gameTransions = "Null";
+      }
+      pushMatrix();
+      rotate(0);
+      translate(0,0);
+      scale(1.0);
+      //background(0,0);
+      ctx.rect(0,0,width,height);
+      fill(255, round(random(1))*255);
+      noStroke();        
+      rect(0,0,width,height);   
+      popMatrix();
+    break;
+    
+    
+    case "Blackout":
+      tween = tween +(initColor-tween)/10;
+      if(tween>(initColor-1)) {
+        gameTransions = "Null";
+      }
+      pushMatrix();
+      rotate(0);
+      translate(0,0);
+      scale(1.0);
+      fill(0, 255-tween);
+      noStroke();        
+      rect(0,0,width,height);   
+      popMatrix();
+    break;
+    
     
   } //end switch
   
