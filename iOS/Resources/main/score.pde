@@ -3,8 +3,6 @@ int energy = 0;
 String scoreResult = "";
 int recordScore;
 class ScoreInfo {
-
-    
     int dw = 100;
     int dh = 10;
     float px = width - dw - 10;
@@ -25,33 +23,39 @@ class ScoreInfo {
       if(energy>=25) {
         numSegment = 4;
         numOfArms = 10;  
+        WeightSegmentTouch = 0;
+        angleSpeedTouch =  0;
+        angleRadiusTouch = 0;
       }         
       else if(energy>20 && energy<24) {
-        numSegment = 4;
-        numOfArms = 8;  
+        numSegment = 3;
+        numOfArms = 8;
+        WeightSegmentTouch = random(1.0, 3.0);
+        angleSpeedTouch =  0;
+        angleRadiusTouch = 0;
+
       } 
-      else if(energy>15 && energy<19) {
-        numSegment = 3;
-        numOfArms = 7;  
-      }
-      else if(energy>10 && energy<14) {
-        numSegment = 3;
-        numOfArms = 6;  
-      }
-      else if(energy>5 && energy<9) {
+      else if(energy>10 && energy<19) {
         numSegment = 2;
-        numOfArms = 5;  
+        numOfArms = 5;
+        WeightSegmentTouch = random(3.0, 6.0);
+        angleSpeedTouch =  0;
+        angleRadiusTouch = 0;
       }
-      else if(energy>1 && energy<4) {
+      else if(energy>1 && energy<9) {
         numSegment = 1;
         numOfArms = 3;  
+        WeightSegmentTouch = random(8.0, 12.0);
+        angleSpeedTouch =  random(0.05, 0.3);
+        angleRadiusTouch = random(-6.0, 6.0);
       }
 
       pushMatrix();
       scale(1.0);
       
+      
+      fill(255,204,0,128);
       stroke(0);
-      noFill();
       rect(px, py, dw, dh);
       
       fill(0);
@@ -76,6 +80,13 @@ class ScoreInfo {
 
 }
 
+void checkScore() {
+  if(score>recordScore) {
+    iphone.saveState(score);
+  } 
+}
+
+
 void setScore() {
     //First time score
   if(!recordScore || recordScore == null || recordScore == "null") {
@@ -89,9 +100,7 @@ void setScore() {
       recordScore = score;
       iphone.saveState(recordScore);
     } else {
-      scoreResult = "Last Record";
-    }
+      scoreResult = "Record";
+    }     
   } 
 }
-
-

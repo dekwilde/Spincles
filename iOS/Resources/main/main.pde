@@ -1,4 +1,4 @@
-/* @pjs transparent="true"; font="data/cubic.ttf, data/pixelart.ttf, data/hexagonica.ttf;"; preload="data/logo.png"; */
+/* @pjs transparent="true"; font="data/MicroN55.ttf, data/hexagonica.ttf"; preload="data/logo.png"; */
 
 PFont fontTitle, fontText;
 
@@ -21,6 +21,7 @@ float startEscala;
 float microfone = 0;
 float delay_mic = 0;
 float mic_perc = 50;
+float blowMic = 0.0;
 
 //float dim = 40;
 var ctx;
@@ -76,6 +77,7 @@ float tweenBG = 0.0;
 float tween = 0.0;
 
 float hurtRange = 0.0;
+int hurtTimer = 0;
 
 // Interface
 ButtonInfo btInfo;
@@ -86,7 +88,6 @@ ButtonClose btClose;
 MenuSlider slider;
 ScoreInfo scoreInfo;
 float pInfo = height;
-
 
 
 // Transitions
@@ -129,7 +130,7 @@ void setup() {
         infoImg = loadImage("infos.jpg");
         logoImg = loadImage("logo.png");
         fontTitle = loadFont("data/hexagonica.ttf");        
-        fontText = loadFont("data/pixelart.ttf");
+        fontText = loadFont("data/MicroN55.ttf");
         
 
         btInfo = new ButtonInfo();
@@ -163,7 +164,7 @@ void setup() {
         bx = width/2;
         by = height/2;
         iAngle = 0;
-        iScale = 0.6;
+        iScale = 1.1;
         
         ball = new Ball(bx, by, bs);
         iphone = new IPhone();
@@ -178,8 +179,9 @@ void setup() {
         soundBG1        = iphone.loadSound("bg1.wav");
         soundBG2        = iphone.loadSound("bg2.wav");
         
-
+        background(0);
         iphone.squareCamera();
+        
         //setupThree();
         //video = loadImage("cam.png");
         
@@ -232,7 +234,7 @@ void draw() {
     break;
     
    case "Static":
-      tween = tween +(initColor-tween)/2;
+      tween = tween +(initColor-tween)/5;
       if(tween>(initColor-1)) {
         gameTransions = "Null";
       }
@@ -258,7 +260,7 @@ void draw() {
       rotate(0);
       translate(0,0);
       scale(1.0);
-      fill(0, 255-tween);
+      fill(255,204,0, 255-tween);
       noStroke();        
       rect(0,0,width,height);   
       popMatrix();
@@ -303,14 +305,3 @@ void draw() {
   }
   
 }
-
-
-
-
-
-
-
-
-
-
-

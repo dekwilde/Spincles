@@ -47,16 +47,13 @@ class Ball {
           bx = x;
           by = y;
           bover = true;
-          
-          
-          if(!locked) { 
-              //stroke(0); 
-              //fill(0);
+
+          if(locked) { 
+              clawTouchLoop();
           } 
-     } else {
-          //stroke(0);
-          //fill(255);          
+     } else {      
           bover = false;
+          clawTouchStop();
     }
     
     //println("touch_off"); 

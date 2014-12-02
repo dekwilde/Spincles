@@ -6,7 +6,7 @@ class Tbody {
     pushMatrix();
     x = posX;
     y = posY;
-    stroke((0 + microfone*15), 80); 
+    stroke(blowMic, 80); 
     translate(posX, posY);
     rotate(rotator);
     scale(escala);
@@ -30,7 +30,7 @@ class Arm {
       pushMatrix();
       for(int i=0; i<numSegment; i++) {
         if(i>0) {
-          segment(LengthSeg, 0, angleSeg*angleSegment[i]+(microfone/50)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg);
+          segment(LengthSeg, 0, angleSeg*angleSegment[i]-(microfone/20)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg);
         } else {
           segment(0, 0, angleSeg, (numSegment+1)*WeightSeg, LengthSeg); 
         }
@@ -58,21 +58,24 @@ function spinclesDraw() {
   targetX = ball.x;
   float dx = targetX - x;
   float nX = noise(pi/10)*cos(noise(pi/10)*((width/2 - noise(pi/50)*(width))/10));
-  x += dx * easing + nX*(microfone/3 + 5.2);
+  x += dx * easing + nX*(microfone/2 + 5.2);
   spinX = x;
   
   //targetY = mouseY;
   targetY = ball.y;
   float dy = targetY - y;
   float nY = noise(pi/10)*sin(noise(pi/10)*((height/2 - noise(pi/50)*(height))/10));
-  y += dy * easing + nY*(microfone/3 + 5.2);
+  y += dy * easing + nY*(microfone/2 + 5.2);
   spinY = y;
           
-  rotationT = noise(pi/500)*((dx*dy*easing)/450) + radians(iAngle) + microfone/40;
+  PVector  v1 = new PVector(targetX, targetY);
+  PVector  v2 = new PVector(x, y); 
+  float d = v1.dist(v2);
+  
+  rotationT = rotationT + noise(pi/500)*((d*easing)/50) - microfone/200;
   
   body = new Tbody(x, y, rotationT, iScale);
   //+ noise(pi/10)*2)
   
   pi++;
 }
-

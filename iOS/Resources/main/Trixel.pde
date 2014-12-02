@@ -7,11 +7,11 @@ float angleCompass;
 float delaySpeedCompass = 20;
 
 //ENGINE GAME
-int rangeCentroid = 10;
+int rangeTrixType = 10;
 int changeTimeRange = 10;
 int changeTimeRand = 10;
 int changeTimeRandRange = 200;
-int activeEnemyRange = 1;
+int activeEnemyRange = 0;
 
 
 TrixParticle trixBAD;
@@ -151,8 +151,6 @@ class Trixel {
   int range;
   int changeTrix = 0;
   int changeTime;
-  boolean activeTrix = false;
-  float aniTrix;
   XY a,b,c;
   XY centroid;
   
@@ -181,20 +179,22 @@ class Trixel {
       t = new Triangle(x1,y1,x2,y2,x3,y3);
       //ENGINE
       
-      range = int(random(rangeCentroid));
+      range = int(random(rangeTrixType));
 
   }
     
   void draw() {
+
     changeTrix = changeTrix + 1;
     if(changeTrix>changeTime) { //warnning
-      fill(255,255,255,int(random(255)));
+      fill(255,int(random(255)));
       if(changeTrix>changeTime+20) { //actived
         resetTrix();
       }
     } else {
       noFill();
     }
+    
     
     if(range == 0) { //enemy
       fill(255);  
@@ -207,27 +207,26 @@ class Trixel {
     
     
     if(checkCollision(mx,my,t)){
-      if(range == 0) { //enemy
-        //rotate(random(10));
-        energy = energy - 1;
+      
+      if(range > 1) {
+        fill(0,int(random(128)));  
+      }
+      
+      if(range == 0 && blowMic<200) { //enemy        
+        fill(int(random(255)),int(random(100)));
+        energy = energy - 4;
         soundGlitch.play();
         gameTransions = "Static";
-        hurt();
-        
-        fill(int(random(255)),int(random(100)));
-        if(!activeTrix) {
-          activeTrix = true;
-          aniTrix = changeTrix;
-        }
-        if(changeTrix>aniTrix+activeEnemyRange){
-          println("energy " + energy);
-          resetTrix();
-          trixBAD.num = 0;
-        }
+        hurtRange = 300;
+        //hurt();
+        println("energy " + energy);
+        resetTrix();
+        trixBAD.num = 0;
       }
       if(range == 1) { //score
         energy = energy + 2;
         score = score + 1;
+        checkScore();
         println("energy " + energy);
         soundMagnetic.play();
         gameTransions = "Blackout";
@@ -236,17 +235,17 @@ class Trixel {
         
       }
     } else {
-      activeTrix = false;
       hurtRange = hurtRange + (0-hurtRange)/100;
     }
+        
+    
     t.draw();
   }
 
   void resetTrix() {
-    range = int(random(rangeCentroid));
+    range = int(random(rangeTrixType));
     changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
     changeTrix = 0;
-    activeTrix = false;
   }
   
   void troid() {
@@ -452,5 +451,3 @@ class Particle{
   }
      
 }
-
-

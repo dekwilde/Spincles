@@ -70,7 +70,29 @@ void hurt() {
   angleSpeedTouch =  random(0.02, 0.14);
   angleRadiusTouch = random(-3.0, 3.0);
   WeightSegmentTouch = random(4.0, 10.0);  
-  hurtRange = 500;
+}
+
+void clawTouchLoop() {
+  hurtTimer += 2;
+  println("hurt " + hurtTimer);
+  if(hurtTimer>60) {
+    bover = false;
+    locked = true;
+    energy = energy - 2;
+    soundGlitch.play();
+    //gameTransions = "Static";
+    hurtRange = 255;
+    //hurt();
+    trixBAD.num = 0;
+  }
+}
+
+void clawTouchStop() {
+  hurtTimer -= 1;
+  if(hurtTimer<0) {
+    hurtTimer = 0;
+  }
+  println("hurt " + hurtTimer);
 }
 
 void shakeEvent() {
@@ -83,6 +105,14 @@ void drawBG() {
   colorG = 204; // + microfone*25;
   colorB = 0;   // + microfone*20;
    
+   
+  blowMic =  microfone*15;
+  if(blowMic>255) {
+    blowMic = 255;
+  }
+  
+  println(blowMic);
+  
   tweenBG = tweenBG + ((microfone+hurtRange)*15 - tweenBG/4)/10;
   
   if(tweenBG>255) {
@@ -120,6 +150,8 @@ void startGame() {
 void resetGame() {
   energy = 30;
   score = 0;
+  hurtRange = 0;
+  hurtTimer = 0;
   gameState = "Game";
   gameTransions = "Flash";
   gameSound = "Game";
@@ -138,8 +170,12 @@ void gameWin() {
 
 
 void stateStart() {
+  background(0);
+  
   initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
-  background(255, 204, 0, initColorAlpha);
+  fill(255, 204, 0, initColorAlpha);
+  rect(0,0,width,height);
+  
   fill(0);
   textFont(fontTitle, 10);
   
@@ -236,4 +272,3 @@ void stateGame() {
   scoreInfo.draw();
   spinclesDraw();
 }
-

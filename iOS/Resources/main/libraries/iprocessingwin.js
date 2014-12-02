@@ -487,8 +487,8 @@ function squareCamera() {
     Ti.API.info("2 - startSquareCamera => " + SquareCamera);
     cameraView = SquareCamera.createView({
                                          top: 0,
-                                         height: 480,
-                                         width: 320,
+                                         height: Ti.UI.SIZE,
+                                         width: Ti.UI.SIZE,
                                          backgroundColor: "#000",
                                          keepScreenOn: true
                                          });

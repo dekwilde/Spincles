@@ -55,7 +55,7 @@ class ButtonAgain {
     
     int pX = width/2;
     int pY = height/2+160;
-    int dw = 120;
+    int dw = 160;
     int dh = 40;
     int fSize = 20;
     
@@ -121,7 +121,7 @@ class ButtonStart {
         rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
         fill();
         textFont(fontText, fSize);
-        text("Start", pX, pY);
+        text("PLAY", pX, pY);
         
         if (overButton == true) {
            overButton = false;
@@ -276,5 +276,3 @@ class ButtonCamera {
           }
     }
 }
-
-
