@@ -90,8 +90,8 @@ class TrixelMatrix {
     r = dgr - a;
     
     
-    //println("degrees " + angleCompass);
-    //println("radians " + r);
+    //pebug("degrees " + angleCompass);
+    //pebug("radians " + r);
     d = dist(width/2, height/2, trixelX, trixelY);
     mx = d*cos(-r);
     my = d*sin(-r);
@@ -215,11 +215,11 @@ class Trixel {
       if(range == 0 && blowMic<200) { //enemy        
         fill(int(random(255)),int(random(100)));
         energy = energy - 4;
-        soundGlitch.play();
+        soundEnemy.play();
         gameTransions = "Static";
         hurtRange = 300;
         //hurt();
-        println("energy " + energy);
+        pebug("energy " + energy);
         resetTrix();
         trixBAD.num = 0;
       }
@@ -227,8 +227,9 @@ class Trixel {
         energy = energy + 2;
         score = score + 1;
         checkScore();
-        println("energy " + energy);
+        pebug("energy " + energy);
         soundMagnetic.play();
+        soundScore.play();
         gameTransions = "Blackout";
         resetTrix();
         trixGOOD.num = 0;
@@ -355,7 +356,7 @@ class TrixParticle {
     }
     for(int i=0; i < particles.size(); i++){
       Particle p = (Particle) particles.get(i);
-      p.run();
+      p.draw();
       //p.gravity();
       p.display();
       p.conect();
@@ -398,7 +399,8 @@ class Particle{
     }
   }
     
-  void run(){
+  void draw(){
+    strokeWeight(1);
     if(tp == "good") {
       float dx = spinX - x;
       float dy = spinY - y;

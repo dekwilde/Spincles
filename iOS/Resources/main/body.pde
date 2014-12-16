@@ -6,7 +6,6 @@ class Tbody {
     pushMatrix();
     x = posX;
     y = posY;
-    stroke(blowMic, 80); 
     translate(posX, posY);
     rotate(rotator);
     scale(escala);
@@ -30,18 +29,22 @@ class Arm {
       pushMatrix();
       for(int i=0; i<numSegment; i++) {
         if(i>0) {
-          segment(LengthSeg, 0, angleSeg*angleSegment[i]-(microfone/20)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg);
+          draw(LengthSeg, 0, angleSeg*angleSegment[i]-(microfone/20)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg);
         } else {
-          segment(0, 0, angleSeg, (numSegment+1)*WeightSeg, LengthSeg); 
+          draw(0, 0, angleSeg, (numSegment+1)*WeightSeg, LengthSeg); 
         }
       }
       popMatrix();
   }
   
-  void segment(float x, float y, float a, float Weight, float LengthSeg) {
+  void draw(float x, float y, float a, float Weight, float LengthSeg) {
       translate(x, y);
       rotate(a);
       strokeWeight(Weight/SegWeightPor);
+      fill(255,255);
+      noStroke();
+      ellipse(0,0,2,2);
+      stroke(blowMic, 80);
       line(0, 0, LengthSeg, 0);
   } 
 }

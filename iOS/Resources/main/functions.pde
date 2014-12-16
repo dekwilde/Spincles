@@ -1,3 +1,7 @@
+void pebug(m) {
+  //println(m);
+}
+
 void gestureStarted() {
 	startAngle = iAngle;
 	startEscala = iScale;
@@ -67,15 +71,22 @@ void touch1Stopped() {
 }
 
 void hurt() {
-  angleSpeedTouch =  random(0.02, 0.14);
-  angleRadiusTouch = random(-3.0, 3.0);
-  WeightSegmentTouch = random(4.0, 10.0);  
+  //
 }
 
 void clawTouchLoop() {
+  soundTouchTimer.setVolume(hurtTimer/100);
+  
+  if(hurtTimer<1) {
+    soundTouchTimer.play();
+    soundTouchTimer.loop();
+  }
+  
   hurtTimer += 2;
-  println("hurt " + hurtTimer);
-  if(hurtTimer>60) {
+    
+  
+  pebug("hurt " + hurtTimer);
+  if(hurtTimer>100) {
     bover = false;
     locked = true;
     energy = energy - 2;
@@ -88,15 +99,18 @@ void clawTouchLoop() {
 }
 
 void clawTouchStop() {
+  
   hurtTimer -= 1;
+  soundTouchTimer.setVolume(hurtTimer/100);
   if(hurtTimer<0) {
     hurtTimer = 0;
+    soundTouchTimer.stop();
   }
-  println("hurt " + hurtTimer);
+  pebug("hurt " + hurtTimer);
 }
 
 void shakeEvent() {
-  println("shaked");
+  pebug("shaked");
 }
 
 
@@ -111,7 +125,7 @@ void drawBG() {
     blowMic = 255;
   }
   
-  println(blowMic);
+  pebug(blowMic);
   
   tweenBG = tweenBG + ((microfone+hurtRange)*15 - tweenBG/4)/10;
   
@@ -155,7 +169,7 @@ void resetGame() {
   gameState = "Game";
   gameTransions = "Flash";
   gameSound = "Game";
-  println(gameState);
+  pebug(gameState);
 }
 
 
@@ -180,8 +194,13 @@ void stateStart() {
   textFont(fontTitle, 10);
   
   text("Welcome to", width/2, height/2-50); 
-  image(logoImg, width/2, height/2);
+  //image(logoImg, width/2, height/2);
+  pushMatrix();
+  translate(width/2-(500*0.3), height/2-(200*0.3)+20);
+  scale(0.3);
   
+  logo.draw();
+  popMatrix();
   
   textFont(fontText, 10);
   text("headphone required", width/2, height/2-170-initPosY);

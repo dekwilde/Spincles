@@ -24,7 +24,7 @@ void location() {
 
         lastTime = currentTime;
         iphone.getCurrentLocation();
-        println("location LT:" + lt + " LG:" + lg + " AL:" +al + " HD:" + hd + " SP:" + sp);
+        pebug("location LT:" + lt + " LG:" + lg + " AL:" +al + " HD:" + hd + " SP:" + sp);
 
     }
     //fill(0); 
@@ -34,13 +34,13 @@ void location() {
 
 
 void compassEvent() {
-  //println(compassHeading);
+  //pebug(compassHeading);
   compassDEGREE = compassHeading;
 }
 
 void locationEvent() {
   //text("locationEvent LT:" + locLatitude + " LG:" + locLongitude + " AL:" +locAltitude + " HD:" + locHeading, 10, 80);
-  println("locationEvent LT:" + locLatitude + " LG:" + locLongitude + " AL:" +locAltitude + " HD:" + locHeading);
+  pebug("locationEvent LT:" + locLatitude + " LG:" + locLongitude + " AL:" +locAltitude + " HD:" + locHeading);
 }
 
 void pointCompass() {
@@ -70,7 +70,7 @@ void pointCompass() {
     */
     
     targetDEGREE = atan2(diffLT, diffLG) * 180 / PI;
-    //println(targetDEGREE);
+    //pebug(targetDEGREE);
 }
 
 void acceMic() {
@@ -78,13 +78,9 @@ void acceMic() {
   gravityX = iphone.getAcceleration().x;
   gravityY = -iphone.getAcceleration().y;
   
-  println("x: " + gravityX + " " + "y: " + gravityY);
-  println("Mic: " + iphone.getMicLevel());
+  pebug("x: " + gravityX + " " + "y: " + gravityY);
+  pebug("Mic: " + iphone.getMicLevel());
   
   microfone = pow(iphone.getMicLevel(), 1) * mic_perc;                
 
 }
-
-
-
-

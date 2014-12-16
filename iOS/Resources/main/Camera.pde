@@ -11,7 +11,7 @@ void Camera() {
   //background(0,0,0,0);
   checkCamera = iphone.checkCamera();
   if (checkCamera && !loadCamera) {
-    println("4 - getCamera in pde: " + iphone.getCamera());
+    pebug("4 - getCamera in pde: " + iphone.getCamera());
     video = requestImage(iphone.getCamera());
     loadCamera = true;
   } //end if checkCamera
@@ -22,7 +22,7 @@ void Camera() {
       
       
       
-      println("6 - loaded image - ready Pixels Image");
+      pebug("6 - loaded image - ready Pixels Image");
       
       /*
       float brightestValue = 0; // Brightness of the brightest video pixel
@@ -60,4 +60,3 @@ void Camera() {
   fill(0,0,255);
   ellipse(brightestX*10, brightestY*10, 50, 50);
 }
-

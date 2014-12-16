@@ -61,6 +61,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 
 - (void)turnFlashOn:(id)args
 {
+    /*
     if([self.captureDevice lockForConfiguration:true]){
         [self.captureDevice setTorchMode:AVCaptureTorchModeOn];
         [self.captureDevice setFlashMode:AVCaptureFlashModeOn];
@@ -69,10 +70,12 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
         
         [self.proxy fireEvent:@"onFlashOn"];
     };
+     */
 };
 
 - (void)turnFlashOff:(id)args
 {
+    /*
     if([self.captureDevice lockForConfiguration:true]){
         [self.captureDevice setTorchMode:AVCaptureTorchModeOff];
         [self.captureDevice setFlashMode:AVCaptureFlashModeOff];
@@ -81,6 +84,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
         
         [self.proxy fireEvent:@"onFlashOff"];
     };
+     */
 };
 
 // utility routine to display error aleart if takePicture fails
@@ -511,12 +515,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             
 
             self.captureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-
+            
+            /*
             if([self.captureDevice lockForConfiguration:true]){
                 [self.captureDevice setFlashMode:AVCaptureFlashModeOff];
                 self.flashOn = NO;  
                 [self.captureDevice lockForConfiguration:false];
             };
+             */
             
 
             NSError *error = nil;

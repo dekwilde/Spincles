@@ -56,7 +56,7 @@ class Ball {
           clawTouchStop();
     }
     
-    //println("touch_off"); 
+    //pebug("touch_off"); 
   }
   
   void display() {

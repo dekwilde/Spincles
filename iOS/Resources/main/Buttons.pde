@@ -30,7 +30,7 @@ class MenuSlider {
       
       mic_perc = (st_x-init) / ((end-init)/100);
       
-      //println(perc);
+      //pebug(perc);
       
       
       if (touch1X > st_x-st_s && touch1X < st_x+st_s && 
@@ -65,7 +65,8 @@ class ButtonAgain {
     
     void draw() {
         checkButton();
-              // Left buttom
+        // Left buttom
+        strokeWeight(1);
         if (overButton == true) {
           stroke(#ffcc00);          
         } else {
@@ -100,7 +101,7 @@ class ButtonStart {
     boolean overButton = false;
     
     int pX = width/2;
-    int pY = height/2+100;
+    int pY = height/2+160;
     int dw = 120;
     int dh = 40;
     int fSize = 20;
@@ -111,7 +112,8 @@ class ButtonStart {
     
     void draw() {
         checkButton();
-              // Left buttom
+        strokeWeight(1);
+        // Left buttom
         if (overButton == true) {
           stroke(#ffcc00);          
         } else {
@@ -126,7 +128,8 @@ class ButtonStart {
         if (overButton == true) {
            overButton = false;
            soundClick.play();
-           gameState = "Intro";
+           gameState = "Intro"; 
+           gameSound = "Start"; 
            gameTransions = "Flash";
         }
     } 
@@ -153,31 +156,22 @@ class ButtonInfo {
     }    
     void draw() {
         checkButton();
-          // Left buttom
+        strokeWeight(1);
         if (overButton == true) {
           gameState = "InfoShow";
           soundClick.play();
-          textFont(fontText, 20);
           // circulo          
           noStroke();
           fill(0);
-          ellipse(pX, pY, dm, dm);
-          
           fill(255);
-          text("i", pX, pY+dm/2);
-          
         } else {
           // circulo
           stroke(0);
-          strokeWeight(1);
           noFill();
-          ellipse(pX, pY, dm, dm);
-          
-          fill(0);
-          rect(pX-dm/8, pY-dm/8, dm/4, dm/4);
-          
-
         }
+        ellipse(pX, pY, dm, dm);
+        fill(0);
+        rect(pX-dm/8, pY-dm/8, dm/4, dm/4);
     }
     void checkButton() {
           if (touch1X > pX-dm && touch1X < pX+dm && touch1Y > pY-dm && touch1Y < pY+dm) {
@@ -220,7 +214,7 @@ class ButtonClose {
            pInfo = 480;    
            soundClick.play();
            gameState = "Game";
-           println("close");
+           pebug("close");
         }
     } 
     
@@ -255,7 +249,7 @@ class ButtonCamera {
           pressButton = true;
           overButton = false;
           cameraShow = true;
-          println("camera " + cameraShow);
+          pebug("camera " + cameraShow);
           iphone.squareCamera();    
           noStroke();
           fill(255);

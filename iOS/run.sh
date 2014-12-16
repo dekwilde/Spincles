@@ -17,7 +17,7 @@ done
 
 echo "<html>" > main.html
 echo "<head>" >> main.html
-echo "<script src=\"libraries/iprocessing.1.0.0.js\"></script>" >> main.html
+echo "<script src=\"libraries/iprocessing.1.4.8.js\"></script>" >> main.html
 echo "<script src=\"libraries/iprocessing.lib.js\"></script>" >> main.html
 
 echo "<meta name=\"viewport\" content=\"width=device-width, height=device-height, initial-scale=1.0, user-scalable=no\">" >> main.html

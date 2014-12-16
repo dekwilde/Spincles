@@ -33,9 +33,8 @@ Ball ball;
 IPhone iphone;
 
 
-boolean playSoundBG1 = false;
-boolean playSoundBG2 = false;
-PSound soundBG1, soundBG2, soundLoopBG, soundTransIN, soundTransOUT, soundStartUP, soundGlitch, soundClick, soundMagnetic;
+
+PSound soundBG1, soundBG2, soundLoopBG, soundTransIN, soundTransOUT, soundStartUP, soundGlitch, soundEnemy, soundClick, soundScore, soundMagnetic, soundTouchTimer;
 Tbody body;
 TCompass compass;
 
@@ -87,6 +86,7 @@ ButtonCamera btCamera;
 ButtonClose btClose;
 MenuSlider slider;
 ScoreInfo scoreInfo;
+Logo logo;
 float pInfo = height;
 
 
@@ -102,7 +102,7 @@ void setup() {
         scW = screen.width;
         scH = screen.height;
         
-        size(scW, scH);
+        size(scW, scH, P2D);
         
         if(scW>320 && scH>480) {
           wCount = 9;
@@ -112,7 +112,7 @@ void setup() {
           hCount = 3;
         }
         
-        println("wCount: " + wCount + ", hCount: " + hCount);
+        pebug("wCount: " + wCount + ", hCount: " + hCount);
         
         
         
@@ -128,7 +128,7 @@ void setup() {
         initPosY = height + 100;
         
         infoImg = loadImage("infos.jpg");
-        logoImg = loadImage("logo.png");
+        //logoImg = loadImage("logo.png");
         fontTitle = loadFont("data/hexagonica.ttf");        
         fontText = loadFont("data/MicroN55.ttf");
         
@@ -140,6 +140,7 @@ void setup() {
         btClose = new ButtonClose();
         slider = new MenuSlider();
         scoreInfo = new ScoreInfo();
+        logo = new Logo();
 
         compass = new Tcompass();
         trixBAD = new TrixParticle("bad");
@@ -169,15 +170,17 @@ void setup() {
         ball = new Ball(bx, by, bs);
         iphone = new IPhone();
         
-        soundMagnetic   = iphone.loadSound("magnetic.wav");
+        soundMagnetic   = iphone.loadSound("energy.wav");
+        soundScore      = iphone.loadSound("score.wav");
         soundClick      = iphone.loadSound("click.wav");
-        soundGlitch     = iphone.loadSound("world_glitch.wav");
-        soundStartUP    = iphone.loadSound("module_startup.wav");
+        soundGlitch     = iphone.loadSound("gltch.wav");
+        soundEnemy      = iphone.loadSound("enemy.wav");
+        soundTouchTimer = iphone.loadSound("glitch.wav");
+        soundStartUP    = iphone.loadSound("startup.wav");
         soundTransIN    = iphone.loadSound("transIn.wav");
         soundTransOUT   = iphone.loadSound("transOut.wav");
-        soundLoopBG     = iphone.loadSound("loop1.wav");
-        soundBG1        = iphone.loadSound("bg1.wav");
-        soundBG2        = iphone.loadSound("bg2.wav");
+        soundLoopBG     = iphone.loadSound("loop7.wav");
+        soundBG1        = iphone.loadSound("loop0.wav");
         
         background(0);
         iphone.squareCamera();
@@ -185,7 +188,7 @@ void setup() {
         //setupThree();
         //video = loadImage("cam.png");
         
-        println("4 - Start sequence: main.pde setup()");
+        pebug("4 - Start sequence: main.pde setup()");
 }
 
 void draw() {
@@ -244,7 +247,7 @@ void draw() {
       scale(1.0);
       //background(0,0);
       ctx.rect(0,0,width,height);
-      fill(255, round(random(1))*255);
+      fill(255, random(255));
       noStroke();        
       rect(0,0,width,height);   
       popMatrix();
@@ -275,28 +278,19 @@ void draw() {
       //
     break;
     case "Intro":
-      int m = round(millis()/1000);
-      
-      if(!playSoundBG1) {
-        playSoundBG1 = true;
-        soundBG1.play();
-        soundBG1.loop();
-        println("soundBG1");
-      }
-      if(m == 4) {
-        if(!playSoundBG2) {
-          playSoundBG2 = true;
-          soundBG2.play();
-          soundBG2.loop();
-          gameSound = "Null";
-          println("soundBG2");
-        }  
-      }
+      soundBG1.play();
+      soundBG1.loop();
+      gameSound = "Null";
     break;
     
-    case "Game":
+    case "Start":
+      soundStartUP.play();
+      gameSound = "Null";
+    break;
+
+    case "Game": 
+	  //soundStartUP.stop();
       soundBG1.stop();
-      soundBG2.stop();
       soundLoopBG.play();
       soundLoopBG.loop();
       gameSound = "Null";
