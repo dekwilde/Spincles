@@ -1,5 +1,5 @@
 void pebug(m) {
-  //println(m);
+  println(m);
 }
 
 void gestureStarted() {
@@ -85,7 +85,7 @@ void clawTouchLoop() {
   hurtTimer += 2;
     
   
-  pebug("hurt " + hurtTimer);
+  //pebug("hurt " + hurtTimer);
   if(hurtTimer>100) {
     bover = false;
     locked = true;
@@ -106,7 +106,7 @@ void clawTouchStop() {
     hurtTimer = 0;
     soundTouchTimer.stop();
   }
-  pebug("hurt " + hurtTimer);
+  //pebug("hurt " + hurtTimer);
 }
 
 void shakeEvent() {
@@ -143,9 +143,9 @@ void drawBG() {
     rect(0,0,width,height);  
   } else {
     background(colorR, colorG, colorB, alphaBG*2);
-    //fill(colorR, colorG, colorB, 255-alphaBG);
-    //noStroke();        
-    //rect(0,0,width,height); 
+    fill(colorR, colorG, colorB, 128);
+    noStroke();        
+    rect(0,0,width,height); 
   }
   
 }

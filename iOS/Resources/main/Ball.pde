@@ -1,7 +1,6 @@
 class Ball {
   float x, y;
   float diameter;
-  float gravity = 1.0;
   float vx = 0;
   float vy = 0;
   Ball(float xin, float yin, float din) {
@@ -15,10 +14,10 @@ class Ball {
         bx = x;
         by = y;
         
-        vx += gravityX*gravity;
-        vy += gravityY*gravity;
-        x += vx;
-        y += vy;
+        vx += gravityX;
+        vy += gravityY;
+        x += vx*gravity;
+        y += vy*gravity;
         if (x + diameter/2 > width) {
           x = width - diameter/2;
           vx *= -spring; 
@@ -70,7 +69,7 @@ class Ball {
   void draw() {
     ball.move();
     ball.touch();
-    //ball.display();
+    ball.display();
   }
   
 }

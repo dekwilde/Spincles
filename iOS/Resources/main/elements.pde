@@ -185,12 +185,17 @@ class pL {
   
 }
 
+
+
+
+
+// Intro animation
 class IntroGame {
 
   float x1, y1, x2, y2, x3, y3;
   float radius = 300;
-  float scaleTri = 4.0;
-  float scaleInit = 4.0;
+  float scaleTri = 8.0;
+  float scaleInit = 8.0;
   float acce = 0.05;
   float angle = (TWO_PI / 6) * 2;
   

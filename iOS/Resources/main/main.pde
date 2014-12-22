@@ -2,7 +2,9 @@
 
 PFont fontTitle, fontText;
 
+float easing = 0.20;
 float spring = 0.02;
+float gravity = 10.0;
 float gravityX = 0.0;
 float gravityY = 0.0;
 float bx;
@@ -45,7 +47,7 @@ int numSegment = 4;
 int numOfArms = 10;
 float SegWeightPor = 1.9f;
 float radius = 0.00;
-float easing = 0.20;
+
 float x = width/2; 
 float y = height/2;
 float targetX, targetY;

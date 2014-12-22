@@ -197,7 +197,7 @@ class Trixel {
     
     
     if(range == 0) { //enemy
-      fill(255);  
+      fill(0);        
     }
     if(range == 1) { //life
       troid();
@@ -209,7 +209,7 @@ class Trixel {
     if(checkCollision(mx,my,t)){
       
       if(range > 1) {
-        fill(0,int(random(128)));  
+        fill(255,204,0,int(random(128)));  
       }
       
       if(range == 0 && blowMic<200) { //enemy        
@@ -240,7 +240,7 @@ class Trixel {
     }
         
     
-    t.draw();
+    t.draw(range);
   }
 
   void resetTrix() {
@@ -250,10 +250,9 @@ class Trixel {
   }
   
   void troid() {
-    stroke(0);
-    fill(0);
-    stroke(0); 
-    ellipse(centroid.x, centroid.y, 10, 10);
+    noStroke();
+    fill(255);
+    ellipse(centroid.x, centroid.y, 15, 15);
     noFill();
   }
   
@@ -299,7 +298,7 @@ class Triangle {
     this.point3y = point3y;        
   }
   
-  void draw() {
+  void draw(int range) {
     stroke(#ffffff);
     strokeWeight(1);
     triangle(point1x, point1y, point2x, point2y, point3x, point3y);
