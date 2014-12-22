@@ -280,7 +280,7 @@ void stateGame() {
   acceMic();
   drawBG();
   //Three();        
-  chain.draw();  
+  control.draw();  
   compass.draw();
   trixBAD.draw();
   trixGOOD.draw();
