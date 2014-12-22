@@ -20,20 +20,18 @@ class Ball {
         y += vy*gravity;
         if (x + diameter/2 > width) {
           x = width - diameter/2;
-          vx *= -spring; 
         }
         else if (x - diameter/2 < 0) {
           x = diameter/2;
-          vx *= -spring;
         }
         if (y + diameter/2 > height) {
           y = height - diameter/2;
-          vy *= -spring; 
         } 
         else if (y - diameter/2 < 0) {
           y = diameter/2;
-          vy *= -spring;
         }
+        vx *= -spring;
+        vy *= -spring; 
     } else {
         x = bx;
         y = by;

@@ -58,14 +58,14 @@ function spinclesDraw() {
   }
   
   //targetX = mouseX;
-  targetX = ball.x;
+  targetX = chain.x;
   float dx = targetX - x;
   float nX = noise(pi/10)*cos(noise(pi/10)*((width/2 - noise(pi/50)*(width))/10));
   x += dx * easing + nX*(microfone/2 + 5.2);
   spinX = x;
   
   //targetY = mouseY;
-  targetY = ball.y;
+  targetY = chain.y;
   float dy = targetY - y;
   float nY = noise(pi/10)*sin(noise(pi/10)*((height/2 - noise(pi/50)*(height))/10));
   y += dy * easing + nY*(microfone/2 + 5.2);

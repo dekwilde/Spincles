@@ -1,5 +1,5 @@
 void pebug(m) {
-  println(m);
+  //println(m);
 }
 
 void gestureStarted() {
@@ -27,9 +27,7 @@ void touch1Started() {
   //GEsture Drag Spincles
   if (touch1X > bx-bs && touch1X < bx+bs && 
 	touch1Y > by-bs && touch1Y < by+bs) {
-       bover = true;
-       
-       
+       bover = true;       
   } else {
 
     
@@ -282,7 +280,7 @@ void stateGame() {
   acceMic();
   drawBG();
   //Three();        
-  ball.draw();  
+  chain.draw();  
   compass.draw();
   trixBAD.draw();
   trixGOOD.draw();

@@ -32,6 +32,7 @@ PGraphics pimg;
 int dim = 1300;
 
 Ball ball;
+Chain chain;
 IPhone iphone;
 
 
@@ -169,7 +170,8 @@ void setup() {
         iAngle = 0;
         iScale = 1.1;
         
-        ball = new Ball(bx, by, bs);
+        //ball = new Ball(bx, by, bs);
+        chain = new Chain();
         iphone = new IPhone();
         
         soundMagnetic   = iphone.loadSound("energy.wav");
