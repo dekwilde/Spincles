@@ -145,7 +145,6 @@ class GridTrixel {
 
 
 class Trixel {
-  Triangle t;
   float x1, y1, x2, y2, x3, y3;
   float radius;
   int range;
@@ -176,7 +175,6 @@ class Trixel {
       centroid = new XY(-1,-1);
       XY bc = new XY(b.x+(c.x-b.x)/2, b.y+(c.y-b.y)/2);
       centroid.set( int(a.x+(bc.x-a.x)*twothird) , int(a.y+(bc.y-a.y)*twothird) );
-      t = new Triangle(x1,y1,x2,y2,x3,y3);
       //ENGINE
       
       range = int(random(rangeTrixType));
@@ -184,7 +182,7 @@ class Trixel {
   }
     
   void draw() {
-
+    
     changeTrix = changeTrix + 1;
     if(changeTrix>changeTime) { //warnning
       fill(255,int(random(255)));
@@ -193,20 +191,28 @@ class Trixel {
       }
     } else {
       noFill();
-    }
+    }   
+
     
     
     if(range == 0) { //enemy
-      fill(0);        
+      fill(0);   
     }
     if(range == 1) { //life
-      troid();
+      stroke(255);
+      fill(255,int(random(255)));
+      triangle(centroid.x, centroid.y,x1,y1,x2,y2);
+      fill(255,int(random(255)));
+      triangle(centroid.x, centroid.y,x2,y2,x3,y3);
+      fill(255,int(random(255)));
+      triangle(centroid.x, centroid.y,x3,y3,x1,y1);
+      
     }
     
 
     
     
-    if(checkCollision(mx,my,t)){
+    if(checkCollision(mx,my)){
       
       if(range > 1) {
         fill(255,204,0,int(random(128)));  
@@ -238,34 +244,34 @@ class Trixel {
     } else {
       hurtRange = hurtRange + (0-hurtRange)/100;
     }
+         
         
+    // draw triangle
+    stroke(255);
+    strokeWeight(1);
+    triangle(x1, y1, x2, y2, x3, y3);
     
-    t.draw(range);
+    if(range == 0) { //enemy
+      for(int i=0;i<10;i++) {
+        stroke(255);
+        point(centroid.x+random(-rad/5,rad/5), centroid.y+random(-rad/5,rad/5));
+      }    
+    }
   }
 
-  void resetTrix() {
-    range = int(random(rangeTrixType));
-    changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
-    changeTrix = 0;
-  }
-  
-  void troid() {
-    noStroke();
-    fill(255);
-    ellipse(centroid.x, centroid.y, 15, 15);
-    noFill();
-  }
+
+
   
 
-  boolean checkCollision(float x, float y, Triangle t) {
+  boolean checkCollision(float cx, float cy) {
     float tArea,t1Area,t2Area,t3Area;
-    tArea  = triangleArea(t.point1x, t.point1y, t.point3x, t.point3y, t.point2x, t.point2y);
-    t1Area = triangleArea(x,y, t.point2x, t.point2y, t.point3x, t.point3y);
-    t2Area = triangleArea(x,y, t.point3x, t.point3y, t.point1x, t.point1y);
-    t3Area = triangleArea(x,y, t.point2x, t.point2y, t.point1x, t.point1y);    
+    tArea  = triangleArea(x1,y1,x3,y3,x2,y2);
+    t1Area = triangleArea(cx,cy,x2,y2,x3,y3);
+    t2Area = triangleArea(cx,cy,x3,y3,x1,y1);
+    t3Area = triangleArea(cx,cy,x2,y2,x1,y1);    
     float totalArea = t1Area+t2Area+t3Area;
     return (totalArea == tArea);
-  }
+  } 
   
   float triangleArea(float p1, float p2, float p3, float p4, float p5, float p6) {
     float a,b,c,d;
@@ -277,37 +283,13 @@ class Trixel {
   }
   
   
-}
-
-
-
-class Triangle {
-  float point1x;
-  float point1y;
-  float point2x;
-  float point2y;
-  float point3x;
-  float point3y;
-  
-  Triangle(float point1x,float point1y,float point2x,float point2y,float point3x,float point3y){
-    this.point1x = point1x;
-    this.point1y = point1y;
-    this.point2x = point2x;
-    this.point2y = point2y;
-    this.point3x = point3x;
-    this.point3y = point3y;        
+  void resetTrix() {
+    range = int(random(rangeTrixType));
+    changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
+    changeTrix = 0;
   }
   
-  void draw(int range) {
-    stroke(#ffffff);
-    strokeWeight(1);
-    triangle(point1x, point1y, point2x, point2y, point3x, point3y);
-  }
 }
-
-
-
-
 
 
 class XY

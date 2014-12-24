@@ -31,7 +31,7 @@ class Control {
       
       springs[i].move(x, y);
       springs[i].touch();
-      springs[i].display(x, y);
+      //springs[i].display(x, y);
       x = springs[i].x;
       y = springs[i].y;
     }

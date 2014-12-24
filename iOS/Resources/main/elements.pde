@@ -193,7 +193,8 @@ class pL {
 class IntroGame {
 
   float x1, y1, x2, y2, x3, y3;
-  float radius = 300;
+  float side = 300;
+  float radius = sqrt(3)/3 * side;
   float scaleTri = 8.0;
   float scaleInit = 8.0;
   float acce = 0.05;
@@ -207,10 +208,10 @@ class IntroGame {
   void draw() {
     
     x1 = 0;      
-    y1 = -radius/2;
+    y1 = -radius;
     
-    x2 = x1 + cos( angle ) * radius;
-    y2 = y1 + sin( angle ) * radius;
+    x2 = x1 + cos( angle ) * side;
+    y2 = y1 + sin( angle ) * side;
     
     x3 = x1 + (cos(atan2(y2-y1,x2-x1)-PI/3) * dist(x1,y1,x2,y2));
     y3 = y1 + (sin(atan2(y2-y1,x2-x1)-PI/3) * dist(x1,y1,x2,y2));
