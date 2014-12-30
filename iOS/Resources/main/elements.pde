@@ -64,7 +64,7 @@ class Logo {
   void draw() {
     
     //scale(0.4);
-    
+    fill(255);
     //S
     strokeWeight(8);
     line(pArr[0].x,pArr[0].y,pArr[1].x,pArr[1].y);
@@ -77,7 +77,12 @@ class Logo {
     strokeWeight(18);
     line(pArr[4].x,pArr[4].y,pArr[5].x,pArr[5].y);
     strokeWeight(12);
-    line(pArr[5].x,pArr[5].y,pArr[6].x,pArr[6].y);
+    line(pArr[5].x,pArr[5].y,pArr[6].x,pArr[6].y);  
+    noStroke();
+    ellipse(pArr[5].x,pArr[5].y,8,8);
+    ellipse(pArr[4].x,pArr[4].y,8,8);
+    ellipse(pArr[3].x,pArr[3].y,8,8);
+    stroke(0);
     
     
     //p
@@ -88,11 +93,18 @@ class Logo {
     strokeWeight(12);
     line(pArr[9].x,pArr[9].y,pArr[10].x,pArr[10].y);
     strokeWeight(8);
-    line(pArr[10].x,pArr[10].y,pArr[11].x,pArr[11].y);
+    line(pArr[10].x,pArr[10].y,pArr[11].x,pArr[11].y);    
+    noStroke();
+    ellipse(pArr[7].x,pArr[7].y,8,8);
+    ellipse(pArr[8].x,pArr[8].y,8,8);
+    stroke(0);
     
     //i
     strokeWeight(18);
     line(pArr[12].x,pArr[12].y,pArr[13].x,pArr[13].y);
+    noStroke();
+    ellipse(pArr[13].x,pArr[13].y,8,8);
+    stroke(0);
     
     
     //n
@@ -104,6 +116,9 @@ class Logo {
     line(pArr[17].x,pArr[17].y,pArr[18].x,pArr[18].y);
     strokeWeight(8);
     line(pArr[18].x,pArr[18].y,pArr[19].x,pArr[19].y);
+    noStroke();
+    ellipse(pArr[14].x,pArr[14].y,8,8);
+    stroke(0);
     
     
     //c
@@ -117,11 +132,20 @@ class Logo {
     line(pArr[23].x,pArr[23].y,pArr[24].x,pArr[24].y);
     strokeWeight(8);
     line(pArr[24].x,pArr[24].y,pArr[25].x,pArr[25].y);
+    noStroke();
+    ellipse(pArr[23].x,pArr[23].y,8,8);
+    ellipse(pArr[24].x,pArr[24].y,8,8);
+    stroke(0);
+    
     
     
     //l
     strokeWeight(18);
     line(pArr[26].x,pArr[26].y,pArr[27].x,pArr[27].y);
+    noStroke();
+    ellipse(pArr[26].x,pArr[26].y,8,8);
+    ellipse(pArr[27].x,pArr[27].y,8,8);
+    stroke(0);
     
     
     //e
@@ -137,6 +161,10 @@ class Logo {
     line(pArr[32].x,pArr[32].y,pArr[33].x,pArr[33].y);
     strokeWeight(12);
     line(pArr[33].x,pArr[33].y,pArr[34].x,pArr[34].y);
+    noStroke();
+    ellipse(pArr[31].x,pArr[31].y,8,8);
+    ellipse(pArr[32].x,pArr[32].y,8,8);
+    stroke(0);
     
     
     //s
@@ -152,6 +180,11 @@ class Logo {
     line(pArr[39].x,pArr[39].y,pArr[40].x,pArr[40].y);
     strokeWeight(8);
     line(pArr[40].x,pArr[40].y,pArr[41].x,pArr[41].y);
+    noStroke();
+    ellipse(pArr[38].x,pArr[38].y,8,8);
+    ellipse(pArr[40].x,pArr[40].y,8,8);
+    stroke(0);
+    
     
     for(int i=0; i<42; i++) {
       pArr[i].draw();

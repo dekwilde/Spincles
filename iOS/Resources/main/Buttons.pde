@@ -33,8 +33,8 @@ class MenuSlider {
       //pebug(perc);
       
       
-      if (touch1X > st_x-st_s && touch1X < st_x+st_s && 
-        touch1Y > st_y-st_s && touch1Y < st_y+st_s) {
+      if (touch1X > st_x-(st_s*1.6) && touch1X < st_x+(st_s*1.6) && 
+        touch1Y > st_y-(st_s*1.6) && touch1Y < st_y+(st_s*1.6)) {
            st_x = touch1X;
            soundClick.play();
          } else {
