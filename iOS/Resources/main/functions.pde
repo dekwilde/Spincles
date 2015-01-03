@@ -132,19 +132,23 @@ void drawBG() {
   } else {
     alphaBG = tweenBG; 
   }
-        
+ 
+  background(colorR, colorG, colorB, alphaBG*2);
+  fill(colorR, colorG, colorB, 128);
+  noStroke();        
+  rect(0,0,width,height);       
+  
+  /*
   if (alphaBG>128) {
     ctx.rect(0,0,width,height);
     //background(colorR, colorG, colorB, alphaBG);
     fill(colorR, colorG, colorB, 255-alphaBG);
     noStroke();        
-    rect(0,0,width,height);  
+    rect(0,0,width,height);
   } else {
-    background(colorR, colorG, colorB, alphaBG*2);
-    fill(colorR, colorG, colorB, 128);
-    noStroke();        
-    rect(0,0,width,height); 
+    //
   }
+  */
   
 }
 
