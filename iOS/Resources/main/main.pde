@@ -31,8 +31,7 @@ var ctx;
 PGraphics pimg;
 int dim = 1300;
 
-Ball ball;
-Control controlcontrol;
+Control control;
 IPhone iphone;
 
 
@@ -111,8 +110,8 @@ void setup() {
           wCount = 9; //ipad:9
           hCount = 7; //ipad:7
         } else {
-          wCount = 4;
-          hCount = 3;
+          wCount = 4; //iphone:4
+          hCount = 3; //iphone:3
         }
         
         pebug("wCount: " + wCount + ", hCount: " + hCount);
@@ -170,7 +169,6 @@ void setup() {
         iAngle = 0;
         iScale = 1.1;
         
-        //ball = new Ball(bx, by, bs);
         control = new Control();
         iphone = new IPhone();
         

@@ -47,8 +47,8 @@ void pointCompass() {
     currentLT = lt;
     currentLG = lg;
         
-    diffLT = targetLT - currentLT;
-    diffLG = targetLG - currentLG;
+    float diffLT = targetLT - currentLT;
+    float diffLG = targetLG - currentLG;
     
     /*
     if (diffLT == 0) {
@@ -78,7 +78,7 @@ void acceMic() {
   gravityX = iphone.getAcceleration().x;
   gravityY = -iphone.getAcceleration().y;
   
-  //pebug("x: " + gravityX + " " + "y: " + gravityY);
+  pebug("x: " + gravityX + " " + "y: " + gravityY);
   //pebug("Mic: " + iphone.getMicLevel());
   
   microfone = pow(iphone.getMicLevel(), 1) * mic_perc;                

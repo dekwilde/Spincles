@@ -20,8 +20,7 @@ ArrayList particles;
 
 class Tcompass {  
   TrixelMatrix trixelMtx;
-  float pX = 0.0;
-  float pY = 0.0;
+  float a;
   
   Tcompass() {
     trixelMtx = new TrixelMatrix();
@@ -41,21 +40,12 @@ class Tcompass {
     }
     angleCompass = compassDEGREE + iAngle;
     
-    
-    
-    //trixelX += (spinX - trixelX)*easing;
-    //trixelY += (spinY - trixelY)*easing;
-    
     trixelX = spinX;
     trixelY = spinY;
-    
-    //trixelX = targetX;
-    //trixelY = targetY;
-    
-
+        
     pushMatrix();
     translate(width/2, height/2);
-    float a = atan2(trixelY-height/2, trixelX-width/2);
+    a = atan2(trixelY-height/2, trixelX-width/2);
     rotate(a);
     trixelMtx.draw();
     popMatrix();
@@ -71,8 +61,7 @@ class Tcompass {
 class TrixelMatrix {
   GridTrixel gridtrixel;
   float r = 0.0; //rotation var
-  float dgr;
-  float d; // distance mouse to center, mouse middle
+  float dgr,d,a; // distance mouse to center, mouse middle
   float speed = 1; //speed for rotation
   TrixelMatrix() {
     gridtrixel = new GridTrixel(); 
@@ -85,7 +74,7 @@ class TrixelMatrix {
     
     dgr = radians(angleCompass);
     //r += (dgr - r)*easing;
-    float a = atan2(trixelY-height/2, trixelX-width/2);
+    a = atan2(trixelY-height/2, trixelX-width/2);
     r = dgr - a;
     
     
@@ -97,18 +86,19 @@ class TrixelMatrix {
     
 
     
-    pebug("mx: " + mx + " my: " + my);
+    //pebug("mx: " + mx + " my: " + my);
     pushMatrix();
     rotate(r);
     translate(-width/2,-height/2); //new line before implementation
     gridtrixel.draw();
     
+    //pebug display
     fill(0,255,0);
     ellipse(mx,my, 60, 60); // target position
     popMatrix();
     
 
-    
+     //pebug display
     stroke(0,255,0);
     line(0, 0, 0, 150); //point compass
   }
@@ -125,7 +115,6 @@ class GridTrixel {
   int n = 0;
   int count;
   int tv = 4;
-  float px=0.0,py=0.0;
 
   GridTrixel() {
     count = wCount*hCount*tv;
@@ -141,17 +130,15 @@ class GridTrixel {
   }
   
   void draw() {
-    px = trixelX - width/2;
-    py = trixelY - height/2;
     
     pushMatrix();
-    //translate(width/2,height/2);
-    //rotate(radians(mouseX));
     for (int i = 0; i < count; i++) {
-      trixel[i].draw(px,py);
+      trixel[i].draw(trixelX - width/2,trixelY - height/2);
     }
     popMatrix();
-    stroke(255);
+    
+    //pebug display
+    stroke(0,0,255);
     line(0,height/2,width,height/2);
     line(width/2,0,width/2,height);
     }
@@ -168,13 +155,11 @@ class Trixel {
   float x, y;
   int v;
 
-  float s = 140; 
+  float s = rad; 
   float h = 0.5 * sqrt(3) * s; 
   float radius = sqrt(3)/3 * s;
   float angle = (TWO_PI / 6) * 2;
 
-  XY a,b,c;
-  XY centroid;  
 
   int range;
   int changeTrix = 0;
@@ -216,23 +201,13 @@ class Trixel {
       x3 = x1 + (cos(atan2(y2-y1,x2-x1)-PI/3) * dist(x1,y1,x2,y2));
       y3 = y1 + (sin(atan2(y2-y1,x2-x1)-PI/3) * dist(x1,y1,x2,y2));
       
-      a = new XY(x1,y1);
-      b = new XY(x2,y2);
-      c = new XY(x3,y3);
-      centroid = new XY(-1,-1);
-      XY bc = new XY(b.x+(c.x-b.x)/2, b.y+(c.y-b.y)/2);
-      centroid.set( int(a.x+(bc.x-a.x)*twothird) , int(a.y+(bc.y-a.y)*twothird) );
-      //ENGINE
-      
-      
+            
       changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
       range = int(random(rangeTrixType));
 
   }
     
   void draw(float spX, float spY) {
-    
-    
     
     x -= spX/100;
     y -= spY/100;
@@ -256,16 +231,7 @@ class Trixel {
     collisionX = mx - x;
     collisionY = my - y;
     
-    pushMatrix();
-    translate(x, y); 
-    if(v == 1 || v == 3) {
-      rotate(radians(180));
-    }  
-    triangle(x1, y1, x2, y2, x3, y3);
-    popMatrix();
-    
-    
-    
+
     changeTrix = changeTrix + 1;
     if(changeTrix>changeTime) { //warnning
       fill(255,int(random(255)));
@@ -282,14 +248,19 @@ class Trixel {
       fill(0);   
     }
     if(range == 1) { //life
+      pushMatrix();
+      translate(x, y); 
+      if(v == 1 || v == 3) {
+        rotate(radians(180));
+      }  
       stroke(255);
       fill(255,int(random(255)));
-      triangle(centroid.x, centroid.y,x1,y1,x2,y2);
+      triangle(0,0,x1,y1,x2,y2);
       fill(255,int(random(255)));
-      triangle(centroid.x, centroid.y,x2,y2,x3,y3);
+      triangle(0,0,x2,y2,x3,y3);
       fill(255,int(random(255)));
-      triangle(centroid.x, centroid.y,x3,y3,x1,y1);
-      
+      triangle(0,0,x3,y3,x1,y1);
+      popMatrix();
     }
     
 
@@ -331,15 +302,25 @@ class Trixel {
          
         
     // draw triangle
+    
+    pushMatrix();
+    translate(x, y); 
+    if(v == 1 || v == 3) {
+      rotate(radians(180));
+    }  
     stroke(255);
     strokeWeight(1);
     triangle(x1, y1, x2, y2, x3, y3);
+    popMatrix();
     
     if(range == 0) { //enemy
+      pushMatrix();
+      translate(x, y); 
       for(int i=0;i<10;i++) {
         stroke(255);
-        point(centroid.x+random(-rad/5,rad/5), centroid.y+random(-rad/5,rad/5));
-      }    
+        point(random(-rad/5,rad/5), random(-rad/5,rad/5));
+      }
+      popMatrix();
     }
   }
 
@@ -374,33 +355,6 @@ class Trixel {
   }
   
 }
-
-
-class XY
-{
-    float x, y;
-    
-    XY (float xx, float yy)
-    {
-        x=xx; 
-        y=yy;
-    }
-    
-    boolean inside (int xx, int yy)
-    { 
-        return (xx>x-5 && xx<x+5 && yy>y-5 && yy<y+5); 
-    }
-    
-    void set ( int _x, int _y )
-    {
-        x=_x; 
-        y=_y;
-    }
-}
-
-
-
-
 
 
 class TrixParticle {

@@ -1,4 +1,4 @@
-void pebug(m) {
+void pebug(String m) {
   println(m);
 }
 
