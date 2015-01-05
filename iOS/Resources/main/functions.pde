@@ -1,5 +1,5 @@
 void pebug(String m) {
-  //println(m);
+  println(m);
 }
 
 void gestureStarted() {
@@ -285,7 +285,7 @@ void stateGame() {
   drawBG();
   //Three();        
   control.draw();  
-  compass.draw();
+  trixelmatrix.draw();
   trixBAD.draw();
   trixGOOD.draw();
   btInfo.draw();

@@ -14045,14 +14045,16 @@ module.exports = function setupParser(Processing, options) {
      */
     p.println = function(message) {
 	
-
-	
-      Processing.logger.println(message);
-
-		// new code ##############################################################
-		debug(message); // also added l to parameters
+       // new code ##############################################################
+	   debug(message); // also added l to parameters
 		return;
-		// #######################################################################
+	   // #######################################################################            
+	  
+	  // orginal code ############################################################## 
+      //Processing.logger.println(message);  
+	  // ####################################################################### 
+
+
     };
     /**
      * The print() function writes to the console area of the Processing environment.

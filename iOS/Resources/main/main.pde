@@ -38,7 +38,7 @@ IPhone iphone;
 
 PSound soundBG1, soundBG2, soundLoopBG, soundTransIN, soundTransOUT, soundStartUP, soundGlitch, soundEnemy, soundClick, soundScore, soundMagnetic, soundTouchTimer;
 Tbody body;
-TCompass compass;
+TrixelMatrix trixelmatrix;
 
 int scW, scH;
 int wCount, hCount;
@@ -110,8 +110,8 @@ void setup() {
           wCount = 9; //ipad:9
           hCount = 7; //ipad:7
         } else {
-          wCount = 4; //iphone:4
-          hCount = 3; //iphone:3
+          wCount = 3; //iphone:4
+          hCount = 2; //iphone:3
         }
         
         pebug("wCount: " + wCount + ", hCount: " + hCount);
@@ -144,7 +144,7 @@ void setup() {
         scoreInfo = new ScoreInfo();
         logo = new Logo();
 
-        compass = new Tcompass();
+        trixelmatrix = new TrixelMatrix();
         trixBAD = new TrixParticle("bad");
         trixGOOD = new TrixParticle("good");
         

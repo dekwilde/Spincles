@@ -1,6 +1,5 @@
-int rad = 140; //triangle radius
+int rad = 240; //triangle radius
 float mx, my; //mouse or object position middle;
-float twothird = 2.0/3.0; //triangle use
 float trixelX, trixelY;
 float angleCompass;
 float delaySpeedCompass = 20;
@@ -19,19 +18,18 @@ TrixParticle trixGOOD;
 ArrayList particles;
 
 
-class Tcompass {  
-  TrixelMatrix trixelMtx;
+class TrixelMatrix {  
+  GridTrixel gridtrixel;
+  float r, d;
 
   
-  Tcompass() {
-    trixelMtx = new TrixelMatrix();
+  TrixelMatrix() {
+    gridtrixel = new GridTrixel();
   }
   void draw() {
     
-    
     //location();
     //pointCompass();
-    //angleCompass = targetDEGREE - compassDEGREE;
     
     if (compassDEGREE > 360) {
       compassDEGREE = compassDEGREE - 360;
@@ -43,43 +41,16 @@ class Tcompass {
     
     trixelX = spinX;
     trixelY = spinY;
-        
-    pushMatrix();
-    translate(width/2, height/2);
-    atan = atan2(trixelY-height/2, trixelX-width/2);
-    rotate(atan);
-    trixelMtx.draw();
-    popMatrix();
-  }  
-}
-
-
-
-
-
-
-
-class TrixelMatrix {
-  GridTrixel gridtrixel;
-  float r, d;
-  TrixelMatrix() {
-    gridtrixel = new GridTrixel(); 
-  }
-  
-  void draw() {
-
-    r = radians(angleCompass) - atan;
     
-    //pebug("degrees " + angleCompass);
-    //pebug("radians " + r);
+    atan = atan2(trixelY-height/2, trixelX-width/2);   
+    r = radians(angleCompass) - atan;
     d = dist(width/2, height/2, trixelX, trixelY); // distance mouse to center, mouse middle
     mx = d*cos(-r)+width/2;
     my = d*sin(-r)+height/2;
-    
-
-    
-    //pebug("mx: " + mx + " my: " + my);
+        
     pushMatrix();
+    translate(width/2, height/2);
+    rotate(atan);
     rotate(r);
     translate(-width/2,-height/2); //new line before implementation
     gridtrixel.draw();
@@ -87,17 +58,11 @@ class TrixelMatrix {
     //pebug display
     fill(0,255,0);
     ellipse(mx,my, 60, 60); // target position
-    popMatrix();
-    
-
-     //pebug display
     stroke(0,255,0);
     line(0, 0, 0, 150); //point compass
-  }
+    popMatrix();
+  }  
 }
-
-
-
 
 
 
@@ -123,17 +88,15 @@ class GridTrixel {
   
   void draw() {
     
-    pushMatrix();
     for (int i = 0; i < count; i++) {
       trixel[i].draw(trixelX - width/2,trixelY - height/2);
     }
-    popMatrix();
     
     //pebug display
     stroke(0,0,255);
     line(0,height/2,width,height/2);
     line(width/2,0,width/2,height);
-    }
+  }
 }
 
 
@@ -223,7 +186,7 @@ class Trixel {
     collisionX = mx - x;
     collisionY = my - y;
     
-
+    
     changeTrix = changeTrix + 1;
     if(changeTrix>changeTime) { //warnning
       fill(255,int(random(255)));
@@ -234,17 +197,16 @@ class Trixel {
       noFill();
     }   
 
-    
+    pushMatrix();
+    translate(x, y); 
+    if(v == 1 || v == 3) {
+      rotate(radians(180));
+    }  
     
     if(range == 0) { //enemy
       fill(0);   
     }
     if(range == 1) { //life
-      pushMatrix();
-      translate(x, y); 
-      if(v == 1 || v == 3) {
-        rotate(radians(180));
-      }  
       stroke(255);
       fill(255,int(random(255)));
       triangle(0,0,x1,y1,x2,y2);
@@ -252,7 +214,6 @@ class Trixel {
       triangle(0,0,x2,y2,x3,y3);
       fill(255,int(random(255)));
       triangle(0,0,x3,y3,x1,y1);
-      popMatrix();
     }
     
 
@@ -262,6 +223,7 @@ class Trixel {
       
       if(range > 1) {
         //fill(255,204,0,int(random(128))); 
+       //pebug display
        fill(0,0,200); 
       }
       
@@ -293,27 +255,20 @@ class Trixel {
     }
          
         
-    // draw triangle
-    
-    pushMatrix();
-    translate(x, y); 
-    if(v == 1 || v == 3) {
-      rotate(radians(180));
-    }  
+    // draw triangle 
     stroke(255);
     strokeWeight(1);
     triangle(x1, y1, x2, y2, x3, y3);
-    popMatrix();
+    
     
     if(range == 0) { //enemy
-      pushMatrix();
-      translate(x, y); 
       for(int i=0;i<10;i++) {
         stroke(255);
         point(random(-rad/5,rad/5), random(-rad/5,rad/5));
       }
-      popMatrix();
     }
+    
+    popMatrix();
   }
 
 
@@ -321,12 +276,12 @@ class Trixel {
   
 
   boolean checkCollision(float cx, float cy) {
-    float tArea,t1Area,t2Area,t3Area;
+    float tArea,t1Area,t2Area,t3Area,totalArea;
     tArea  = triangleArea(x1,y1,x3,y3,x2,y2);
     t1Area = triangleArea(cx,cy,x2,y2,x3,y3);
     t2Area = triangleArea(cx,cy,x3,y3,x1,y1);
     t3Area = triangleArea(cx,cy,x2,y2,x1,y1);    
-    float totalArea = t1Area+t2Area+t3Area;
+    totalArea = t1Area+t2Area+t3Area;
     return (totalArea == tArea);
   } 
   
