@@ -92,16 +92,23 @@ class TrixelMatrix {
     //pebug("degrees " + angleCompass);
     //pebug("radians " + r);
     d = dist(width/2, height/2, trixelX, trixelY);
-    mx = d*cos(-r);
-    my = d*sin(-r);
-  
+    mx = d*cos(-r)+width/2;
+    my = d*sin(-r)+height/2;
+    
+
+    
+    pebug("mx: " + mx + " my: " + my);
     pushMatrix();
     rotate(r);
     translate(-width/2,-height/2); //new line before implementation
     gridtrixel.draw();
+    
     fill(0,255,0);
     ellipse(mx,my, 60, 60); // target position
     popMatrix();
+    
+
+    
     stroke(0,255,0);
     line(0, 0, 0, 150); //point compass
   }
@@ -172,6 +179,8 @@ class Trixel {
   int range;
   int changeTrix = 0;
   int changeTime;
+  
+  float collisionX, collisionY;
 
   
 
@@ -244,8 +253,8 @@ class Trixel {
       y = y + h*(hCount+3);
     }
     
-    mx = mx - x;
-    my = my - y;
+    collisionX = mx - x;
+    collisionY = my - y;
     
     pushMatrix();
     translate(x, y); 
@@ -286,10 +295,11 @@ class Trixel {
 
     
     
-    if(checkCollision(mx,my)){
+    if(checkCollision(collisionX,collisionY)){
       
       if(range > 1) {
-        fill(255,204,0,int(random(128)));  
+        //fill(255,204,0,int(random(128))); 
+       fill(0,0,200); 
       }
       
       if(range == 0 && blowMic<200) { //enemy        

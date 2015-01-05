@@ -40,7 +40,7 @@ void compassEvent() {
 
 void locationEvent() {
   //text("locationEvent LT:" + locLatitude + " LG:" + locLongitude + " AL:" +locAltitude + " HD:" + locHeading, 10, 80);
-  pebug("locationEvent LT:" + locLatitude + " LG:" + locLongitude + " AL:" +locAltitude + " HD:" + locHeading);
+  //pebug("locationEvent LT:" + locLatitude + " LG:" + locLongitude + " AL:" +locAltitude + " HD:" + locHeading);
 }
 
 void pointCompass() {
@@ -78,7 +78,7 @@ void acceMic() {
   gravityX = iphone.getAcceleration().x;
   gravityY = -iphone.getAcceleration().y;
   
-  pebug("x: " + gravityX + " " + "y: " + gravityY);
+  //pebug("x: " + gravityX + " " + "y: " + gravityY);
   //pebug("Mic: " + iphone.getMicLevel());
   
   microfone = pow(iphone.getMicLevel(), 1) * mic_perc;                

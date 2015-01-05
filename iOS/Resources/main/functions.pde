@@ -123,7 +123,7 @@ void drawBG() {
     blowMic = 255;
   }
   
-  pebug(blowMic);
+  //pebug(blowMic);
   
   tweenBG = tweenBG + ((microfone+hurtRange)*15 - tweenBG/4)/10;
   
