@@ -31,7 +31,7 @@ class Control {
       
       springs[i].move(x, y);
       springs[i].touch();
-      //springs[i].display(x, y);
+      springs[i].display(x, y);
       x = springs[i].x;
       y = springs[i].y;
     }
@@ -66,11 +66,11 @@ class Spring2D {
         bover = true;
 
         if(locked) {
-          clawTouchLoop();
+          //clawTouchStart();
         } 
      } else {      
         bover = false;
-        clawTouchStop();
+        //clawTouchStop();
      }
   }
   
@@ -127,6 +127,6 @@ class Spring2D {
     stroke(255,0,0);
     strokeWeight(1);
     ellipse(x, y, radius*2, radius*2);
-    //line(x, y, nx, ny);
+    line(x, y, nx, ny);
   }
 }

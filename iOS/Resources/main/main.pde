@@ -108,8 +108,8 @@ void setup() {
         size(scW, scH, P2D);
         
         if(scW>320 && scH>480) {
-          wCount = 9;
-          hCount = 7;
+          wCount = 4; //ipad:9
+          hCount = 3; //ipad:7
         } else {
           wCount = 4;
           hCount = 3;

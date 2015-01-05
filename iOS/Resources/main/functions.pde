@@ -1,5 +1,5 @@
 void pebug(m) {
-  //println(m);
+  println(m);
 }
 
 void gestureStarted() {
@@ -72,7 +72,7 @@ void hurt() {
   //
 }
 
-void clawTouchLoop() {
+void clawTouchStart() {
   soundTouchTimer.setVolume(hurtTimer/100);
   
   if(hurtTimer<1) {

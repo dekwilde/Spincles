@@ -1,4 +1,3 @@
-//LAYOUT and ANIMATION
 int rad = 140; //triangle radius
 float mx, my; //mouse or object position middle;
 float twothird = 2.0/3.0; //triangle use
@@ -98,12 +97,13 @@ class TrixelMatrix {
   
     pushMatrix();
     rotate(r);
+    translate(-width/2,-height/2); //new line before implementation
     gridtrixel.draw();
-    //fill(0,255,0);
-    //ellipse(mx,my, 30, 30); // target position
+    fill(0,255,0);
+    ellipse(mx,my, 60, 60); // target position
     popMatrix();
-    //stroke(0,255,0);
-    //line(0, 0, 0, 20); //point compass
+    stroke(0,255,0);
+    line(0, 0, 0, 150); //point compass
   }
 }
 
@@ -113,18 +113,20 @@ class TrixelMatrix {
 
 
 class GridTrixel {
+  
   Trixel[] trixel;
   int n = 0;
   int count;
-  int angleStart = 2;
-  int angleEnd = 6;  
+  int tv = 4;
+  float px=0.0,py=0.0;
+
   GridTrixel() {
-    count = wCount*hCount*(angleEnd-angleStart);
+    count = wCount*hCount*tv;
     trixel = new Trixel[count];
-    for(int i=0; i < hCount; i++) {
-      for(int j=0; j < wCount; j++) {
-        for(int k=angleStart; k < angleEnd; k++) {
-          trixel[n++] = new Trixel(j, i, rad, k);  
+    for(int i=0; i<hCount; i++) {
+      for(int j=0; j<wCount; j++) {
+        for(int k=0; k<tv; k++) {
+          trixel[n++] = new Trixel(j, i, k);  
         }
       }
     }
@@ -132,10 +134,20 @@ class GridTrixel {
   }
   
   void draw() {
+    px = trixelX - width/2;
+    py = trixelY - height/2;
+    
+    pushMatrix();
+    //translate(width/2,height/2);
+    //rotate(radians(mouseX));
     for (int i = 0; i < count; i++) {
-      trixel[i].draw();
+      trixel[i].draw(px,py);
     }
-  }
+    popMatrix();
+    stroke(255);
+    line(0,height/2,width,height/2);
+    line(width/2,0,width/2,height);
+    }
 }
 
 
@@ -146,25 +158,51 @@ class GridTrixel {
 
 class Trixel {
   float x1, y1, x2, y2, x3, y3;
-  float radius;
+  float x, y;
+  int v;
+
+  float s = 140; 
+  float h = 0.5 * sqrt(3) * s; 
+  float radius = sqrt(3)/3 * s;
+  float angle = (TWO_PI / 6) * 2;
+
+  XY a,b,c;
+  XY centroid;  
+
   int range;
   int changeTrix = 0;
   int changeTime;
-  XY a,b,c;
-  XY centroid;
+
   
 
   
-  Trixel(float i, float j, float r, int inv) {
+  Trixel(float tx, float ty, int inv) {
       
-      changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
-      radius = r;
-      x1 = (i-(wCount-1)/2)*radius;      
-      y1 = (j-(hCount-twothird)/2)*(radius + radius*twothird+radius*0.065625)+radius/2+radius*0.065625;
+      v = inv;
+      if(v == 0) {
+        x = s/2     + tx*s;
+        y = radius  + ty*h*2; 
+      }
+      if(v == 1) {
+        x = s/2     + tx*s;
+        y = radius  + ty*h*2 + radius;  
+      }
+      if(v == 2) {
+        x = tx*s;
+        y = h+radius + ty*h*2; 
+      }
+      if(v == 3) {
+        x = tx*s;
+        y = h/3 + ty*h*2; 
+      }
+      x = x  + width/2    - wCount*s/2        + s/2;
+      y = y  + height/2  - (hCount+1)*radius  - h/3;
       
-      float angle = (TWO_PI / 6) * inv;
-      x2 = x1 + cos( angle ) * radius;
-      y2 = y1 + sin( angle ) * radius;
+      x1 = 0;
+      y1 = -radius;
+        
+      x2 = x1 + cos( angle ) * s;
+      y2 = y1 + sin( angle ) * s;
       
       x3 = x1 + (cos(atan2(y2-y1,x2-x1)-PI/3) * dist(x1,y1,x2,y2));
       y3 = y1 + (sin(atan2(y2-y1,x2-x1)-PI/3) * dist(x1,y1,x2,y2));
@@ -177,11 +215,47 @@ class Trixel {
       centroid.set( int(a.x+(bc.x-a.x)*twothird) , int(a.y+(bc.y-a.y)*twothird) );
       //ENGINE
       
+      
+      changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
       range = int(random(rangeTrixType));
 
   }
     
-  void draw() {
+  void draw(float spX, float spY) {
+    
+    
+    
+    x -= spX/100;
+    y -= spY/100;
+    
+    if(x>width+s) {
+      x = x - s*wCount;
+    }
+    
+    if(x<-s) {
+      x = x + s*wCount;
+    }
+    
+    if(y>height+h) {
+      y = y - h*(hCount+3);
+    }
+    
+    if(y<-h) {
+      y = y + h*(hCount+3);
+    }
+    
+    mx = mx - x;
+    my = my - y;
+    
+    pushMatrix();
+    translate(x, y); 
+    if(v == 1 || v == 3) {
+      rotate(radians(180));
+    }  
+    triangle(x1, y1, x2, y2, x3, y3);
+    popMatrix();
+    
+    
     
     changeTrix = changeTrix + 1;
     if(changeTrix>changeTime) { //warnning
