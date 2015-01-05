@@ -4,6 +4,7 @@ float twothird = 2.0/3.0; //triangle use
 float trixelX, trixelY;
 float angleCompass;
 float delaySpeedCompass = 20;
+float atan;
 
 //ENGINE GAME
 int rangeTrixType = 10;
@@ -20,7 +21,7 @@ ArrayList particles;
 
 class Tcompass {  
   TrixelMatrix trixelMtx;
-  float a;
+
   
   Tcompass() {
     trixelMtx = new TrixelMatrix();
@@ -45,8 +46,8 @@ class Tcompass {
         
     pushMatrix();
     translate(width/2, height/2);
-    a = atan2(trixelY-height/2, trixelX-width/2);
-    rotate(a);
+    atan = atan2(trixelY-height/2, trixelX-width/2);
+    rotate(atan);
     trixelMtx.draw();
     popMatrix();
   }  
@@ -60,27 +61,18 @@ class Tcompass {
 
 class TrixelMatrix {
   GridTrixel gridtrixel;
-  float r = 0.0; //rotation var
-  float dgr,d,a; // distance mouse to center, mouse middle
-  float speed = 1; //speed for rotation
+  float r, d;
   TrixelMatrix() {
     gridtrixel = new GridTrixel(); 
   }
   
   void draw() {
-    //r = r + speed;
 
-    
-    
-    dgr = radians(angleCompass);
-    //r += (dgr - r)*easing;
-    a = atan2(trixelY-height/2, trixelX-width/2);
-    r = dgr - a;
-    
+    r = radians(angleCompass) - atan;
     
     //pebug("degrees " + angleCompass);
     //pebug("radians " + r);
-    d = dist(width/2, height/2, trixelX, trixelY);
+    d = dist(width/2, height/2, trixelX, trixelY); // distance mouse to center, mouse middle
     mx = d*cos(-r)+width/2;
     my = d*sin(-r)+height/2;
     
