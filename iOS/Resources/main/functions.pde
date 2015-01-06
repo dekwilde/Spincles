@@ -90,7 +90,7 @@ void clawTouchStart() {
     energy = energy - 2;
     soundGlitch.play();
     //gameTransions = "Static";
-    hurtRange = 255;
+    hurtRange = 300;
     //hurt();
     trixBAD.num = 0;
   }
@@ -125,20 +125,16 @@ void drawBG() {
   
   //pebug(blowMic);
   
-  tweenBG = tweenBG + ((microfone+hurtRange)*15 - tweenBG/4)/10;
+  tweenBG += (hurtRange*10 - tweenBG/4)/10;
   
   if(tweenBG>255) {
     alphaBG = 255;  
   } else {
-    alphaBG = tweenBG; 
+    alphaBG = round(tweenBG); 
   }
  
-  background(colorR, colorG, colorB, alphaBG*2);
-  fill(colorR, colorG, colorB, 128);
-  noStroke();        
-  rect(0,0,width,height);       
-  
-  /*
+  pebug("alphaBG: " + alphaBG);  
+
   if (alphaBG>128) {
     ctx.rect(0,0,width,height);
     //background(colorR, colorG, colorB, alphaBG);
@@ -146,9 +142,12 @@ void drawBG() {
     noStroke();        
     rect(0,0,width,height);
   } else {
-    //
+    background(colorR, colorG, colorB, alphaBG*2);
+    fill(colorR, colorG, colorB, 128);
+    noStroke();        
+    rect(0,0,width,height);  
   }
-  */
+
   
 }
 
@@ -196,16 +195,17 @@ void stateStart() {
   textFont(fontTitle, 10);
   
   text("Welcome to", width/2, height/2-50); 
-  //image(logoImg, width/2, height/2);
+
   pushMatrix();
-  translate(width/2-(500*0.3), height/2-(200*0.3)+20);
+  translate(width/2-(500*0.3), height/2-(200*0.3)+20); // a logo tem o tamanho original com 1000x400
   scale(0.3);
-  
   logo.draw();
   popMatrix();
   
   textFont(fontText, 10);
+  fill(0);
   text("headphone required", width/2, height/2-170-initPosY);
+  
   // headhpone
   pushMatrix();
   noFill();

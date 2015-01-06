@@ -73,7 +73,7 @@ float initColorAlpha = 0.0;
 float endColorAlpha = 0.0;
 float initPosY = 0.0;
 int initColor = 255;
-float alphaBG = 0.0;
+int alphaBG = 0.0;
 float tweenBG = 0.0;
 float tween = 0.0;
 
@@ -110,8 +110,8 @@ void setup() {
           wCount = 9; //ipad:9
           hCount = 7; //ipad:7
         } else {
-          wCount = 3; //iphone:4
-          hCount = 2; //iphone:3
+          wCount = 4; //iphone:4 and 4 menor
+          hCount = 2; //iphone:3 and 3 menor
         }
         
         pebug("wCount: " + wCount + ", hCount: " + hCount);

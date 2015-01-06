@@ -60,10 +60,6 @@ class ScoreInfo {
         angleRadiusTouch = 3;
       }
 
-      pushMatrix();
-      scale(1.0);
-      
-      
       fill(255,204,0,128);
       stroke(0);
       rect(px, py, dw, dh);
@@ -71,20 +67,17 @@ class ScoreInfo {
       fill(0);
       noStroke();
       rect(px, py, energy, dh);
-      
+    
       stroke(255);
-
       line(px+10, py+dh/2, px+80, py+dh/2);
       line(px+10, py+ dh/5, px+10, py+ dh - dh/5);
       line(px+80, py+ dh/5, px+80, py+ dh - dh/5);    
-    
-      popMatrix();
       
-      pushMatrix();
+
       textFont(fontText, 14);
       textAlign(RIGHT);
       text(score, px-5, py+10); 
-      popMatrix();      
+  
 
     }
 

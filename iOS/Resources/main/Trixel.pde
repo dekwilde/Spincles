@@ -1,4 +1,4 @@
-int rad = 240; //triangle radius
+int rad = 215; //triangle radius 215 is default
 float mx, my; //mouse or object position middle;
 float trixelX, trixelY;
 float angleCompass;
@@ -56,10 +56,12 @@ class TrixelMatrix {
     gridtrixel.draw();
     
     //pebug display
+    /*
     fill(0,255,0);
     ellipse(mx,my, 60, 60); // target position
     stroke(0,255,0);
     line(0, 0, 0, 150); //point compass
+    */
     popMatrix();
   }  
 }
@@ -93,9 +95,11 @@ class GridTrixel {
     }
     
     //pebug display
+    /*
     stroke(0,0,255);
     line(0,height/2,width,height/2);
     line(width/2,0,width/2,height);
+    */
   }
 }
 
@@ -176,11 +180,11 @@ class Trixel {
     }
     
     if(y>height+h) {
-      y = y - h*(hCount+3);
+      y = y - h*(hCount+2);
     }
     
     if(y<-h) {
-      y = y + h*(hCount+3);
+      y = y + h*(hCount+2);
     }
     
     collisionX = mx - x;
@@ -208,6 +212,7 @@ class Trixel {
     }
     if(range == 1) { //life
       stroke(255);
+      strokeWeight(1);
       fill(255,int(random(255)));
       triangle(0,0,x1,y1,x2,y2);
       fill(255,int(random(255)));
@@ -222,9 +227,9 @@ class Trixel {
     if(checkCollision(collisionX,collisionY)){
       
       if(range > 1) {
-        //fill(255,204,0,int(random(128))); 
+        fill(255,204,0,int(random(255))); 
        //pebug display
-       fill(0,0,200); 
+       //fill(0,0,200); 
       }
       
       if(range == 0 && blowMic<200) { //enemy        
@@ -235,7 +240,7 @@ class Trixel {
         hurtRange = 300;
         //hurt();
         pebug("energy " + energy);
-        resetTrix();
+        collisionTrix();
         trixBAD.num = 0;
       }
       if(range == 1) { //score
@@ -246,12 +251,12 @@ class Trixel {
         soundMagnetic.play();
         soundScore.play();
         gameTransions = "Blackout";
-        resetTrix();
+        collisionTrix();
         trixGOOD.num = 0;
         
       }
     } else {
-      hurtRange = hurtRange + (0-hurtRange)/100;
+      hurtRange -= hurtRange*0.01;
     }
          
         
@@ -298,6 +303,12 @@ class Trixel {
   void resetTrix() {
     range = int(random(rangeTrixType));
     changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
+    changeTrix = 0;
+  }
+  
+  void collisionTrix() {
+    range = rangeTrixType; 
+    changeTime = 0;
     changeTrix = 0;
   }
   
