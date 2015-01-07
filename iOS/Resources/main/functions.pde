@@ -133,7 +133,7 @@ void drawBG() {
     alphaBG = round(tweenBG); 
   }
  
-  pebug("alphaBG: " + alphaBG);  
+  //pebug("alphaBG: " + alphaBG);  
 
   if (alphaBG>128) {
     ctx.rect(0,0,width,height);

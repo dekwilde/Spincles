@@ -12,6 +12,7 @@ float by;
 int bs = 120;
 boolean bover = false;
 boolean locked = false;
+boolean effect = false;
 float bdifx = 0.0; 
 float bdify = 0.0;
 
@@ -220,6 +221,7 @@ void draw() {
   
   switch( gameTransions ) {      
     case "Null":
+      effect = false;
       tween = 0.0;
     break;
     
@@ -239,6 +241,7 @@ void draw() {
     break;
     
    case "Static":
+      effect = true;
       tween = tween +(initColor-tween)/5;
       if(tween>(initColor-1)) {
         gameTransions = "Null";
@@ -249,7 +252,7 @@ void draw() {
       scale(1.0);
       //background(0,0);
       ctx.rect(0,0,width,height);
-      fill(255, random(255));
+      fill(0, random(255));
       noStroke();        
       rect(0,0,width,height);   
       popMatrix();

@@ -21,6 +21,7 @@ ArrayList particles;
 class TrixelMatrix {  
   GridTrixel gridtrixel;
   float r, d;
+  float delayCompassDEGREE, transCompassDEGREE;
 
   
   TrixelMatrix() {
@@ -31,13 +32,10 @@ class TrixelMatrix {
     //location();
     //pointCompass();
     
-    if (compassDEGREE > 360) {
-      compassDEGREE = compassDEGREE - 360;
-    }
-    if (compassDEGREE < 0) {
-      compassDEGREE = 360 + compassDEGREE;
-    }
+    pebug("compassDEGREE: " + compassDEGREE);
+    
     angleCompass = compassDEGREE + iAngle;
+    
     
     trixelX = spinX;
     trixelY = spinY;
@@ -60,7 +58,7 @@ class TrixelMatrix {
     fill(0,255,0);
     ellipse(mx,my, 60, 60); // target position
     stroke(0,255,0);
-    line(0, 0, 0, 150); //point compass
+    line(width/2, height/2, 0, 150); //point compass
     */
     popMatrix();
   }  
@@ -91,7 +89,7 @@ class GridTrixel {
   void draw() {
     
     for (int i = 0; i < count; i++) {
-      trixel[i].draw(trixelX - width/2,trixelY - height/2);
+      trixel[i].draw(mx - width/2,my - height/2);
     }
     
     //pebug display
@@ -100,6 +98,7 @@ class GridTrixel {
     line(0,height/2,width,height/2);
     line(width/2,0,width/2,height);
     */
+    
   }
 }
 
@@ -221,8 +220,6 @@ class Trixel {
       triangle(0,0,x3,y3,x1,y1);
     }
     
-
-    
     
     if(checkCollision(collisionX,collisionY)){
       
@@ -233,7 +230,6 @@ class Trixel {
       }
       
       if(range == 0 && blowMic<200) { //enemy        
-        fill(int(random(255)),int(random(100)));
         energy = energy - 4;
         soundEnemy.play();
         gameTransions = "Static";
@@ -260,9 +256,14 @@ class Trixel {
     }
          
         
-    // draw triangle 
-    stroke(255);
-    strokeWeight(1);
+    // draw triangle
+    if(effect) {
+      stroke(0);
+    } else {
+      stroke(255);
+    }
+    
+    strokeWeight(1); 
     triangle(x1, y1, x2, y2, x3, y3);
     
     
