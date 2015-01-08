@@ -90,6 +90,7 @@ ButtonClose btClose;
 MenuSlider slider;
 ScoreInfo scoreInfo;
 Logo logo;
+TrixelEffect tEff;
 float pInfo = height;
 
 
@@ -149,6 +150,7 @@ void setup() {
         slider = new MenuSlider();
         scoreInfo = new ScoreInfo();
         logo = new Logo();
+        tEff = new TrixelEffect();
 
         trixelmatrix = new TrixelMatrix();
         trixBAD = new TrixParticle("bad");
@@ -239,9 +241,7 @@ void draw() {
       rotate(0);
       translate(0,0);
       scale(1.0);
-      fill(255, 255-tween);
-      noStroke();        
-      rect(0,0,width,height);   
+      tEff.draw2(255-tween, 255); 
       popMatrix();
     break;
     
@@ -254,8 +254,8 @@ void draw() {
       rotate(0);
       translate(0,0);
       scale(1.0);
-      fill(255, 255-tween);
-      noStroke();        
+      noStroke();
+      fill(255, 255-tween);      
       rect(0,0,width,height);   
       popMatrix();
     break;
@@ -272,9 +272,7 @@ void draw() {
       scale(1.0);
       //background(0,0);
       ctx.rect(0,0,width,height);
-      fill(0, random(255));
-      noStroke();        
-      rect(0,0,width,height);   
+      tEff.draw2(255-tween, 0); 
       popMatrix();
     break;
     
@@ -288,8 +286,8 @@ void draw() {
       rotate(0);
       translate(0,0);
       scale(1.0);
-      fill(255,204,0, 255-tween);
-      noStroke();        
+      noStroke();
+      fill(255,204,0, 255-tween); 
       rect(0,0,width,height);   
       popMatrix();
     break;

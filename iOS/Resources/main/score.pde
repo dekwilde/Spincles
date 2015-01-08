@@ -2,7 +2,7 @@ int score = 0;
 int energy = 0;
 int level = 0;
 String scoreResult = "";
-int recordScore;
+int recordScore = 0;
 class ScoreInfo {
     int dw = 100;
     int dh = 10;
@@ -98,7 +98,16 @@ void levelUp() {
 }
 
 void clearScore() {
-  iphone.saveState(0+","+0);  
+  iphone.saveState("");  
+}
+
+void loadScore() {
+      // Load the previously saved state of the app
+    Array[] load = split(iphone.loadState(), ",");
+    if (load.length >= 2) {
+      recordScore = load[0];
+      level = load[1];
+    }
 }
 
 void saveScore() {

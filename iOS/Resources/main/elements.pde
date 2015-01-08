@@ -293,3 +293,78 @@ class IntroGame {
 
   }
 }
+
+
+class TrixelEffect {
+  float w = 80, h = 0.5 * sqrt(3) * w;  
+  float tx = 0;
+  float ty = 0; 
+  TrixelEffect() {
+    
+  }
+  void draw1() {
+    noStroke();
+    for(int i=0; i<10;i++) {
+      for(int j=0; j<14;j++) {    
+          fill(255,random(255));
+          for (float x = 0; x < width; x += w)
+            for (float y = 0; y < height; y += 2*h)
+              if (i*w/2 >= x && i*w/2 <= x+w)
+                if (j*h/2 >= 2*abs(i*w/2-x-w/2)+y && j*h/2 <= y+h)
+                  triangle(x,y+h,x+w/2,y,x+w,y+h);
+          
+          for (float x = -w/2; x < width; x += w)
+            for (float y = h; y < height; y += 2*h)
+              if (i*w/2 >= x && i*w/2 <= x+w)
+                if (j*h/2 >= 2*abs(i*w/2-x-w/2)+y && j*h/2 <= y+h)
+                  triangle(x,y+h,x+w/2,y,x+w,y+h);
+          
+          for (float x = -w/2; x < width; x += w)
+            for (float y = 0; y < height; y += 2*h)
+              if (i*w/2 >= x && i*w/2 <= x+w)
+                if (j*h/2 <= -2*abs(i*w/2-x-w/2)+y+h && j*h/2 >= y)
+                  triangle(x,y,x+w/2,y+h,x+w,y);
+          
+          for (float x = 0; x < width; x += w)
+            for (float y = h; y < height; y += 2*h)
+              if (i*w/2 >= x && i*w/2 <= x+w)
+                if (j*h/2 <= -2*abs(i*w/2-x-w/2)+y+h && j*h/2 >= y)
+                  triangle(x,y,x+w/2,y+h,x+w,y);    
+      }              
+    }
+  }
+  
+  void draw2(float n, color c) {
+    noStroke();
+    for(int j=0; j<n;j++) {    
+          fill(c,random(255));
+          tx = random(width);
+          ty = random(height);
+          for (float x = 0; x < width; x += w)
+            for (float y = 0; y < height; y += 2*h)
+              if (tx >= x && tx <= x+w)
+                if (ty >= 2*abs(tx-x-w/2)+y && ty <= y+h)
+                  triangle(x,y+h,x+w/2,y,x+w,y+h);
+       
+          for (float x = -w/2; x < width; x += w)
+            for (float y = h; y < height; y += 2*h)
+              if (tx >= x && tx <= x+w)
+                if (ty >= 2*abs(tx-x-w/2)+y && ty <= y+h)
+                  triangle(x,y+h,x+w/2,y,x+w,y+h);
+       
+          for (float x = -w/2; x < width; x += w)
+            for (float y = 0; y < height; y += 2*h)
+              if (tx >= x && tx <= x+w)
+                if (ty <= -2*abs(tx-x-w/2)+y+h && ty >= y)
+                  triangle(x,y,x+w/2,y+h,x+w,y);
+       
+          for (float x = 0; x < width; x += w)
+            for (float y = h; y < height; y += 2*h)
+              if (tx >= x && tx <= x+w)
+                if (ty <= -2*abs(tx-x-w/2)+y+h && ty >= y)
+                  triangle(x,y,x+w/2,y+h,x+w,y);
+      }              
+  }
+  
+  
+}
