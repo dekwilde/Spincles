@@ -1,8 +1,7 @@
-int rad = 215; //triangle radius 215 is default
+int rad; //triangle radius 215 is default
 float mx, my; //mouse or object position middle;
 float trixelX, trixelY;
 float angleCompass;
-float delaySpeedCompass = 20;
 float atan;
 
 //ENGINE GAME
@@ -19,24 +18,26 @@ ArrayList particles;
 
 
 class TrixelMatrix {  
-  GridTrixel gridtrixel;
+  Trixel[] trixel;
+  int n = 0;
+  int count;
+  int tv = 4;
   float r, d;
-  float delayCompassDEGREE, transCompassDEGREE;
-
   
   TrixelMatrix() {
-    gridtrixel = new GridTrixel();
+    count = wCount*hCount*tv;
+    trixel = new Trixel[count];
+    for(int i=0; i<hCount; i++) {
+      for(int j=0; j<wCount; j++) {
+        for(int k=0; k<tv; k++) {
+          trixel[n++] = new Trixel(j, i, k);  
+        }
+      }
+    }
   }
   void draw() {
-    
-    //location();
-    //pointCompass();
-    
-    pebug("compassDEGREE: " + compassDEGREE);
-    
+
     angleCompass = compassDEGREE + iAngle;
-    
-    
     trixelX = spinX;
     trixelY = spinY;
     
@@ -51,42 +52,6 @@ class TrixelMatrix {
     rotate(atan);
     rotate(r);
     translate(-width/2,-height/2); //new line before implementation
-    gridtrixel.draw();
-    
-    //pebug display
-    /*
-    fill(0,255,0);
-    ellipse(mx,my, 60, 60); // target position
-    stroke(0,255,0);
-    line(width/2, height/2, 0, 150); //point compass
-    */
-    popMatrix();
-  }  
-}
-
-
-
-class GridTrixel {
-  
-  Trixel[] trixel;
-  int n = 0;
-  int count;
-  int tv = 4;
-
-  GridTrixel() {
-    count = wCount*hCount*tv;
-    trixel = new Trixel[count];
-    for(int i=0; i<hCount; i++) {
-      for(int j=0; j<wCount; j++) {
-        for(int k=0; k<tv; k++) {
-          trixel[n++] = new Trixel(j, i, k);  
-        }
-      }
-    }
-    
-  }
-  
-  void draw() {
     
     for (int i = 0; i < count; i++) {
       trixel[i].draw(mx - width/2,my - height/2);
@@ -97,14 +62,15 @@ class GridTrixel {
     stroke(0,0,255);
     line(0,height/2,width,height/2);
     line(width/2,0,width/2,height);
+
+    fill(0,255,0);
+    ellipse(mx,my, 60, 60); // target position
+    stroke(0,255,0);
+    line(width/2, height/2, 0, 150); //point compass
     */
-    
-  }
+    popMatrix();
+  }  
 }
-
-
-
-
 
 
 
@@ -242,7 +208,7 @@ class Trixel {
       if(range == 1) { //score
         energy = energy + 2;
         score = score + 1;
-        checkScore();
+        saveScore();
         pebug("energy " + energy);
         soundMagnetic.play();
         soundScore.play();

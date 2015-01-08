@@ -67,11 +67,11 @@ class Spring2D {
         bover = true;
 
         if(locked) {
-          //clawTouchStart();
+          clawTouchStart();
         } 
      } else {      
         bover = false;
-        //clawTouchStop();
+        clawTouchStop();
      }
   }
   

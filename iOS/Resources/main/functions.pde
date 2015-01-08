@@ -242,7 +242,7 @@ void stateStart() {
 }
 
 void stateOver() {
-  int Talign = 40;
+  int Talign = 0;
   initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
   background(255, 204, 0, initColorAlpha);
   fill(0);
@@ -262,6 +262,10 @@ void stateOver() {
   text(scoreResult, width/2, 270+Talign);
   textSize(36);
   text(recordScore, width/2, 300+Talign);
+  textSize(16);
+  text("level", width/2, 340+Talign);
+  textSize(36);
+  text(level, width/2, 370+Talign);
   
   btAgain.draw();
 }

@@ -99,6 +99,7 @@ IntroGame introgame;
 var gameState = "Start";
 var gameTransions = "Null";
 var gameSound = "Intro";
+var gameDialog = "Null";
 
 void setup() {
         //size(320, 480);
@@ -108,11 +109,15 @@ void setup() {
         size(scW, scH, P2D);
         
         if(scW>320 && scH>480) {
-          wCount = 9; //ipad:9
-          hCount = 7; //ipad:7
+          wCount = 4; //ipad
+          hCount = 2; 
+          rad = 430;
+          iScale = 2.4;
         } else {
-          wCount = 4; //iphone:4 and 4 menor
-          hCount = 2; //iphone:3 and 3 menor
+          wCount = 4; //iphone
+          hCount = 2;
+          rad = 215;
+          iScale = 1.4;
         }
         
         pebug("wCount: " + wCount + ", hCount: " + hCount);
@@ -168,7 +173,7 @@ void setup() {
         bx = width/2;
         by = height/2;
         iAngle = 0;
-        iScale = 1.1;
+
         
         control = new Control();
         iphone = new IPhone();
@@ -302,5 +307,12 @@ void draw() {
     break;
     
   }
+  
+  switch( gameDialog ) {      
+    case "Null":
+      //
+    break;
+  }
+  
   
 }

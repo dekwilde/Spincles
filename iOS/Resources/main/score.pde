@@ -1,5 +1,6 @@
 int score = 0;
 int energy = 0;
+int level = 0;
 String scoreResult = "";
 int recordScore;
 class ScoreInfo {
@@ -83,7 +84,7 @@ class ScoreInfo {
 
 }
 
-void checkScore() {
+void saveScore() {
   if(score>recordScore) {
     iphone.saveState(score);
   } 

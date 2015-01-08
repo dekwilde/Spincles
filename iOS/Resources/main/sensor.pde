@@ -74,13 +74,11 @@ void pointCompass() {
 }
 
 void acceMic() {
-  // init vars DONT MOVE    
   gravityX = iphone.getAcceleration().x;
   gravityY = -iphone.getAcceleration().y;
+  pebug("x: " + gravityX + " " + "y: " + gravityY);
   
-  //pebug("x: " + gravityX + " " + "y: " + gravityY);
-  //pebug("Mic: " + iphone.getMicLevel());
-  
-  microfone = pow(iphone.getMicLevel(), 1) * mic_perc;                
+  microfone = iphone.getMicLevel()*mic_perc;  
+  //pebug("Mic: " + microfone);
 
 }

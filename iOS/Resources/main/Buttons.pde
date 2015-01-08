@@ -54,7 +54,7 @@ class ButtonAgain {
     boolean overButton = false;
     
     int pX = width/2;
-    int pY = height/2+160;
+    int pY = height/2+200;
     int dw = 160;
     int dh = 40;
     int fSize = 20;
@@ -68,13 +68,13 @@ class ButtonAgain {
         // Left buttom
         strokeWeight(1);
         if (overButton == true) {
-          stroke(#ffcc00);          
+          stroke(255,204,0);          
         } else {
           stroke(255);
         }
         noFill();
         rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
-        fill();
+        fill(0);
         textFont(fontText, fSize);
         text("TRY AGAIN", pX, pY);
         
@@ -170,8 +170,10 @@ class ButtonInfo {
           noFill();
         }
         ellipse(pX, pY, dm, dm);
+        
         fill(0);
-        rect(pX-dm/8, pY-dm/8, dm/4, dm/4);
+        textFont(fontText, 16);
+        text("*", pX+dm/2-3, pY+dm/2-5);
     }
     void checkButton() {
           if (touch1X > pX-dm && touch1X < pX+dm && touch1Y > pY-dm && touch1Y < pY+dm) {
