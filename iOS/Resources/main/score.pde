@@ -16,6 +16,12 @@ class ScoreInfo {
     }
     
     void draw() {
+      
+      if(energy > 100) {
+          levelUp();
+      }
+      
+      
       if(energy < 0) {
           gameOver();
       }
@@ -84,10 +90,23 @@ class ScoreInfo {
 
 }
 
+void levelUp() {
+  energy = 30;
+  level += 1;
+  saveScore();
+  gameTransions = "Level";
+}
+
+void clearScore() {
+  iphone.saveState(0+","+0);  
+}
+
 void saveScore() {
   if(score>recordScore) {
-    iphone.saveState(score);
-  } 
+    iphone.saveState(score+","+level);
+  } else {
+    iphone.saveState(recordScore+","+level);
+  }
 }
 
 
@@ -95,14 +114,14 @@ void setScore() {
     //First time score
   if(!recordScore || recordScore == null || recordScore == "null") {
     recordScore = score;
-    iphone.saveState(recordScore);
+    iphone.saveState(recordScore+","+level);
     scoreResult = "New Record";
   } else {
     //check if the score is a new record
     if(score>recordScore) {
       scoreResult = "New Record";
       recordScore = score;
-      iphone.saveState(recordScore);
+      iphone.saveState(recordScore+","+level);
     } else {
       scoreResult = "Record";
     }     

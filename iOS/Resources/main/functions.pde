@@ -153,7 +153,13 @@ void drawBG() {
 
 
 void startGame() {
-    recordScore = iphone.loadState();
+    // Load the previously saved state of the app
+    String[] save = split(iphone.loadState(), ',');
+    if (save.length >= 2) {
+      recordScore = value(save[0]);
+      level = value(save[1]);
+    }
+    
     iphone.startMicMonitor();
     iphone.startAccelerometer();
     iphone.startCompass();

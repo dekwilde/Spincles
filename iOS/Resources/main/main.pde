@@ -230,6 +230,21 @@ void draw() {
       tween = 0.0;
     break;
     
+    case "Level":
+      tween = tween +(initColor-tween)/10;
+      if(tween>(initColor-1)) {
+        gameTransions = "Null";
+      }
+      pushMatrix();
+      rotate(0);
+      translate(0,0);
+      scale(1.0);
+      fill(255, 255-tween);
+      noStroke();        
+      rect(0,0,width,height);   
+      popMatrix();
+    break;
+    
     case "Flash":
       tween = tween +(initColor-tween)/10;
       if(tween>(initColor-1)) {
