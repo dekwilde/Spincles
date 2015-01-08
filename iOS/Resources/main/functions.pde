@@ -190,6 +190,7 @@ void stateStart() {
   background(0);
   
   initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
+  noStroke();
   fill(255, 204, 0, initColorAlpha);
   rect(0,0,width,height);
   

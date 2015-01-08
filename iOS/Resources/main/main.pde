@@ -77,6 +77,7 @@ int initColor = 255;
 int alphaBG = 0.0;
 float tweenBG = 0.0;
 float tween = 0.0;
+float dialogTimer = 0;
 
 float hurtRange = 0.0;
 int hurtTimer = 0;
@@ -91,16 +92,18 @@ MenuSlider slider;
 ScoreInfo scoreInfo;
 Logo logo;
 TrixelEffect tEff;
+Dialog dialog;
+
 float pInfo = height;
 
 
 // Transitions
 IntroGame introgame;
 
-var gameState = "Start";
-var gameTransions = "Null";
-var gameSound = "Intro";
-var gameDialog = "Null";
+String gameState = "Start";
+String gameTransions = "Null";
+String gameSound = "Intro";
+String gameDialog = "Null";
 
 void setup() {
         //size(320, 480);
@@ -151,6 +154,7 @@ void setup() {
         scoreInfo = new ScoreInfo();
         logo = new Logo();
         tEff = new TrixelEffect();
+        dialog = new Dialog();
 
         trixelmatrix = new TrixelMatrix();
         trixBAD = new TrixParticle("bad");
@@ -324,6 +328,24 @@ void draw() {
   switch( gameDialog ) {      
     case "Null":
       //
+    break;
+    
+    case "Level":
+      pushMatrix();
+      rotate(0);
+      translate(width/2,height/2);
+      scale(1.0);
+      dialog.draw("level",level, "");
+      popMatrix();
+    break;
+    
+    case "Score":
+      pushMatrix();
+      rotate(0);
+      translate(width/2,height/2);
+      scale(1.0);
+      dialog.draw("score",score, "");
+      popMatrix();
     break;
   }
   

@@ -1,3 +1,65 @@
+class Dialog {
+  Trix trix;
+  float scl, aph;
+  Dialog() {
+    trix = new Trix(150);
+  }
+  void draw(String t1, String t2, String t3) {
+    dialogTimer += 4;
+    scl = 2 - (dialogTimer*2)/100;
+    aph = sin((dialogTimer*2)/50)*255;
+    pushMatrix();
+    if(dialogTimer<50) {
+      scale(scl);
+    }
+    
+    noStroke();
+    fill(255,204,0, aph);
+    pushMatrix();
+    rotate(radians(180));
+    triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);
+    popMatrix();
+
+    fill(255, aph);
+    textAlign(CENTER);
+    textFont(fontText);
+    textSize(14);
+    text(t1, 0, -10); 
+    textSize(36);
+    text(t2, 0, 30);
+    
+    popMatrix();
+    
+    if(dialogTimer>100) {
+      dialogTimer = 0;
+      gameDialog = "Null";
+    }
+
+  }
+}
+
+class Trix {
+  float x1, y1, x2, y2, x3, y3;
+  float s, h, r, a;
+  
+  Trix(float w) {
+    s = w; 
+    h = 0.5 * sqrt(3) * s; 
+    r = sqrt(3)/3 * s;
+    a = (TWO_PI / 6) * 2;
+       
+    x1 = 0;
+    y1 = -r;
+      
+    x2 = x1 + cos( a ) * s;
+    y2 = y1 + sin( a ) * s;
+    
+    x3 = x1 + (cos(atan2(y2-y1,x2-x1)-PI/3) * dist(x1,y1,x2,y2));
+    y3 = y1 + (sin(atan2(y2-y1,x2-x1)-PI/3) * dist(x1,y1,x2,y2));
+    
+  }
+}
+
 class Logo {
   pL[] pArr;
   
@@ -66,6 +128,7 @@ class Logo {
     //scale(0.4);
     fill(255);
     //S
+    stroke(0);
     strokeWeight(8);
     line(pArr[0].x,pArr[0].y,pArr[1].x,pArr[1].y);
     strokeWeight(12);
@@ -82,10 +145,9 @@ class Logo {
     ellipse(pArr[5].x,pArr[5].y,8,8);
     ellipse(pArr[4].x,pArr[4].y,8,8);
     ellipse(pArr[3].x,pArr[3].y,8,8);
-    stroke(0);
-    
-    
+
     //p
+    stroke(0);
     strokeWeight(18);
     line(pArr[7].x,pArr[7].y,pArr[8].x,pArr[8].y);
     strokeWeight(12);
@@ -271,7 +333,8 @@ class IntroGame {
 
     
     if(scaleTri<0.1) {
-
+      
+     noStroke();
      fill(255);
      rect(0,0,width,height);
      scaleTri = scaleInit;
@@ -284,6 +347,7 @@ class IntroGame {
      if(acce<0.9999) {
        acce = acce + acce*0.26;
      } else {
+       noStroke();
        fill(0);
        rect(0,0,width,height);
        startGame();

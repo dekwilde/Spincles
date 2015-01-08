@@ -75,15 +75,11 @@ class TrixelMatrix {
 
 
 class Trixel {
+  Trix trix;
   float x1, y1, x2, y2, x3, y3;
+  float s, h, radius, angle;
   float x, y;
   int v;
-
-  float s = rad; 
-  float h = 0.5 * sqrt(3) * s; 
-  float radius = sqrt(3)/3 * s;
-  float angle = (TWO_PI / 6) * 2;
-
 
   int range;
   int changeTrix = 0;
@@ -91,11 +87,24 @@ class Trixel {
   
   float collisionX, collisionY;
 
-  
-
-  
   Trixel(float tx, float ty, int inv) {
+    
+      trix = new Trix(rad);
+      s = rad; 
+      h = trix.h; 
+      radius = trix.r;
+      angle = trix.a;
       
+      x1 = trix.x1;
+      y1 = trix.y1;
+        
+      x2 = trix.x2;
+      y2 = trix.y2;
+      
+      x3 = trix.x3;
+      y3 = trix.y3;
+      
+    
       v = inv;
       if(v == 0) {
         x = s/2     + tx*s;
@@ -116,14 +125,8 @@ class Trixel {
       x = x  + width/2    - wCount*s/2        + s/2;
       y = y  + height/2  - (hCount+1)*radius  - h/3;
       
-      x1 = 0;
-      y1 = -radius;
-        
-      x2 = x1 + cos( angle ) * s;
-      y2 = y1 + sin( angle ) * s;
       
-      x3 = x1 + (cos(atan2(y2-y1,x2-x1)-PI/3) * dist(x1,y1,x2,y2));
-      y3 = y1 + (sin(atan2(y2-y1,x2-x1)-PI/3) * dist(x1,y1,x2,y2));
+
       
             
       changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
@@ -213,6 +216,7 @@ class Trixel {
         soundMagnetic.play();
         soundScore.play();
         gameTransions = "Blackout";
+        gameDialog = "Score";
         collisionTrix();
         trixGOOD.num = 0;
         
@@ -280,6 +284,9 @@ class Trixel {
   }
   
 }
+
+
+
 
 
 class TrixParticle {
