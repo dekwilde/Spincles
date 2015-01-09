@@ -49,8 +49,18 @@ class Arm {
   } 
 }
 
+void spinclesState() {
+  for(int i=0; i<numOfArms; i++) {
+    rotation[i] = random(0, 360);
+    angleRadius[i] = random(0.3, 1.9);
+    angleSpeed[i] = random(0.009, 0.16);
+    angleSegment[i] = random(0.09, 1.4);
+    WeightSegment[i] = random(1.4, 6.1);
+    segLength[i] = random(25, 65);
+  }
+}
 
-function spinclesDraw() {
+void spinclesDraw() {
   ///////////////////////////////////////////////// Spincles draw /////////////////////////////////////////////////////////
   
   for(int i=0; i<numOfArms; i++) {

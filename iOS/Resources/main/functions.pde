@@ -293,8 +293,8 @@ void stateGame() {
   //Three();        
   control.draw();  
   trixelmatrix.draw();
-  trixBAD.draw();
-  trixGOOD.draw();
+  //trixBAD.draw();
+  //trixGOOD.draw();
   btInfo.draw();
   //btCamera.draw();
   scoreInfo.draw();
