@@ -337,6 +337,16 @@ void draw() {
       dialog.draw("score",score, "");
       popMatrix();
     break;
+    
+    case "Start":
+      pushMatrix();
+      rotate(0);
+      translate(width/2,height/2);
+      scale(1.0);
+      dialog.draw("start","GO", "");
+      popMatrix();
+    break;
+    
   }
   
   

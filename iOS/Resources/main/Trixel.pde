@@ -207,6 +207,9 @@ class Trixel {
         collisionTrix();
         //trixBAD.num = 0;
         spinclesState();
+        iphone.vibrate();
+        iphone.beep();
+        
       }
       if(range == 1) { //score
         energy = energy + 2;

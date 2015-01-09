@@ -172,6 +172,7 @@ void resetGame() {
   gameState = "Game";
   gameTransions = "Flash";
   gameSound = "Game";
+  gameDialog = "Start";
   pebug(gameState);
 }
 

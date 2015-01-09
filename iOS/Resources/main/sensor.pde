@@ -76,9 +76,18 @@ void pointCompass() {
 void acceMic() {
   gravityX = iphone.getAcceleration().x;
   gravityY = -iphone.getAcceleration().y;
-  pebug("x: " + gravityX + " " + "y: " + gravityY);
+  //pebug("x: " + gravityX + " " + "y: " + gravityY);
   
   microfone = iphone.getMicLevel()*mic_perc;  
   //pebug("Mic: " + microfone);
+  
+  
 
 }
+
+
+void orientationChanged() {
+  pebug(iphone.getOrientation()); 
+  pebug(orientation);
+}
+
