@@ -91,3 +91,7 @@ void orientationChanged() {
   pebug(orientation);
 }
 
+
+void shakeEvent() {
+  pebug("shaked");
+}

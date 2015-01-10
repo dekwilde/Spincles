@@ -105,8 +105,8 @@ void loadScore() {
       // Load the previously saved state of the app
     Array[] load = split(iphone.loadState(), ",");
     if (load.length >= 2) {
-      recordScore = load[0];
-      level = load[1];
+      recordScore = int(load[0]);
+      level = int(load[1]);
     }
 }
 

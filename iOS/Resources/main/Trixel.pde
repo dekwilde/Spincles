@@ -69,7 +69,7 @@ class TrixelMatrix {
     line(width/2, height/2, 0, 150); //point compass
     */
     popMatrix();
-  }  
+  }
 }
 
 
@@ -83,13 +83,14 @@ class Trixel {
 
   int range;
   int changeTrix = 0;
-  int changeTime;
+  int changeTime = 450;
   
   float collisionX, collisionY;
 
   Trixel(float tx, float ty, int inv) {
     
       trix = new Trix(rad);
+      range = rangeTrixType;
       s = rad; 
       h = trix.h; 
       radius = trix.r;
@@ -125,12 +126,6 @@ class Trixel {
       x = x  + width/2    - wCount*s/2        + s/2;
       y = y  + height/2  - (hCount+1)*radius  - h/3;
       
-      
-
-      
-            
-      resetTrix();
-
   }
     
   void draw(float spX, float spY) {
@@ -201,7 +196,7 @@ class Trixel {
         energy = energy - 4;
         soundEnemy.play();
         gameTransions = "Static";
-        hurtRange = 300;
+        hurtRange = hurtValue;
         //hurt();
         pebug("energy " + energy);
         collisionTrix();
@@ -288,6 +283,3 @@ class Trixel {
   }
   
 }
-
-
-

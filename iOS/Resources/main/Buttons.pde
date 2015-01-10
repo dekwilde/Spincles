@@ -1,3 +1,47 @@
+class ButtonClose {
+    boolean overButton = false;
+    int pX = width/2 - 160 + 285;
+    int pY = height/2 - 240 + 35;
+    int dm = 15; 
+    
+    ButtonClose() {  
+      
+    }
+    
+    void draw(int c) {
+        checkButton();
+              // Left buttom
+        if (overButton == true) {          
+          // o "X"
+          stroke(255,034,0);          
+        } else {
+          // o "X"
+          stroke(c);
+        }
+        strokeWeight(1);
+        line(pX-dm, pY-dm, pX+dm, pY+dm);
+        line(pX-dm, pY+dm, pX+dm, pY-dm);
+        
+        if (overButton == true) {
+           background(0);
+           pInfo = 480;    
+           soundClick.play();
+           gameState = "Game";
+           pebug("close");
+        }
+    } 
+    
+    
+    void checkButton() {
+          if (touch1X > pX-dm*4 && touch1X < pX+dm*4 && touch1Y > pY-dm*4 && touch1Y < pY+dm*4) {
+            overButton = true;   
+          } else {
+            overButton = false;
+          }
+    }
+}
+
+
 class MenuSlider {
     float st_x;
     float st_y;
@@ -60,7 +104,7 @@ class ButtonAgain {
     int fSize = 20;
     
     ButtonAgain() {
-        smooth();
+        //
     }
     
     void draw() {
@@ -95,6 +139,52 @@ class ButtonAgain {
     }
 }
 
+
+
+class ButtonHow {
+    boolean overButton = false;
+    
+    int pX = width/2;
+    int pY = height/2+180;
+    int dw = 200;
+    int dh = 40;
+    int fSize = 20;
+    
+    ButtonHow() {
+      //
+    }
+    
+    void draw() {
+        checkButton();
+        // Left buttom
+        strokeWeight(1);
+        if (overButton == true) {
+          stroke(255,204,0);          
+        } else {
+          stroke(255);
+        }
+        fill(255,204,0);
+        rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
+        fill(255);
+        textFont(fontText, fSize);
+        text("How to Play", pX, pY);
+        
+        if (overButton == true) {
+            overButton = false;
+            soundClick.play();
+            gameState  = "How";
+        }
+    } 
+    
+    
+    void checkButton() {
+          if (touch1X > pX-dw && touch1X < pX+dw && touch1Y > pY-dh && touch1Y < pY+dh) {
+            overButton = true;   
+          } else {
+            overButton = false;
+          }
+    }
+}
 
 
 class ButtonStart {
@@ -173,7 +263,8 @@ class ButtonInfo {
         
         fill(0);
         textFont(fontText, 16);
-        text("*", pX+dm/2-3, pY+dm/2-5);
+        textAlign(CENTER);
+        text("*", pX+dm/2-9, pY+dm/2-5);
     }
     void checkButton() {
           if (touch1X > pX-dm && touch1X < pX+dm && touch1Y > pY-dm && touch1Y < pY+dm) {
@@ -186,49 +277,6 @@ class ButtonInfo {
 
 
 
-class ButtonClose {
-    boolean overButton = false;
-    int pX = width/2 - 160 + 285;
-    int pY = height/2 - 240 + 25;
-    int dm = 15; 
-    
-    ButtonClose() {  
-      
-    }
-    
-    void draw() {
-        checkButton();
-              // Left buttom
-        if (overButton == true) {          
-          // o "X"
-          stroke(#ffcc00);          
-        } else {
-          // o "X"
-          stroke(255);
-        }
-        strokeWeight(1);
-        noFill();
-        line(pX-dm, pY-dm, pX+dm, pY+dm);
-        line(pX-dm, pY+dm, pX+dm, pY-dm);
-        
-        if (overButton == true) {
-           background(0);
-           pInfo = 480;    
-           soundClick.play();
-           gameState = "Game";
-           pebug("close");
-        }
-    } 
-    
-    
-    void checkButton() {
-          if (touch1X > pX-dm && touch1X < pX+dm && touch1Y > pY-dm && touch1Y < pY+dm) {
-            overButton = true;   
-          } else {
-            overButton = false;
-          }
-    }
-}
 
 
 

@@ -11,6 +11,8 @@ class Control {
   Control() {
     gx = 0;
     gy = 0;
+    x = width/2;
+    y = height/2;
     for (int i=0; i<numSprings; i++) {
       springs[i] = new Spring2D(0.0, width/2, mass, gravity);
     }
@@ -60,8 +62,8 @@ class Spring2D {
   }
   
   void touch() {
-    if (touch1X > x-radius && touch1X < x+radius && 
-    touch1Y > y-radius && touch1Y < y+radius) {
+    if (touch1X > x-radius*2 && touch1X < x+radius*2 && 
+    touch1Y > y-radius*2 && touch1Y < y+radius*2) {
         bx = x;
         by = y;
         bover = true;
