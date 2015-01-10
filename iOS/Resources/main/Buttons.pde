@@ -24,7 +24,6 @@ class ButtonClose {
         
         if (overButton == true) {
            background(0);
-           pInfo = 480;    
            soundClick.play();
            gameState = "Game";
            pebug("close");
@@ -54,12 +53,12 @@ class MenuSlider {
     
     MenuSlider() {  
       st_x = 160;
-      st_y = height/2 -240 + 100;
+      st_y = height/2 -120;
     }
     
     void draw() {
       //Draw Line
-      line(init, st_y, end, st_y);
+      
       
       // Draw the button
       if (st_x>end) {
@@ -68,8 +67,11 @@ class MenuSlider {
       if (st_x<init) {
         st_x = init;
       }
+      stroke(255,204,0);
       fill(0);
+      line(init, st_y, end, st_y);
       ellipse(st_x, st_y, st_s, st_s);
+      
 
       
       mic_perc = (st_x-init) / ((end-init)/100);
@@ -158,18 +160,15 @@ class ButtonHow {
         checkButton();
         // Left buttom
         strokeWeight(1);
-        if (overButton == true) {
-          stroke(255,204,0);          
-        } else {
-          stroke(255);
-        }
-        fill(255,204,0);
+        stroke(255,204,0);
+        fill(0);
         rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
-        fill(255);
+        fill(255,204,0);
         textFont(fontText, fSize);
         text("How to Play", pX, pY);
         
         if (overButton == true) {
+            pInfo = 480;
             overButton = false;
             soundClick.play();
             gameState  = "How";
@@ -186,6 +185,47 @@ class ButtonHow {
     }
 }
 
+
+class ButtonClear {
+    boolean overButton = false;
+    
+    int pX = width/2;
+    int pY = height/2+120;
+    int dw = 200;
+    int dh = 40;
+    int fSize = 20;
+    
+    ButtonClear() {
+      //
+    }
+    
+    void draw() {
+        checkButton();
+        // Left buttom
+        strokeWeight(1);
+        stroke(255,204,0);
+        fill(0);
+        rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
+        fill(255,204,0);
+        textFont(fontText, fSize);
+        text("clear record", pX, pY);
+        
+        if (overButton == true) {
+            clearScore();
+            overButton = false;
+            soundClick.play();
+        }
+    } 
+    
+    
+    void checkButton() {
+          if (touch1X > pX-dw && touch1X < pX+dw && touch1Y > pY-dh && touch1Y < pY+dh) {
+            overButton = true;   
+          } else {
+            overButton = false;
+          }
+    }
+}
 
 class ButtonStart {
     boolean overButton = false;
@@ -248,6 +288,7 @@ class ButtonInfo {
         checkButton();
         strokeWeight(1);
         if (overButton == true) {
+          pInfo = 480;
           gameState = "InfoShow";
           soundClick.play();
           // circulo          

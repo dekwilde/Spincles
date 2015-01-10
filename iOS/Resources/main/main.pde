@@ -88,6 +88,7 @@ ButtonInfo btInfo;
 ButtonStart btStart;
 ButtonAgain btAgain;
 ButtonHow btHow;
+ButtonClear btClear;
 ButtonCamera btCamera;
 ButtonClose btClose;
 MenuSlider slider;
@@ -148,6 +149,7 @@ void setup() {
   btStart = new ButtonStart();
   btAgain = new ButtonAgain();
   btHow = new ButtonHow();
+  btClear = new ButtonClear();
   btCamera = new ButtonCamera();
   btClose = new ButtonClose();
   slider = new MenuSlider();

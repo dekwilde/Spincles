@@ -272,22 +272,52 @@ void stateOver() {
 
 
 void stateInfoShow() {
+  int Talign = height/2-260+pInfo;
+  
+  noStroke();
   fill(0, 0, 0, 20);
-  rect(0,0,width,height);
-  //tint(20);
+  rect(0,0,width,height+pInfo);
+  fill(255);
+  textAlign(CENTER);
+  textFont(fontTitle, 20);
+  text("PAUSED", width/2, 70+Talign);
+  textFont(fontText);
+  textSize(16);
+  text("MIC VOLUME", width/2, 110+Talign);
+  text(scoreResult, width/2, 200+Talign); //200
+  textSize(36);
+  text(recordScore, width/2, 230+Talign); //230
+  textSize(16);
+  text("level", width/2, 250+Talign); //250
+  textSize(36);
+  text(level, width/2, 280+Talign); //280
+  
+  
   if (pInfo<1) {
       pInfo = 0;
       slider.draw();
       btClose.draw(255);
+      btHow.draw();
+      btClear.draw();
   }
   pInfo = pInfo - pInfo/6;
+  
+
+  
+
+  
 }
 
 void stateHow() {
+  int Talign = height/2-260+pInfo;
   noStroke();
-  fill(0, 0, 0, 20);
+  fill(0, 20);
   rect(0,0,width,height);
   image(howImg, width/2, pInfo+height/2, width, height);
+  fill(255);
+  textAlign(CENTER);
+  textFont(fontTitle, 20);
+  text("HOW TO PLAY", width/2, 70+Talign);
   //tint(20);
   if (pInfo<1) {
       pInfo = 0;

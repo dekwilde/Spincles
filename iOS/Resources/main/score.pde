@@ -1,7 +1,7 @@
 int score = 0;
 int energy = 0;
 int level = 0;
-String scoreResult = "";
+String scoreResult = "RECORD";
 int recordScore = 0;
 class ScoreInfo {
     int dw = 100;
@@ -98,6 +98,10 @@ void levelUp() {
 }
 
 void clearScore() {
+  energy = 30;
+  level = 0;
+  score = 0;
+  recordScore = 0;
   iphone.saveState("");  
 }
 
