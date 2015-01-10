@@ -287,7 +287,7 @@ void stateHow() {
   noStroke();
   fill(0, 0, 0, 20);
   rect(0,0,width,height);
-  image(howImg, width/2, pInfo+height/2);
+  image(howImg, width/2, pInfo+height/2, width, height);
   //tint(20);
   if (pInfo<1) {
       pInfo = 0;
