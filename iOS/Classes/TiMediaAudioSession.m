@@ -220,6 +220,10 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
     }
 	AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof (mode), &mode);
     
+    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+    
+    
     
 }
 
@@ -230,6 +234,10 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
         mode = kAudioSessionCategory_PlayAndRecord;
     }
 	AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(mode), &mode);
+    
+    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+    
     
 }
 

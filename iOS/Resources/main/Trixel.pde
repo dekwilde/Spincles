@@ -192,7 +192,9 @@ class Trixel {
        //fill(0,0,200); 
       }
       
-      if(range == 0 && blowMic<200) { //enemy        
+      if(range == 0 && blowMic<200) { //enemy 
+        iphone.vibrate();
+        //iphone.beep();
         energy = energy - 4;
         soundEnemy.play();
         gameTransions = "Static";
@@ -202,8 +204,6 @@ class Trixel {
         collisionTrix();
         //trixBAD.num = 0;
         spinclesState();
-        iphone.vibrate();
-        iphone.beep();
         
       }
       if(range == 1) { //score

@@ -229,6 +229,10 @@ MAKE_SYSTEM_PROP(STATE_PAUSED,AS_PAUSED);
     }
     sessionMode = newMode;
     
+    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+    
+    
 }
 
 -(NSNumber*)audioSessionMode
