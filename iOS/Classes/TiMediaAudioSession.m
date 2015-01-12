@@ -220,6 +220,7 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
     }
 	AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof (mode), &mode);
     
+    
 }
 
 -(void)playback:(UInt32)mode
@@ -229,6 +230,7 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
         mode = kAudioSessionCategory_PlayAndRecord;
     }
 	AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(mode), &mode);
+    
 }
 
 
@@ -237,7 +239,9 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
     if ([self isActive]) {
         NSLog(@"[WARN] Overriding audio route while playing audio... changes will not take effect until audio is restarted.");
     }
-    AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(mode), &mode);
+    mode = kAudioSessionOverrideAudioRoute_Speaker;
+    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (mode),&mode);
+    
 }
 
 
@@ -264,9 +268,18 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
 			AudioSessionAddPropertyListener(kAudioSessionProperty_AudioInputAvailable, TiAudioSessionInputAvailableCallback, self);
 		}
 
-		// make our audio session active
+        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+        AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+        
+        
+        
+        // make our audio session active
         AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(defaultSessionMode), &defaultSessionMode);
 		AudioSessionSetActive(true);
+        
+        
+        
+        
 	}
 	[lock unlock];
 }

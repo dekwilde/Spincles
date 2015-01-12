@@ -45,6 +45,7 @@ TiMediaAudioSessionInputType;
 -(void)stopAudioSession;
 -(void)record:(UInt32)mode;
 -(void)playback:(UInt32)mode;
+-(void)setRouteOverride:(UInt32)mode;
 -(BOOL)isActive;
 -(TiMediaAudioSessionInputType)inputType;
 -(CGFloat)volume;

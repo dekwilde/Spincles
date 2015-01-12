@@ -79,7 +79,7 @@ void acceMic() {
   //pebug("x: " + gravityX + " " + "y: " + gravityY);
   
   microfone = iphone.getMicLevel()*mic_perc;  
-  //pebug("Mic: " + microfone);
+  pebug("Mic: " + microfone);
   
   
 

@@ -228,6 +228,7 @@ MAKE_SYSTEM_PROP(STATE_PAUSED,AS_PAUSED);
         newMode = kAudioSessionCategory_PlayAndRecord;
     }
     sessionMode = newMode;
+    
 }
 
 -(NSNumber*)audioSessionMode

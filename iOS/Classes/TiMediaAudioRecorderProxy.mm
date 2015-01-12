@@ -203,6 +203,8 @@
         newMode = kAudioSessionCategory_PlayAndRecord;
     }
     sessionMode = newMode;
+    
+    
 }
 
 -(NSNumber*)audioSessionMode
