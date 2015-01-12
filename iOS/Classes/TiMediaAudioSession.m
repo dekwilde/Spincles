@@ -216,9 +216,10 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
 {
     if (mode != kAudioSessionCategory_RecordAudio && mode != kAudioSessionCategory_PlayAndRecord) {
         // Default is to use RecordAudio mode
-        mode = kAudioSessionCategory_RecordAudio;
+        mode = kAudioSessionCategory_PlayAndRecord;
     }
 	AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof (mode), &mode);
+    
 }
 
 -(void)playback:(UInt32)mode
@@ -229,6 +230,16 @@ void TiAudioSessionInputAvailableCallback(void* inUserData, AudioSessionProperty
     }
 	AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(mode), &mode);
 }
+
+
+-(void)setRouteOverride:(UInt32)mode
+{
+    if ([self isActive]) {
+        NSLog(@"[WARN] Overriding audio route while playing audio... changes will not take effect until audio is restarted.");
+    }
+    AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(mode), &mode);
+}
+
 
 -(void)startAudioSession
 {

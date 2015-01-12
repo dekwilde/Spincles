@@ -29,7 +29,7 @@
 
 -(void)_configure
 {
-    sessionMode = kAudioSessionCategory_RecordAudio; // Doesn't fit into the 'default' mode paradigm.. but I guess that's OK?
+    sessionMode = kAudioSessionCategory_PlayAndRecord; // Doesn't fit into the 'default' mode paradigm.. but I guess that's OK?
 	recorder = NULL;
 	format = [[NSNumber numberWithUnsignedInt:kAudioFileCAFType] retain];
 	compression = [[NSNumber numberWithUnsignedInt:kAudioFormatLinearPCM] retain];

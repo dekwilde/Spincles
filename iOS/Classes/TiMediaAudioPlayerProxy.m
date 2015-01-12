@@ -23,6 +23,11 @@
                              properties:properties
                                     def:[[TiMediaAudioSession sharedSession] defaultSessionMode]];
     [self setAudioSessionMode:[NSNumber numberWithInt:initialMode]];
+
+    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+    
+    
 	[[TiMediaAudioSession sharedSession] startAudioSession];
 }
 

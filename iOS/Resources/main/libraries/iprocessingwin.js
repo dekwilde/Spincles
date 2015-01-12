@@ -384,6 +384,7 @@ function startMicMonitor() {
 		updateMicMonitorTimer = setInterval(updateMicMonitor, 100);
 		Titanium.Media.startMicrophoneMonitor();
 	}
+    
 }
 
 function stopMicMonitor() {
