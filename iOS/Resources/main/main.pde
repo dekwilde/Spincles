@@ -182,7 +182,7 @@ void setup() {
   soundStartUP    = iphone.loadSound("startup.wav");
   soundTransIN    = iphone.loadSound("transIn.wav");
   soundTransOUT   = iphone.loadSound("transOut.wav");
-  soundLoopBG     = iphone.loadSound("loop7.wav");
+  soundLoopBG     = iphone.loadSound("loop1.wav");
   soundBG1        = iphone.loadSound("loop0.wav");
   
   background(0);
@@ -325,7 +325,6 @@ void draw() {
     break;
 
     case "Game": 
-      //soundStartUP.stop();
       soundBG1.stop();
       soundLoopBG.play();
       soundLoopBG.loop();

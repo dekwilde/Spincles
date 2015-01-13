@@ -82,7 +82,7 @@ void drawBG() {
 
 void initGame() {
   gameSound = "Start";
-  gameTransions = "Flash";
+  //gameTransions = "Flash";
   trixelmatrix.reset();
 }
 

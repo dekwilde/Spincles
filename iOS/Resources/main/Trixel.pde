@@ -72,7 +72,8 @@ class TrixelMatrix {
     
   void reset() {
     for (int i = 0; i < count; i++) {
-      trixel[i].resetTrix();
+      trixel[i].changeTrix = 0;
+      trixel[i].changeTime = 0;
     } 
   }
 }
