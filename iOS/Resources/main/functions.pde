@@ -2,71 +2,7 @@ void pebug(String m) {
   println(m);
 }
 
-void gestureStarted() {
-	startAngle = iAngle;
-	startEscala = iScale;
-}
 
-void gestureChanged() {
-	iAngle = startAngle + gestureRotation;
-	iScale = startEscala * gestureScale;
-	if (iAngle > 360) {
-		iAngle = iAngle - 360;
-	}
-	if (iAngle < 0) {
-		iAngle = 360 + iAngle;
-	}
-}
-
-void gestureStopped() {
-	startAngle = iAngle;
-	startEscala = iScale;
-}
-
-void touch1Started() {
-  //GEsture Drag Spincles
-  if (touch1X > bx-bs && touch1X < bx+bs && 
-	touch1Y > by-bs && touch1Y < by+bs) {
-       bover = true;       
-  } else {
-
-    
-  }
-  
-  if(bover) { 
-    locked = true;
-    
-  } else {
-    locked = false;
-  }
-  bdifx = touch1X-bx; 
-  bdify = touch1Y-by; 
-}
-
-void touch1Moved() {
-  if(locked) {
-    bx = touch1X-bdifx; 
-    by = touch1Y-bdify;
-  }
-}
-
-
-void touch1Stopped() {  
-  if (touch1X > bx-bs && touch1X < bx+bs && 
-	touch1Y > by-bs && touch1Y < by+bs) {
-         //hurt();
-  }
-  
-  // click info var
-  //btClose.overButton = false;
-  //btInfo.overButton = false;
-  //btSupport.overButton = false;
-  //btContact.overButton = false;
-  
-  // gesture var
-  //bover = false;
-  locked = false;
-}
 
 void hurt() {
   //
@@ -96,7 +32,6 @@ void clawTouchStart() {
   if(hurtTimer>120) {
     gameState = "NoTouch";
   }
-  
 }
 
 void clawTouchStop() {
@@ -113,17 +48,9 @@ void clawTouchStop() {
 
 
 void drawBG() {
-  colorR = 255; // + microfone*20;
-  colorG = 204; // + microfone*25;
-  colorB = 0;   // + microfone*20;
-   
-   
-  blowMic =  microfone*15;
-  if(blowMic>255) {
-    blowMic = 255;
-  }
-  
-  //pebug(blowMic);
+  colorR = 255; 
+  colorG = 204; 
+  colorB = 0;   
   
   tweenBG += (hurtRange*10 - tweenBG/4)/10;
   
@@ -136,12 +63,14 @@ void drawBG() {
   //pebug("alphaBG: " + alphaBG);  
 
   if (alphaBG>128) {
+    effect = true;
     ctx.rect(0,0,width,height);
     //background(colorR, colorG, colorB, alphaBG);
     fill(colorR, colorG, colorB, 255-alphaBG);
     noStroke();        
     rect(0,0,width,height);
   } else {
+    effect = false;
     background(colorR, colorG, colorB, alphaBG*2);
     fill(colorR, colorG, colorB, 128);
     noStroke();        
@@ -153,16 +82,9 @@ void drawBG() {
 
 
 void startGame() {
-    
+    isGame = true;
     loadScore();
-    
-    iphone.startMicMonitor();
-    iphone.startAccelerometer();
-    iphone.startCompass();
-    //iphone.startLocation();
-    //iphone.squareCamera();
     resetGame();
-
 }
 void resetGame() {
   energy = 30;
@@ -190,54 +112,34 @@ void gameWin() {
 
 
 void stateStart() {
-  background(255,204,0);  
+  background(255,204,0);
+  /*
+  ctx.rect(0,0,width,height);
+  fill(255,204,0,20);
+  noStroke();        
+  rect(0,0,width,height);
+  */
+
   
+  int Talign = -160;
   fill(0);
   textFont(fontTitle, 10);
-  text("Welcome to", width/2, height/2-50); 
+  text("Welcome to", width/2, height/2-40+Talign); 
 
   pushMatrix();
-  translate(width/2-(500*0.3), height/2-(200*0.3)+20); // a logo tem o tamanho original com 1000x400
-  scale(0.3);
+  float logoscale = 0.3;
+  translate(width/2-(500*logoscale), height/2-(200*logoscale)+20+Talign); // a logo tem o tamanho original com 1000x400
+  scale(logoscale);
   logo.draw();
   popMatrix();
   
-  textFont(fontText, 10);
-  fill(0);
-  text("headphone required", width/2, height/2-170-initPosY);
+  acce();
+  compass();
   
-  // headhpone
-  pushMatrix();
-  noFill();
-  strokeWeight(3);
-  translate(width/2, height/2-140-initPosY);
-  scale(0.4);
-  rotate(-QUARTER_PI/2+PI);
-  arc(0, 0, 80, 80, 0, PI+QUARTER_PI, OPEN);
-  
-  rotate(+QUARTER_PI/2-PI);
-  fill(0);
-  strokeWeight(3);
-  ellipse(25,15,15,30);
-  ellipse(-25,15,15,30);
-  
-  ellipse(33,15,10,10);
-  ellipse(-33,15,10,10);
-  popMatrix();
-  
-  
-  
-  if(gameTransions == "Null") {
-    initPosY = initPosY + (0 - initPosY)/10;
-    pushMatrix();
-    translate(0, initPosY);
-    btStart.draw();
-    popMatrix();
-  }
-  
+  control.draw(); 
+  btStart.draw();
   
 
-  
   
 }
 
@@ -328,20 +230,25 @@ void stateHow() {
 }
 
 
-void stateIntro() {
-  //acceMic();
-  drawBG();
-  //control.draw();
-  introgame.draw();
-  trixelmatrix.draw();
-  //btInfo.draw();
-  //scoreInfo.draw();
-  spinclesDraw();
+void stateLoadGame() {
+  fill(255,204,0);
+  noStroke();
+  rect(0,0,width,height);
+  fill(0);
+  textAlign(CENTER);
+  textFont(fontText, 16);
+  text("LOADING", width/2, height/2-8);
+  
+  if (pInfo<1) {
+    startGame();
+  }
+  pInfo += - 1;
 }
 
-
 void stateGame() {
-  acceMic();
+  acce();
+  mic();
+  compass();
   drawBG();
   //Three();        
   control.draw();  

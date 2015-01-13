@@ -12,6 +12,92 @@ float currentLT;
 float currentLG;
 float compassDEGREE, targetDEGREE;
 
+
+void startSensor() {
+  iphone.startMicMonitor();
+  iphone.startAccelerometer();
+  iphone.startCompass();
+  //iphone.startLocation();
+  //iphone.squareCamera();
+}
+
+void stopSensor() {
+  iphone.stopMicMonitor();
+  iphone.stopAccelerometer();
+  iphone.stopCompass();
+  //iphone.stopLocation();
+  //iphone.squareCamera();
+}
+
+
+void gestureStarted() {
+  startAngle = iAngle;
+  startEscala = iScale;
+}
+
+void gestureChanged() {
+  iAngle = startAngle + gestureRotation;
+  iScale = startEscala * gestureScale;
+  if (iAngle > 360) {
+          iAngle = iAngle - 360;
+  }
+  if (iAngle < 0) {
+          iAngle = 360 + iAngle;
+  }
+        
+}
+
+void gestureStopped() {
+  startAngle = iAngle;
+  startEscala = iScale;
+}
+
+void touch1Started() {
+  //GEsture Drag Spincles
+  if (touch1X > bx-bs && touch1X < bx+bs && 
+  touch1Y > by-bs && touch1Y < by+bs) {
+       bover = true;       
+  } else {
+
+    
+  }
+  
+  if(bover) { 
+    locked = true;
+    
+  } else {
+    locked = false;
+  }
+  bdifx = touch1X-bx; 
+  bdify = touch1Y-by; 
+}
+
+void touch1Moved() {
+  if(locked) {
+    bx = touch1X-bdifx; 
+    by = touch1Y-bdify;
+  }
+}
+
+
+void touch1Stopped() {  
+  if (touch1X > bx-bs && touch1X < bx+bs && 
+  touch1Y > by-bs && touch1Y < by+bs) {
+         //hurt();
+  }
+  
+  // click info var
+  //btClose.overButton = false;
+  //btInfo.overButton = false;
+  //btSupport.overButton = false;
+  //btContact.overButton = false;
+  
+  // gesture var
+  //bover = false;
+  locked = false;
+}
+
+
 void location() {
    int currentTime = millis();
    if (currentTime > lastTime+interval) {
@@ -73,16 +159,27 @@ void pointCompass() {
     //pebug(targetDEGREE);
 }
 
-void acceMic() {
+void acce() {
   gravityX = iphone.getAcceleration().x;
   gravityY = -iphone.getAcceleration().y;
-  //pebug("x: " + gravityX + " " + "y: " + gravityY);
-  
+  //pebug("x: " + gravityX + " " + "y: " + gravityY);  
+}
+void mic() {
   microfone = iphone.getMicLevel()*mic_perc;  
-  pebug("Mic: " + microfone);
+  //pebug("Mic: " + microfone);
+}
+void compass() {
+  angleCompass = compassDEGREE + iAngle;
   
+  if (angleCompass > 360) {
+          angleCompass = angleCompass - 360;
+  }
+  if (angleCompass < 0) {
+          angleCompass = 360 + angleCompass;
+  }
   
-
+  //pebug(angleCompass);
+  
 }
 
 

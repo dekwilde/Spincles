@@ -29,7 +29,7 @@ class Arm {
       pushMatrix();
       for(int i=0; i<numSegment; i++) {
         if(i>0) {
-          draw(LengthSeg, 0, angleSeg*angleSegment[i]-(microfone/20)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg);
+          draw(LengthSeg, 0, angleSeg*angleSegment[i]-(microfone/50)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg);
         } else {
           draw(0, 0, angleSeg, (numSegment+1)*WeightSeg, LengthSeg); 
         }
@@ -64,21 +64,21 @@ void spinclesDraw() {
   ///////////////////////////////////////////////// Spincles draw /////////////////////////////////////////////////////////
   
   for(int i=0; i<numOfArms; i++) {
-    angle[i] = angle[i] + angleSpeed[i] + microfone/250 + angleSpeedTouch;
+    angle[i] = angle[i] + angleSpeed[i] + microfone/100 + angleSpeedTouch;
   }
   
   //targetX = mouseX;
   targetX = control.x;
   float dx = targetX - x;
   float nX = noise(pi/10)*cos(noise(pi/10)*((width/2 - noise(pi/50)*(width))/10));
-  x += dx * easing + nX*(microfone/2 + 5.2);
+  x += dx * easing + nX*(microfone + random(0,5));
   spinX = x;
   
   //targetY = mouseY;
   targetY = control.y;
   float dy = targetY - y;
   float nY = noise(pi/10)*sin(noise(pi/10)*((height/2 - noise(pi/50)*(height))/10));
-  y += dy * easing + nY*(microfone/2 + 5.2);
+  y += dy * easing + nY*(microfone + random(0,5));
   spinY = y;
           
   PVector  v1 = new PVector(targetX, targetY);

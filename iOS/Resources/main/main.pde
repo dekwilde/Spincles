@@ -22,9 +22,7 @@ float iScale;
 float startEscala;
 
 float microfone = 0;
-float delay_mic = 0;
-float mic_perc = 50;
-float blowMic = 0.0;
+float mic_perc = 50; // 0 a 100
 
 //float dim = 40;
 var ctx;
@@ -68,6 +66,8 @@ float WeightSegmentTouch = 0.0f;
 float rotationT = 0.0;
 
 boolean cameraShow = false;
+boolean isGame = false;
+
 PImage howImg, logoImg;
 
 float initColorAlpha = 0.0;
@@ -101,7 +101,6 @@ float pInfo = height;
 
 
 // Transitions
-IntroGame introgame;
 
 String gameState, gameTransions, gameSound, gameDialog;
 
@@ -161,9 +160,7 @@ void setup() {
   trixelmatrix = new TrixelMatrix();
   //trixBAD = new TrixParticle("bad");
   //trixGOOD = new TrixParticle("good");
-  
-  introgame = new IntroGame();
-  
+    
 
   spinclesState();
 
@@ -196,11 +193,15 @@ void setup() {
   
   pebug("4 - Start sequence: main.pde setup()");
   
+  startSensor();
+  pebug("5 - Start sensor");
   
   gameState = "Start";
   gameTransions = "Static";
   gameSound = "Intro";
   gameDialog = "Null";
+  
+
         
 }
 
@@ -226,10 +227,10 @@ void draw() {
     case "How":
       stateHow();
     break;
-    
-    case "Intro":
-      stateIntro();
-    break;
+        
+    case "LoadGame":
+      stateLoadGame();
+    break;    
         
     case "Game":
       stateGame();  
@@ -273,11 +274,11 @@ void draw() {
     break;
     
    case "Static":
-      effect = true;
-      tween = tween +(initColor-tween)/5;
+      tween = tween +(initColor-tween)/5;      
       if(tween>(initColor-1)) {
         gameTransions = "Null";
       }
+      
       pushMatrix();
       rotate(0);
       translate(0,0);

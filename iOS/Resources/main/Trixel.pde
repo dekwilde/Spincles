@@ -6,10 +6,7 @@ float atan;
 
 //ENGINE GAME
 int rangeTrixType = 10;
-int changeTimeRange = 10;
-int changeTimeRand = 5;
-int changeTimeRandRange = 100;
-int activeEnemyRange = 0;
+float nX, nY;
 
 
 //TrixParticle trixBAD;
@@ -37,7 +34,6 @@ class TrixelMatrix {
   }
   void draw() {
 
-    angleCompass = compassDEGREE + iAngle;
     trixelX = spinX;
     trixelY = spinY;
     
@@ -53,8 +49,11 @@ class TrixelMatrix {
     rotate(r);
     translate(-width/2,-height/2); //new line before implementation
     
+    nX = mx*(microfone/50 + 1) - width/2;
+    nY = my*(microfone/50 + 1) - height/2;
+    
     for (int i = 0; i < count; i++) {
-      trixel[i].draw(mx - width/2,my - height/2);
+      trixel[i].draw(nX,nY);
     }
     
     //pebug display
@@ -69,6 +68,12 @@ class TrixelMatrix {
     line(width/2, height/2, 0, 150); //point compass
     */
     popMatrix();
+  }
+  
+  void reset() {
+    for (int i = 0; i < count; i++) {
+      trixel[i].resetTrix();
+    } 
   }
 }
 
@@ -155,7 +160,8 @@ class Trixel {
     
     changeTrix = changeTrix + 1;
     if(changeTrix>changeTime) { //warnning
-      fill(255,int(random(255)));
+      range = rangeTrixType;
+      fill(0,int(random(255)));
       if(changeTrix>changeTime+20) { //actived
         resetTrix();
       }
@@ -192,9 +198,9 @@ class Trixel {
        //fill(0,0,200); 
       }
       
-      if(range == 0 && blowMic<200) { //enemy 
+      if(range == 0) { //enemy 
         iphone.vibrate();
-        //iphone.beep();
+        iphone.beep();
         energy = energy - 4;
         soundEnemy.play();
         gameTransions = "Static";
@@ -225,15 +231,24 @@ class Trixel {
     }
          
         
-    // draw triangle
-    if(effect) {
-      stroke(0);
-    } else {
-      stroke(255);
-    }
+    // draw triangle      
+
     
-    strokeWeight(1); 
-    triangle(x1, y1, x2, y2, x3, y3);
+    if(effect) {
+      
+      noStroke();
+      triangle(x1, y1, x2, y2, x3, y3);
+      
+      strokeWeight(2);
+      stroke(255);
+      point(x1, y1);
+      point(x2, y2);
+      point(x3, y3);
+    } else {
+      strokeWeight(1);
+      stroke(255);
+      triangle(x1, y1, x2, y2, x3, y3);
+    }
     
     
     if(range == 0) { //enemy
@@ -272,8 +287,12 @@ class Trixel {
   
   void resetTrix() {
     range = int(random(rangeTrixType));
-    changeTime = changeTimeRange + changeTimeRandRange*int(random(changeTimeRand));
+    changeTime = 10 + int(random(50-microfone, 100-microfone*2))*int(random(10-microfone/100));
+    if(changeTime<0) {
+      changeTime = 10;
+    }
     changeTrix = 0;
+    pebug("changeTime: " + changeTime);
   }
   
   void collisionTrix() {
