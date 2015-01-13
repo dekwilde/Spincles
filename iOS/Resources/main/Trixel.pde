@@ -27,7 +27,7 @@ class TrixelMatrix {
     for(int i=0; i<hCount; i++) {
       for(int j=0; j<wCount; j++) {
         for(int k=0; k<tv; k++) {
-          trixel[n++] = new Trixel(j, i, k);  
+          trixel[n++] = new Trixel(j, i, k, n);  
         }
       }
     }
@@ -69,7 +69,7 @@ class TrixelMatrix {
     */
     popMatrix();
   }
-  
+    
   void reset() {
     for (int i = 0; i < count; i++) {
       trixel[i].resetTrix();
@@ -85,17 +85,24 @@ class Trixel {
   float s, h, radius, angle;
   float x, y;
   int v;
+  int id;
 
   int range;
   int changeTrix = 0;
-  int changeTime = 450;
+  int changeTime = 10000;
   
   float collisionX, collisionY;
 
-  Trixel(float tx, float ty, int inv) {
-    
+  Trixel(float tx, float ty, int inv, int num) {
       trix = new Trix(rad);
-      range = rangeTrixType;
+      
+      id = num;
+      if(id == 2) {
+        range = 1; 
+      } else {
+        range = rangeTrixType;
+      }
+      
       s = rad; 
       h = trix.h; 
       radius = trix.r;
@@ -213,6 +220,7 @@ class Trixel {
         
       }
       if(range == 1) { //score
+       
         energy = energy + 2;
         score = score + 1;
         saveScore();
@@ -224,7 +232,10 @@ class Trixel {
         collisionTrix();
         //trixGOOD.num = 0;
         spinclesState();
-        
+        if(id == 2) {
+          id = 0;
+          initGame();
+        }
       }
     } else {
       hurtRange -= hurtRange*0.01;

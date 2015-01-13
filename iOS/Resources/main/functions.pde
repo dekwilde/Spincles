@@ -80,6 +80,12 @@ void drawBG() {
   
 }
 
+void initGame() {
+  gameSound = "Start";
+  gameTransions = "Flash";
+  trixelmatrix.reset();
+}
+
 
 void startGame() {
     isGame = true;
