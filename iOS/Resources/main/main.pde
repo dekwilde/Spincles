@@ -273,6 +273,7 @@ void draw() {
       popMatrix();
     break;
     
+        
    case "Static":
       tween = tween +(initColor-tween)/5;      
       if(tween>(initColor-1)) {
@@ -339,30 +340,19 @@ void draw() {
     break;
     
     case "Level":
-      pushMatrix();
-      rotate(0);
-      translate(width/2,height/2);
-      scale(1.0);
       dialog.draw("level",level, "");
-      popMatrix();
     break;
     
     case "Score":
-      pushMatrix();
-      rotate(0);
-      translate(width/2,height/2);
-      scale(1.0);
-      dialog.draw("score",score, "");
-      popMatrix();
+      dialog.draw("score","+1", "");
     break;
     
     case "Start":
-      pushMatrix();
-      rotate(0);
-      translate(width/2,height/2);
-      scale(1.0);
       dialog.draw("start","GO", "");
-      popMatrix();
+    break;
+    
+    case "Find":
+      dialog.draw("find the","", "trix");
     break;
     
   }

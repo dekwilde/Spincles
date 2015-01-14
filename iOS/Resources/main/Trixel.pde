@@ -56,6 +56,7 @@ class TrixelMatrix {
       trixel[i].draw(nX,nY);
     }
     
+    
     //pebug display
     /*
     stroke(0,0,255);
@@ -235,7 +236,7 @@ class Trixel {
         spinclesState();
         if(id == 2) {
           id = 0;
-          initGame();
+          activeGame();
         }
       }
     } else {
@@ -247,10 +248,8 @@ class Trixel {
 
     
     if(effect) {
-      
       noStroke();
       triangle(x1, y1, x2, y2, x3, y3);
-      
       strokeWeight(2);
       stroke(255);
       point(x1, y1);
@@ -304,7 +303,7 @@ class Trixel {
       changeTime = 10;
     }
     changeTrix = 0;
-    pebug("changeTime: " + changeTime);
+    //pebug("changeTime: " + changeTime);
   }
   
   void collisionTrix() {

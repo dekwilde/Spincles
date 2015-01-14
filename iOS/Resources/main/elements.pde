@@ -5,10 +5,14 @@ class Dialog {
     trix = new Trix(150);
   }
   void draw(String t1, String t2, String t3) {
+    
+    pushMatrix();
+    rotate(0);
+    translate(width/2,height/2);
+    scale(1.0);
     dialogTimer += 4;
     scl = 1.6 - (dialogTimer*2)/100;
     aph = sin((dialogTimer*2)/50)*255;
-    pushMatrix();
     if(scl < 1.0) {
       scl = 1.0;
     }
@@ -16,18 +20,21 @@ class Dialog {
     
     noStroke();
     fill(255,204,0, aph);
+    
     pushMatrix();
     rotate(radians(180));
     triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);
     popMatrix();
-
-    fill(255, aph);
+  
+    fill(0, aph);
     textAlign(CENTER);
     textFont(fontText);
-    textSize(14);
+    textSize(16);
     text(t1, 0, -10); 
     textSize(36);
-    text(t2, 0, 30);
+    text(t2, 0, 20);
+    textSize(16);
+    text(t3, 0, 10);
     
     popMatrix();
     
@@ -35,7 +42,6 @@ class Dialog {
       dialogTimer = 0;
       gameDialog = "Null";
     }
-
   }
 }
 

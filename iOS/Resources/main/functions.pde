@@ -80,7 +80,7 @@ void drawBG() {
   
 }
 
-void initGame() {
+void activeGame() {
   gameSound = "Start";
   //gameTransions = "Flash";
   trixelmatrix.reset();
@@ -89,6 +89,7 @@ void initGame() {
 
 void startGame() {
     isGame = true;
+    setTimeout(function() { gameDialog = "Find"; }, 20000);
     loadScore();
     resetGame();
 }
@@ -101,7 +102,6 @@ void resetGame() {
   gameTransions = "Flash";
   gameSound = "Game";
   gameDialog = "Start";
-  pebug(gameState);
 }
 
 
@@ -111,11 +111,6 @@ void gameOver() {
   gameState = "Over";
  
 }
-
-void gameWin() {
-  //
-}
-
 
 void stateStart() {
   background(255,204,0);
