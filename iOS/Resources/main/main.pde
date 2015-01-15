@@ -89,6 +89,7 @@ ButtonStart btStart;
 ButtonAgain btAgain;
 ButtonHow btHow;
 ButtonClear btClear;
+ButtonShare btShare;
 ButtonCamera btCamera;
 ButtonClose btClose;
 MenuSlider slider;
@@ -149,6 +150,7 @@ void setup() {
   btAgain = new ButtonAgain();
   btHow = new ButtonHow();
   btClear = new ButtonClear();
+  btShare = new ButtonShare();
   btCamera = new ButtonCamera();
   btClose = new ButtonClose();
   slider = new MenuSlider();
@@ -234,7 +236,13 @@ void draw() {
         
     case "Game":
       stateGame();  
-    break;  
+    break; 
+    
+    case "Null":
+      //;  
+    break; 
+        
+    
   } //end gameState
   
   

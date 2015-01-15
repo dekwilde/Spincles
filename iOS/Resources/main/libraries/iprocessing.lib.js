@@ -760,8 +760,15 @@ IPhone = function IPhone(processing) {
 
 	ip.openPhotos = function(e) {
 		if (e == null){ var edit = false; } else { var edit = e; }
-		//Titanium.App.fireEvent('openPhotos', {data:edit});
+		Titanium.App.fireEvent('openPhotos', {data:edit});
 	};
+    
+    // screenshot -----------------------------------------------
+    
+    ip.screenShot = function() {
+        Titanium.App.fireEvent('screenShot');
+    };
+    
 	
 	// camera ------------------------------------------------------
 

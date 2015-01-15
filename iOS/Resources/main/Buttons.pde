@@ -231,6 +231,51 @@ class ButtonClear {
     }
 }
 
+
+class ButtonShare {
+    boolean overButton = false;
+    
+    int pX = width/2;
+    int pY = height/2+60;
+    int dw = 200;
+    int dh = 40;
+    int fSize = 20;
+    
+    ButtonShare() {
+      //
+    }
+    
+    void draw() {
+        // Left buttom
+        strokeWeight(1);
+        stroke(255,204,0);
+        fill(0);
+        rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
+        fill(255,204,0);
+        textFont(fontText, fSize);
+        text("share record", pX, pY);
+        
+        if (overButton == true) {
+            overButton = false;
+            touch1X = 0;
+            touch1Y = 0;
+            soundClick.play();
+            share();
+        }
+        checkButton();
+    } 
+    
+    
+    void checkButton() {
+          if (touch1X > pX-dw && touch1X < pX+dw && touch1Y > pY-dh && touch1Y < pY+dh) {
+            overButton = true;  
+          } else {
+            overButton = false;
+          }
+    }
+}
+
+
 class ButtonStart {
   
     Trix trix1, trx2;
@@ -361,7 +406,7 @@ class ButtonInfo {
         fill(0);
         textFont(fontText, 16);
         textAlign(CENTER);
-        text("*", pX+dm/2-9, pY+dm/2-5);
+        text("||", pX+dm/2-9, pY+dm/2-5);
     }
     void checkButton() {
           if (touch1X > pX-dm && touch1X < pX+dm && touch1Y > pY-dm && touch1Y < pY+dm) {

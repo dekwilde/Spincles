@@ -13721,7 +13721,7 @@ module.exports = function setupParser(Processing, options) {
       if (target !== undef) {
         window.open(href, target);
       } else {
-        window.location = href;
+        window.location.href = href;
       }
     };
 

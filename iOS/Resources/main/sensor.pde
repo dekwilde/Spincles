@@ -30,6 +30,20 @@ void stopSensor() {
 }
 
 
+void photoCancelled() {
+  gameState = "InfoShow";
+}
+void photoSelected(file) {  
+  gameState = "InfoShow";
+  
+  //var mailto_link = "mailto:"+emailto+"?from="+emailfrom +"&body=" + encodeURIComponent( message ) + "&subject=" + encodeURIComponent("Subject") + "&attachment=" + file;
+  
+  link("mailto:a@gmail.com?subject=myreport&body=seeattachment&attachment='" + file + "'");
+  
+  pebug("mailto: " + file);
+}
+
+
 void gestureStarted() {
   startAngle = iAngle;
   startEscala = iScale;

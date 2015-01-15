@@ -80,6 +80,14 @@ void drawBG() {
   
 }
 
+
+void share() {
+  gameState = "Null";
+  iphone.screenShot();
+  pebug("screenshot");
+  setTimeout(function() {iphone.openPhotos(true);}, 1000);
+}
+
 void activeGame() {
   gameSound = "Start";
   //gameTransions = "Flash";
@@ -200,6 +208,7 @@ void stateInfoShow() {
       pInfo = 0;
       slider.draw();
       btClose.draw(255);
+      btShare.draw();
       btHow.draw();
       btClear.draw();
   }

@@ -232,6 +232,7 @@ Titanium.App.addEventListener('stopMicMonitor', stopMicMonitor);
 Titanium.App.addEventListener('startCompass', startCompass);
 Titanium.App.addEventListener('stopCompass', stopCompass);
 Titanium.App.addEventListener('openPhotos', openPhotos);
+Titanium.App.addEventListener('screenShot', screenShot);
 Titanium.App.addEventListener('openCamera', openCamera);
 Titanium.App.addEventListener('squareCamera', squareCamera);
 Titanium.App.addEventListener('updateSquare', updateSquare);
@@ -400,15 +401,16 @@ function stopMicMonitor() {
 function openPhotos(e) {
 	var edit = e.data;
 	Titanium.Media.openPhotoGallery({
-		success: function(event) {
+		
+        success: function(event) {
 			var image = event.media;
 			var filename = String((new Date()).getTime()).replace(/\D/gi,'')+".png";
 			var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
 			//var filename = "temp.png";
-			//var f = Titanium.Filesystem.getFile(filename);
+			//var filepath = Titanium.Filesystem.getFile(filename);
 			f.write(image);
 			p(
-				'photoSelected("' + filename + '");'
+				'photoSelected("' + Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename + '");'
 			);
 		},
 		cancel: function() {
@@ -420,8 +422,17 @@ function openPhotos(e) {
 			//error
 		},
 		allowImageEditing: edit
+        
 	})
 }
+
+// screenshot ------------------------------------------------------
+function screenShot() {
+    Ti.Media.takeScreenshot(function(e){
+      Ti.Media.saveToPhotoGallery(e.media);
+    });
+}
+
 
 // camera ------------------------------------------------------
 function openCamera(e) {
