@@ -232,6 +232,7 @@ Titanium.App.addEventListener('stopMicMonitor', stopMicMonitor);
 Titanium.App.addEventListener('startCompass', startCompass);
 Titanium.App.addEventListener('stopCompass', stopCompass);
 Titanium.App.addEventListener('openPhotos', openPhotos);
+Titanium.App.addEventListener('viewDocument', viewDocument);
 Titanium.App.addEventListener('screenShot', screenShot);
 Titanium.App.addEventListener('openCamera', openCamera);
 Titanium.App.addEventListener('squareCamera', squareCamera);
@@ -411,6 +412,7 @@ function openPhotos(e) {
 			f.write(image);
 			p(
 				'photoSelected("' + Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename + '");'
+                //'photoSelected("' + filename + '");'
 			);
 		},
 		cancel: function() {
@@ -426,10 +428,30 @@ function openPhotos(e) {
 	})
 }
 
+// viewDocument ------------------------------------------------------
+function viewDocument(e) {
+    var fileview = e.data;
+    Ti.UI.iOS.createDocumentViewer({url:fileview}).show();
+    //Ti.UI.iPad.createDocumentViewer({url:fileview}).show();
+    NSLog("Ti viewDocument");
+}
+
 // screenshot ------------------------------------------------------
 function screenShot() {
     Ti.Media.takeScreenshot(function(e){
-      Ti.Media.saveToPhotoGallery(e.media);
+        //Ti.Media.saveToPhotoGallery(e.media);
+        var image = e.media;
+        var filename = String((new Date()).getTime()).replace(/\D/gi,'')+".png";
+        var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
+        //var filename = "temp.png";
+        //var filepath = Titanium.Filesystem.getFile(filename);
+        f.write(image);
+        p(
+          'photoScreenShot("' + Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename + '");'
+          //'photoSelected("' + filename + '");'
+        );
+                            
+                            
     });
 }
 

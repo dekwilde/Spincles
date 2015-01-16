@@ -49,10 +49,10 @@ MAKE_SYSTEM_PROP_IPAD(POPOVER_ARROW_DIRECTION_UNKNOWN,UIPopoverArrowDirectionUnk
 #ifdef USE_TI_UIIPADDOCUMENTVIEWER
 -(id)createDocumentViewer:(id)args
 {
-	if ([TiUtils isIPad])
-	{
+	//if ([TiUtils isIPad])
+	//{
 		return [[[TiUIiPadDocumentViewerProxy alloc] _initWithPageContext:[self executionContext] args:args] autorelease];
-	}
+	//}
 	[self throwException:@"this API is not available on non iPad devices" subreason:nil location:CODELOCATION];
 }
 #endif

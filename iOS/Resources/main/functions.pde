@@ -82,10 +82,9 @@ void drawBG() {
 
 
 void share() {
-  gameState = "Null";
+  gameState = "Share";
   iphone.screenShot();
   pebug("screenshot");
-  setTimeout(function() {iphone.openPhotos(true);}, 1000);
 }
 
 void activeGame() {
@@ -136,12 +135,12 @@ void stateStart() {
   text("Welcome to", width/2, height/2-40+Talign); 
 
   pushMatrix();
+
   float logoscale = 0.3;
   translate(width/2-(500*logoscale), height/2-(200*logoscale)+20+Talign); // a logo tem o tamanho original com 1000x400
   scale(logoscale);
   logo.draw();
-  popMatrix();
-  
+  popMatrix();  
   acce();
   compass();
   
@@ -294,3 +293,16 @@ void stateNoTouch() {
   btClose.draw(0);
   btHow.draw();
 }
+
+void stateShare() {
+  
+  int Talign = -10;
+  rotate(0);
+  translate(0,0);
+  scale(1.0);
+  background(255, 204, 0);
+  tEff.draw1(); 
+  
+}
+
+

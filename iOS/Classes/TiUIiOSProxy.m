@@ -18,6 +18,12 @@
 //#import "TiUIiOSAdViewProxy.h"
 #endif
 
+
+#if defined(USE_TI_UIIPADDOCUMENTVIEWER) || defined(USE_TI_UIIOSDOCUMENTVIEWER)
+#import "TiUIiOSDocumentViewerProxy.h"
+#endif
+
+
 #endif
 
 
@@ -25,14 +31,22 @@
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
 #ifdef USE_TI_UIIOSADVIEW
-
 -(id)createAdView:(id)args
 {
 	//return [[[TiUIiOSAdViewProxy alloc] _initWithPageContext:[self executionContext] args:args] autorelease];
 }
+#endif
+#endif
 
+
+#if defined(USE_TI_UIIPADDOCUMENTVIEWER) || defined(USE_TI_UIIOSDOCUMENTVIEWER)
+-(id)createDocumentViewer:(id)args
+{
+	return [[[TiUIiOSDocumentViewerProxy alloc] _initWithPageContext:[self executionContext] args:args] autorelease];
+}
 #endif
-#endif
+
+
 
 @end
 

@@ -9716,6 +9716,7 @@ module.exports = function setupParser(Processing, options) {
 		p.locationEvent				= undef;
 		p.movieCompleted			= undef;	
 		p.photoSelected				= undef;
+        p.photoScreenShot			= undef;
 		p.photoCancelled			= undef;
 		p.cameraCancelled			= undef;	
 		// #######################################################################

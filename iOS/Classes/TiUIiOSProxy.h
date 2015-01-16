@@ -27,6 +27,11 @@
 #ifdef USE_TI_UIIOSADVIEW
 -(id)createAdView:(id)args;
 #endif
+
+#if defined(USE_TI_UIIPADDOCUMENTVIEWER) || defined(USE_TI_UIIOSDOCUMENTVIEWER)
+-(id)createDocumentViewer:(id)args;
+#endif
+
 #endif
 
 @end

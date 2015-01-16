@@ -131,8 +131,8 @@ class Logo {
     pArr[41] = new pL(902,199);
   }
   void draw() {
-    
-    //scale(0.4);
+   
+ 
     fill(255);
     //S
     stroke(0);

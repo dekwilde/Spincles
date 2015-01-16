@@ -496,6 +496,11 @@ function photoCancelled() {
 		p.photoCancelled();
 	}
 }
+function photoScreenShot(f) {
+    if ( p.photoScreenShot ) {
+        p.photoScreenShot(f);
+    }
+}
 
 function cameraCaptured(f) {
     if(f) {
@@ -762,6 +767,13 @@ IPhone = function IPhone(processing) {
 		if (e == null){ var edit = false; } else { var edit = e; }
 		Titanium.App.fireEvent('openPhotos', {data:edit});
 	};
+    
+    // viewDocument -----------------------------------------------
+    
+    ip.viewDocument = function(e) {
+        if (e == null){ var file = ""; } else { var file = e; }
+        Titanium.App.fireEvent('viewDocument', {data:file});
+    };
     
     // screenshot -----------------------------------------------
     

@@ -33,14 +33,20 @@ void stopSensor() {
 void photoCancelled() {
   gameState = "InfoShow";
 }
+
 void photoSelected(file) {  
   gameState = "InfoShow";
-  
+  setTimeout(function() {iphone.viewDocument(file);}, 1000);
+  pebug("viewDocument: " + file);
   //var mailto_link = "mailto:"+emailto+"?from="+emailfrom +"&body=" + encodeURIComponent( message ) + "&subject=" + encodeURIComponent("Subject") + "&attachment=" + file;
-  
-  link("mailto:a@gmail.com?subject=myreport&body=seeattachment&attachment='" + file + "'");
-  
-  pebug("mailto: " + file);
+  //link("mailto:a@gmail.com?subject=myreport&body=seeattachment&attachment='" + file + "'");
+
+}
+
+void photoScreenShot(file) {
+    gameState = "InfoShow";
+    setTimeout(function() {iphone.viewDocument(file);}, 1000);
+    pebug("viewDocument: " + file);
 }
 
 

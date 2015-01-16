@@ -238,8 +238,8 @@ void draw() {
       stateGame();  
     break; 
     
-    case "Null":
-      //;  
+    case "Share":
+     stateShare();  
     break; 
         
     
