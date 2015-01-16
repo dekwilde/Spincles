@@ -272,10 +272,14 @@ void stateGame() {
   trixelmatrix.draw();
   //trixBAD.draw();
   //trixGOOD.draw();
+
+  Camera();
+  spinclesDraw();
+  
   btInfo.draw();
   //btCamera.draw();
   scoreInfo.draw();
-  spinclesDraw();
+  
 }
 
 void stateNoTouch() {

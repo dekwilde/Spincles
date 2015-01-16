@@ -140,7 +140,7 @@ void setup() {
   
   initPosY = height + 100;
   
-  howImg = loadImage("how.png");
+  howImg = loadImage("data/how.png");
   //logoImg = loadImage("logo.png");
   fontTitle = loadFont("data/hexagonica.ttf");        
   fontText = loadFont("data/MicroN55.ttf");
@@ -179,7 +179,7 @@ void setup() {
   soundMagnetic   = iphone.loadSound("energy.wav");
   soundScore      = iphone.loadSound("score.wav");
   soundClick      = iphone.loadSound("click.wav");
-  soundGlitch     = iphone.loadSound("gltch.wav");
+  soundGlitch     = iphone.loadSound("glitch.wav");
   soundEnemy      = iphone.loadSound("enemy.wav");
   soundTouchTimer = iphone.loadSound("glitch.wav");
   soundStartUP    = iphone.loadSound("startup.wav");
@@ -189,7 +189,7 @@ void setup() {
   soundBG1        = iphone.loadSound("loop0.wav");
   
   background(0);
-  iphone.squareCamera();
+
   
   //setupThree();
   //video = loadImage("cam.png");

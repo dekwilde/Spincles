@@ -1,4 +1,4 @@
-PImage video;
+PImage video, frame;
 
 int index = 0;
 int brightestX = 0; // X-coordinate of the brightest video pixel
@@ -15,22 +15,23 @@ void Camera() {
     video = requestImage(iphone.getCamera());
     loadCamera = true;
   } //end if checkCamera
-  
- 
+  if(video.width ==0) {
+    pebug("cam loading");
+  } else if(video.width == -1) {
+    pebug("error load cam");
+  } else {
     if(loadCamera) {
-      
-      
-      
+      frame = video.get();
       
       pebug("6 - loaded image - ready Pixels Image");
       
-      /*
-      float brightestValue = 0; // Brightness of the brightest video pixel
+      
+      float brightestValue = 50; // Brightness of the brightest video pixel
       // Search for the brightest pixel: For each row of pixels in the video image and
       // for each pixel in the yth row, compute each pixel's index in the video
       video.loadPixels();
-      for (int y = 0; y < video.height; y++) {
-        for (int x = 0; x < video.width; x++) {
+      for (int picy = 0; picy < video.height; picy++) {
+        for (int picx = 0; picx < video.width; picx++) {
           // Get the color stored in the pixel
           int pixelValue = video.pixels[index];
           // Determine the brightness of the pixel
@@ -39,24 +40,25 @@ void Camera() {
           // brightness of that pixel, as well as its (x,y) location
           if (pixelBrightness > brightestValue) {
             brightestValue = pixelBrightness;
-            brightestY = y;
-            brightestX = x;
+            brightestY = picy;
+            brightestX = picx;
           }
           index++;
         }
       }
-      */
+      
+      pebug("brigh: " + brightestY + " " + brightestX); 
       
             
       loadCamera = false;
       iphone.updateSquare();
     }
+  }
   
-  
-  // Draw a large, yellow circle at the brightest pixel
-  //image(video, 0, 0, video.width, video.height);
-  image(video, 0, 0, width/2, height/2);
+  image(frame, width/2, height/2, width, height);
+  //pebug display
   noStroke();
   fill(0,0,255);
-  ellipse(brightestX*10, brightestY*10, 50, 50);
+  ellipse(brightestX, brightestY, 50, 50);
+  
 }

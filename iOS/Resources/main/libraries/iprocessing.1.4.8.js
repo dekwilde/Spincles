@@ -18863,8 +18863,8 @@ module.exports = function setupParser(Processing, options) {
 	
 	
 		// new code ##############################################################
-		if (p.match(file,"http") == null) {
-			file = "data/" + file;																																																		
+		if (p.match(file,"http") == null || p.match(file,"file") == null) {
+			//file = "data/" + file;
 		}
 		// #######################################################################
 		

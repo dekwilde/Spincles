@@ -404,16 +404,17 @@ function openPhotos(e) {
 	Titanium.Media.openPhotoGallery({
 		
         success: function(event) {
-			var image = event.media;
-			var filename = String((new Date()).getTime()).replace(/\D/gi,'')+".png";
-			var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
-			//var filename = "temp.png";
-			//var filepath = Titanium.Filesystem.getFile(filename);
-			f.write(image);
-			p(
-				'photoSelected("' + Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename + '");'
-                //'photoSelected("' + filename + '");'
-			);
+                                    
+            var image = event.media;
+            var filename = String((new Date()).getTime()).replace(/\D/gi,'')+".png";
+            var f = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory, filename);
+            f.write(image);
+            
+            p(
+              'photoSelected("' + 'file://' + f.nativePath + '");'
+              //'cameraCaptured("' + filename + '");'
+            );
+                                    
 		},
 		cancel: function() {
 		  p(
@@ -471,13 +472,18 @@ function openCamera(e) {
 	 	
 	Titanium.Media.showCamera({
 		success: function(event) {
-			var image = event.media;
-			var filename = "cam.jpg";
-			var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
-			f.write(image);
-			p(
-				'cameraCaptured("' + filename + '");'
-			);
+                              
+            var image = e.media;
+            var filename = "cam.png";
+            var f = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory, filename);
+            f.write(image);
+
+            p(
+            'cameraCaptured("' + 'file://' + f.nativePath + '");'
+            //'cameraCaptured("' + filename + '");'
+            );
+                              
+                              
 			updateCamera();
 			Ti.API.debug(event.media);  
 			//Titanium.Media.hideCamera();											
@@ -566,7 +572,8 @@ function squareCamera() {
                                     f.write(image);
 
                                     p(
-                                      'cameraCaptured("' + f.nativePath + '");'
+                                      'cameraCaptured("' + 'file://' + f.nativePath + '");'
+                                      //'cameraCaptured("' + filename + '");'
                                     );
                                 
                                 
@@ -651,7 +658,7 @@ function squareCamera() {
     cameraView.switchCamera();
     
     
-    //updateSquareTimer = setTimeout(updateSquare, 3000); //start all the sequence...
+    updateSquareTimer = setTimeout(updateSquare, 3000); //start all the sequence...
     
 }
 function updateSquare() {

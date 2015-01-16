@@ -18,7 +18,8 @@ void startSensor() {
   iphone.startAccelerometer();
   iphone.startCompass();
   //iphone.startLocation();
-  //iphone.squareCamera();
+  iphone.squareCamera();
+  frame = requestImage(iphone.getCamera());
 }
 
 void stopSensor() {
