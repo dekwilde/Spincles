@@ -129,8 +129,9 @@
 /*
 - (UIView *)documentInteractionControllerViewForPreview:(UIDocumentInteractionController *)controller
 {
-	return viewController.view;
-}*/
+	return UIViewController.view;
+}
+*/
 
 - (void)documentInteractionControllerWillBeginPreview:(UIDocumentInteractionController *)controller
 {

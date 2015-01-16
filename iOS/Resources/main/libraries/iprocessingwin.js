@@ -433,23 +433,21 @@ function viewDocument(e) {
     var fileview = e.data;
     Ti.UI.iOS.createDocumentViewer({url:fileview}).show();
     //Ti.UI.iPad.createDocumentViewer({url:fileview}).show();
-    NSLog("Ti viewDocument");
 }
 
 // screenshot ------------------------------------------------------
-function screenShot() {
+function screenShot(e) {
+    var save = e.data;
     Ti.Media.takeScreenshot(function(e){
-        Ti.Media.saveToPhotoGallery(e.media);
-        
+        if(save) {
+            Ti.Media.saveToPhotoGallery(e.media);
+        }
         var image = e.media;
         var filename = String((new Date()).getTime()).replace(/\D/gi,'')+".png";
-        var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);
-        //var filename = "temp.png";
-        //var filepath = Titanium.Filesystem.getFile(filename);
+        var f = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory, filename);
         f.write(image);
         p(
-          'photoScreenShot("' + Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename + '");'
-          //'photoSelected("' + filename + '");'
+          'photoScreenShot("' + f.nativePath + '");'
         );
                             
                             

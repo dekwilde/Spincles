@@ -777,8 +777,9 @@ IPhone = function IPhone(processing) {
     
     // screenshot -----------------------------------------------
     
-    ip.screenShot = function() {
-        Titanium.App.fireEvent('screenShot');
+    ip.screenShot = function(e) {
+        if (e == null){ var save = false; } else { var save = e; }
+        Titanium.App.fireEvent('screenShot', {data:save});
     };
     
 	

@@ -36,10 +36,10 @@ void photoCancelled() {
 }
 
 void photoSelected(file) {  
-  gameState = "InfoShow";
-  loop();
   setTimeout(function() {
     iphone.viewDocument(file);
+    gameState = "InfoShow";
+    loop();
   }, 1000);
   pebug("viewDocument: " + file);
   //var mailto_link = "mailto:"+emailto+"?from="+emailfrom +"&body=" + encodeURIComponent( message ) + "&subject=" + encodeURIComponent("Subject") + "&attachment=" + file;
@@ -49,10 +49,11 @@ void photoSelected(file) {
 
 void photoScreenShot(file) {
     setTimeout(function() {
-      iphone.openPhotos();
-      //iphone.viewDocument(file);
-      //gameState = "InfoShow";
-    }, 2000);
+      //iphone.openPhotos(true);
+      iphone.viewDocument(file);
+      gameState = "InfoShow";
+      loop();
+    }, 5000);
     pebug("viewDocument: " + file);
 }
 

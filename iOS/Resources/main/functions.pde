@@ -91,7 +91,7 @@ void activeGame() {
 
 void startGame() {
     isGame = true;
-    setTimeout(function() { gameDialog = "Find"; }, 20000);
+    //setTimeout(function() { gameDialog = "Find"; }, 20000);
     loadScore();
     resetGame();
 }

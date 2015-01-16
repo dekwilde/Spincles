@@ -1,7 +1,7 @@
 class ButtonClose {
     boolean overButton = false;
-    int pX = width/2 - 160 + 285;
-    int pY = height/2 - 240 + 35;
+    int pX = width - 30;
+    int pY = 30;
     int dm = 15; 
     
     ButtonClose() {  
