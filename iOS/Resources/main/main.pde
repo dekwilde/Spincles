@@ -77,6 +77,7 @@ int initColor = 255;
 int alphaBG = 0.0;
 float tweenBG = 0.0;
 float tween = 0.0;
+int load = 0;
 float dialogTimer = 0;
 
 float hurtRange = 0.0;
@@ -242,10 +243,10 @@ void draw() {
      stateShare();  
     break; 
     
-    case "Null":
-      stateLoad();
+    case "Load":
+     stateLoad();  
     break; 
-        
+            
     
   } //end gameState
   

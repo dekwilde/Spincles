@@ -558,15 +558,15 @@ function squareCamera() {
     // Event that listens for a photo to be taken
     cameraView.addEventListener("success", function(e){
                                 
-                                    //image_preview.image = e.media;
+                                    //takeCamera,takePhoto success
                                 
-                                
-                                    var imageFile = e.media.toString();
-                                    var imgStr = Ti.Utils.base64encode(imageFile).toString();
-                                
-                                    Ti.API.debug("9 - base64 Image18: " + imgStr);
+                                    var image = e.media;
+                                    var filename = "cam.png";
+                                    var f = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory, filename);
+                                    f.write(image);
+
                                     p(
-                                      'cameraCaptured("' + imgStr + '");'
+                                      'cameraCaptured("' + f.nativePath + '");'
                                     );
                                 
                                 

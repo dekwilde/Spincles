@@ -48,12 +48,12 @@ void photoSelected(file) {
 }
 
 void photoScreenShot(file) {
+    gameState = "Load";
+    iphone.viewDocument(file);
     setTimeout(function() {
       //iphone.openPhotos(true);
-      iphone.viewDocument(file);
       gameState = "InfoShow";
-      loop();
-    }, 5000);
+    }, 15000);
     pebug("viewDocument: " + file);
 }
 

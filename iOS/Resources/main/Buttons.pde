@@ -245,24 +245,30 @@ class ButtonShare {
       //
     }
     
-    void draw() {
-        // Left buttom
-        strokeWeight(1);
-        stroke(255,204,0);
-        fill(0);
-        rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
-        fill(255,204,0);
-        textFont(fontText, fSize);
-        text("share record", pX, pY);
-        
+    void draw() {      
         if (overButton == true) {
-            overButton = false;
-            pInfo = 480;
-            gameState = "Share";
-            touch1X = 0;
-            touch1Y = 0;
-            soundClick.play();
+          fill(255,204,0);
+        } else {
+          fill(0); 
         }
+        strokeWeight(1);
+        stroke(255,204,0);  
+        rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
+        fill(255);
+        textFont(fontText, fSize);
+        text("share", pX, pY);
+
+
+        if (overButton == true) {
+          overButton = false;
+          pInfo = 480;
+          load = 0;
+          touch1X = 0;
+          touch1Y = 0;
+          soundClick.play();
+          stateLoad("Share");
+        }
+
         checkButton();
     } 
     

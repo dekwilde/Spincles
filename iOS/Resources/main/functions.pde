@@ -115,8 +115,8 @@ void gameOver() {
 }
 
 void share() {
-  noLoop();
   iphone.screenShot();
+  pebug("screenshot");
 }
 
 void stateStart() {
@@ -203,15 +203,11 @@ void stateInfoShow() {
       pInfo = 0;
       slider.draw();
       btClose.draw(255);
-      btShare.draw();
       btHow.draw();
       btClear.draw();
+      btShare.draw();
   }
   pInfo = pInfo - pInfo/6;
-  
-
-  
-
   
 }
 
@@ -251,7 +247,7 @@ void stateLoadGame() {
 }
 
 
-void stateLoad() {
+void stateLoad(String state) {
   fill(255,204,0);
   noStroke();
   rect(0,0,width,height);
@@ -259,6 +255,9 @@ void stateLoad() {
   textAlign(CENTER);
   textFont(fontText, 16);
   text("LOADING", width/2, height/2-8);
+  if(state) {
+    gameState  = state;
+  }
 }
 
 
@@ -304,17 +303,20 @@ void stateNoTouch() {
 }
 
 void stateShare() {
-  int Talign = height/2-200+pInfo;
+  int Talign = height/2-180+pInfo;
+  background(255, 204, 0);
+  
+  pushMatrix();
   rotate(0);
   translate(0,0);
   scale(1.0);
-  background(255, 204, 0);
   tEff.draw1(); 
+  popMatrix();
   
   fill(0);
   textFont(fontTitle, 10);
   text("Glitch Game", width/2, 20+Talign); 
-  logo.draw(-140+pInfo);
+  logo.draw(-120+pInfo);
   
   fill(0);
   textFont(fontText);
@@ -328,12 +330,15 @@ void stateShare() {
   text(level, width/2, 350+Talign); //280
   
   
-  if (pInfo<1) {
-      share();
+  if (pInfo<10) {
+    load += 1;
   }
+    
+  if(load == 2) {
+    share();
+  }
+  
   pInfo = pInfo - pInfo/6;
   
   
 }
-
-
