@@ -439,7 +439,8 @@ function viewDocument(e) {
 // screenshot ------------------------------------------------------
 function screenShot() {
     Ti.Media.takeScreenshot(function(e){
-        //Ti.Media.saveToPhotoGallery(e.media);
+        Ti.Media.saveToPhotoGallery(e.media);
+        
         var image = e.media;
         var filename = String((new Date()).getTime()).replace(/\D/gi,'')+".png";
         var f = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory+"/main/data/"+filename);

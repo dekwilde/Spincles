@@ -257,10 +257,11 @@ class ButtonShare {
         
         if (overButton == true) {
             overButton = false;
+            pInfo = 480;
+            gameState = "Share";
             touch1X = 0;
             touch1Y = 0;
             soundClick.play();
-            share();
         }
         checkButton();
     } 

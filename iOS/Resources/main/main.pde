@@ -241,6 +241,10 @@ void draw() {
     case "Share":
      stateShare();  
     break; 
+    
+    case "Null":
+      stateLoad();
+    break; 
         
     
   } //end gameState

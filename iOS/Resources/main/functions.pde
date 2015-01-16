@@ -81,11 +81,6 @@ void drawBG() {
 }
 
 
-void share() {
-  gameState = "Share";
-  iphone.screenShot();
-  pebug("screenshot");
-}
 
 void activeGame() {
   gameSound = "Start";
@@ -119,6 +114,11 @@ void gameOver() {
  
 }
 
+void share() {
+  noLoop();
+  iphone.screenShot();
+}
+
 void stateStart() {
   background(255,204,0);
   /*
@@ -134,13 +134,9 @@ void stateStart() {
   textFont(fontTitle, 10);
   text("Welcome to", width/2, height/2-40+Talign); 
 
-  pushMatrix();
 
-  float logoscale = 0.3;
-  translate(width/2-(500*logoscale), height/2-(200*logoscale)+20+Talign); // a logo tem o tamanho original com 1000x400
-  scale(logoscale);
-  logo.draw();
-  popMatrix();  
+  logo.draw(Talign);
+
   acce();
   compass();
   
@@ -254,6 +250,19 @@ void stateLoadGame() {
   pInfo += - 1;
 }
 
+
+void stateLoad() {
+  fill(255,204,0);
+  noStroke();
+  rect(0,0,width,height);
+  fill(0);
+  textAlign(CENTER);
+  textFont(fontText, 16);
+  text("LOADING", width/2, height/2-8);
+}
+
+
+
 void stateGame() {
   acce();
   mic();
@@ -295,13 +304,35 @@ void stateNoTouch() {
 }
 
 void stateShare() {
-  
-  int Talign = -10;
+  int Talign = height/2-200+pInfo;
   rotate(0);
   translate(0,0);
   scale(1.0);
   background(255, 204, 0);
   tEff.draw1(); 
+  
+  fill(0);
+  textFont(fontTitle, 10);
+  text("Glitch Game", width/2, 20+Talign); 
+  logo.draw(-140+pInfo);
+  
+  fill(0);
+  textFont(fontText);
+  textSize(24);
+  text(scoreResult, width/2, 200+Talign); //200
+  textSize(52);
+  text(recordScore, width/2, 250+Talign); //230
+  textSize(24);
+  text("level", width/2, 300+Talign); //250
+  textSize(52);
+  text(level, width/2, 350+Talign); //280
+  
+  
+  if (pInfo<1) {
+      share();
+  }
+  pInfo = pInfo - pInfo/6;
+  
   
 }
 

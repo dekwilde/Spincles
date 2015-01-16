@@ -69,6 +69,7 @@ class Trix {
 
 class Logo {
   pL[] pArr;
+  float logoscale = 0.3;
   
   Logo() {
     pArr = new pL[42];
@@ -130,9 +131,14 @@ class Logo {
     pArr[40] = new pL(856,172); 
     pArr[41] = new pL(902,199);
   }
-  void draw() {
+  void draw(int t) {
    
- 
+    pushMatrix();
+    
+    translate(width/2-(500*logoscale), height/2-(200*logoscale)+20+t); // a logo tem o tamanho original com 1000x400
+    scale(logoscale);
+   
+    
     fill(255);
     //S
     stroke(0);
@@ -254,6 +260,7 @@ class Logo {
     ellipse(pArr[40].x,pArr[40].y,8,8);
     stroke(0);
     
+    popMatrix();  
     
     for(int i=0; i<42; i++) {
       pArr[i].draw();
