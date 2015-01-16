@@ -114,15 +114,19 @@ void setup() {
   size(scW, scH, JAVA2D);
   
   if(scW>320 && scH>480) {
-    wCount = 4; //ipad
+    //ipad
+    wCount = 4;
     hCount = 2; 
     rad = 430;
     iScale = 2.4;
+    videoscale = 24;
   } else {
-    wCount = 4; //iphone
+    //iphone
+    wCount = 4; 
     hCount = 2;
     rad = 215;
     iScale = 1.4;
+    videoscale = 10;
   }
   
   pebug("wCount: " + wCount + ", hCount: " + hCount);

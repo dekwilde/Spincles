@@ -3,7 +3,7 @@ PImage video, frame;
 int index = 0;
 int brightestX = 0; // X-coordinate of the brightest video pixel
 int brightestY = 0; // Y-coordinate of the brightest video pixel
-int videoscale = 10;
+int videoscale;
 
 boolean loadCamera = false;
 boolean checkCamera = false;
@@ -51,10 +51,10 @@ void Camera() {
     }
   }
   
-  image(frame, width/2, height/2, width, height);
   //pebug display
+  //image(frame, width/2, height/2, width, height);
   noStroke();
   fill(0,0,255);
-  ellipse(brightestX*videoscale, brightestY*videoscale, 50, 50);
+  ellipse(width-brightestX*videoscale, brightestY*videoscale, 50, 50);
   
 }

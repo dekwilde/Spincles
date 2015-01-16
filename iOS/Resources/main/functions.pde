@@ -266,16 +266,15 @@ void stateGame() {
   acce();
   mic();
   compass();
+
   drawBG();
+  Camera();
   //Three();        
   control.draw();  
   trixelmatrix.draw();
   //trixBAD.draw();
   //trixGOOD.draw();
-
-  Camera();
   spinclesDraw();
-  
   btInfo.draw();
   //btCamera.draw();
   scoreInfo.draw();
