@@ -119,6 +119,107 @@ void share() {
   pebug("screenshot");
 }
 
+void stateSetup() {
+  
+  //size(320, 480);
+  scW = screen.width;
+  scH = screen.height;
+  
+  size(scW, scH);
+  
+  //rectMode(CENTER_RADIUS);
+  rectMode(CORNER);
+  imageMode(CENTER);
+  textAlign(CENTER);
+  ctx = externals.context;   
+  frameRate(30);
+  //smooth();
+
+  if(scW>320 && scH>480) {
+    //ipad
+    wCount = 4;
+    hCount = 2; 
+    rad = 430;
+    iScale = 2.4;
+    videoscale = 24;
+  } else {
+    //iphone
+    wCount = 4; 
+    hCount = 2;
+    rad = 215;
+    iScale = 1.4;
+    videoscale = 10;
+  }
+  
+  pebug("wCount: " + wCount + ", hCount: " + hCount);
+
+   
+  howImg = loadImage("data/how.png");
+  //logoImg = loadImage("logo.png");
+  fontTitle = loadFont("data/hexagonica.ttf");        
+  fontText = loadFont("data/MicroN55.ttf");
+  
+  stateLoad();
+  
+  
+  iphone = new IPhone();
+  startSensor();
+  pebug("Start sensor");
+
+  control = new Control();
+  btInfo = new ButtonInfo();
+  btStart = new ButtonStart();
+  btAgain = new ButtonAgain();
+  btHow = new ButtonHow();
+  btClear = new ButtonClear();
+  btShare = new ButtonShare();
+  btCamera = new ButtonCamera();
+  btClose = new ButtonClose();
+  slider = new MenuSlider();
+  scoreInfo = new ScoreInfo();
+  logo = new Logo();
+  tEff = new TrixelEffect();
+  dialog = new Dialog();
+
+  trixelmatrix = new TrixelMatrix();
+  //trixBAD = new TrixParticle("bad");
+  //trixGOOD = new TrixParticle("good");
+    
+
+  spinclesState();
+
+
+  bx = width/2;
+  by = height/2;
+  iAngle = 0;
+  initPosY = height + 100;
+
+  
+  soundMagnetic   = iphone.loadSound("energy.wav");
+  soundScore      = iphone.loadSound("score.wav");
+  soundClick      = iphone.loadSound("click.wav");
+  soundGlitch     = iphone.loadSound("glitch.wav");
+  soundEnemy      = iphone.loadSound("enemy.wav");
+  soundTouchTimer = iphone.loadSound("glitch.wav");
+  soundStartUP    = iphone.loadSound("startup.wav");
+  soundTransIN    = iphone.loadSound("transIn.wav");
+  soundTransOUT   = iphone.loadSound("transOut.wav");
+  soundLoopBG     = iphone.loadSound("loop1.wav");
+  soundBG1        = iphone.loadSound("loop0.wav");
+  
+  
+  //setupThree();
+  //video = loadImage("cam.png");
+  
+  pebug("4 - Start sequence: main.pde setup()");
+    
+  gameState = "Start";
+  gameTransions = "Static";
+  gameSound = "Intro";
+  gameDialog = "Null";
+}
+
+
 void stateStart() {
   background(255,204,0);
   /*
