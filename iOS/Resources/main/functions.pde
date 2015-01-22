@@ -25,7 +25,7 @@ void clawTouchStart() {
     locked = true;
     energy = energy - 2;
     soundGlitch.play();
-    hurtRange = hurtValue;
+    hurtRange += hurtValue;
     //hurt();
     //trixBAD.num = 0;
   }
@@ -120,7 +120,7 @@ void share() {
 }
 
 void stateSetup() {
-  
+ 
   //size(320, 480);
   scW = screen.width;
   scH = screen.height;
@@ -134,6 +134,13 @@ void stateSetup() {
   ctx = externals.context;   
   frameRate(30);
   //smooth();
+
+
+  howImg = loadImage("data/how.png");
+  fontTitle = loadFont("data/hexagonica.ttf");        
+  fontText = loadFont("data/MicroN55.ttf");
+  
+  stateLoad();
 
   if(scW>320 && scH>480) {
     //ipad
@@ -153,14 +160,6 @@ void stateSetup() {
   
   pebug("wCount: " + wCount + ", hCount: " + hCount);
 
-   
-  howImg = loadImage("data/how.png");
-  //logoImg = loadImage("logo.png");
-  fontTitle = loadFont("data/hexagonica.ttf");        
-  fontText = loadFont("data/MicroN55.ttf");
-  
-  stateLoad();
-  
   
   iphone = new IPhone();
   startSensor();
@@ -369,7 +368,7 @@ void stateGame() {
   compass();
 
   drawBG();
-  Camera();
+  //Camera();
   //Three();        
   control.draw();  
   trixelmatrix.draw();

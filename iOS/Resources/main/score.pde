@@ -84,7 +84,6 @@ class ScoreInfo {
       textFont(fontText, 14);
       textAlign(RIGHT);
       text(score, px-5, py+10); 
-  
 
     }
 

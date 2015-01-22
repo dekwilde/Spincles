@@ -213,7 +213,7 @@ class Trixel {
         energy = energy - 4;
         soundEnemy.play();
         gameTransions = "Static";
-        hurtRange = hurtValue;
+        hurtRange += hurtValue;
         //hurt();
         pebug("energy " + energy);
         collisionTrix();
@@ -257,7 +257,7 @@ class Trixel {
       point(x3, y3);
     } else {
       strokeWeight(1);
-      stroke(255);
+      stroke(255,255-alphaBG*2);
       triangle(x1, y1, x2, y2, x3, y3);
     }
     

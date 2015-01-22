@@ -1,4 +1,8 @@
-/* @pjs transparent="true"; font="data/MicroN55.ttf, data/hexagonica.ttf"; preload="data/how.png"; */
+/* @pjs 
+transparent="true"; 
+crisp="false";
+font="data/MicroN55.ttf, data/hexagonica.ttf"; 
+preload="data/how.png"; */
 
 PFont fontTitle, fontText;
 
@@ -82,7 +86,7 @@ float dialogTimer = 0;
 
 float hurtRange = 0.0;
 int hurtTimer = 0;
-int hurtValue = 260;
+int hurtValue = 128;
 
 // Interface
 ButtonInfo btInfo;
