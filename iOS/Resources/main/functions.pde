@@ -154,7 +154,7 @@ void stateSetup() {
     wCount = 4; 
     hCount = 2;
     rad = 215;
-    iScale = 1.4;
+    iScale = 0.6;
     videoscale = 10;
   }
   

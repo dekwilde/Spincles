@@ -87,6 +87,7 @@ float dialogTimer = 0;
 float hurtRange = 0.0;
 int hurtTimer = 0;
 int hurtValue = 128;
+int hurtLife = 20;
 
 // Interface
 ButtonInfo btInfo;

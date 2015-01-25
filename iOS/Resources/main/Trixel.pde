@@ -92,6 +92,7 @@ class Trixel {
   int range;
   int changeTrix = 0;
   int changeTime = 10000;
+  int changeActive = 20;
   
   float collisionX, collisionY;
 
@@ -165,37 +166,38 @@ class Trixel {
     
     collisionX = mx - x;
     collisionY = my - y;
-    
-    
-    changeTrix = changeTrix + 1;
-    if(changeTrix>changeTime) { //warnning
-      range = rangeTrixType;
-      fill(0,int(random(255)));
-      if(changeTrix>changeTime+20) { //actived
-        resetTrix();
-      }
-    } else {
-      noFill();
-    }   
+
+
+
+    noFill();
 
     pushMatrix();
     translate(x, y); 
     if(v == 1 || v == 3) {
       rotate(radians(180));
     }  
+        
     
     if(range == 0) { //enemy
       fill(0);   
     }
-    if(range == 1) { //life
+    if(range == 1) { //energy/score
       stroke(255);
       strokeWeight(1);
+      noFill();
+      triangle(x1,y1,x2,y2,x3,y3);
+      
+      scale(0.25);
+      rotate(radians(180));
+//      fill(255,int(random(255)));
+//      triangle(0,0,x1,y1,x2,y2);
+//      fill(255,int(random(255)));
+//      triangle(0,0,x2,y2,x3,y3);
+//      fill(255,int(random(255)));
+//      triangle(0,0,x3,y3,x1,y1);
       fill(255,int(random(255)));
-      triangle(0,0,x1,y1,x2,y2);
-      fill(255,int(random(255)));
-      triangle(0,0,x2,y2,x3,y3);
-      fill(255,int(random(255)));
-      triangle(0,0,x3,y3,x1,y1);
+      triangle(x1,y1,x2,y2,x3,y3);
+      noFill();
     }
     
     
@@ -210,7 +212,7 @@ class Trixel {
       if(range == 0) { //enemy 
         iphone.vibrate();
         iphone.beep();
-        energy = energy - 4;
+        energy = energy - hurtLife;
         soundEnemy.play();
         gameTransions = "Static";
         hurtRange += hurtValue;
@@ -248,7 +250,7 @@ class Trixel {
 
     
     if(effect) {
-      noStroke();
+      stroke(255,204,0);
       triangle(x1, y1, x2, y2, x3, y3);
       strokeWeight(2);
       stroke(255);
@@ -263,13 +265,38 @@ class Trixel {
     
     
     if(range == 0) { //enemy
+      stroke(255);
+      noFill();
       for(int i=0;i<10;i++) {
-        stroke(255);
         point(random(-rad/5,rad/5), random(-rad/5,rad/5));
       }
+      triangle(x1, y1, x2, y2, x3, y3);
     }
     
+    //layout
+    changeTrix = changeTrix + 1;
+    if(changeTrix>changeTime) { //warnning
+      range = rangeTrixType;
+      
+      fill(0,floor((changeTrix-changeTime)*6));
+      stroke(255);
+      float st = ((changeTrix-changeTime)*(100/changeActive))/100;
+      if(st>1.0) {
+        st = 1.0;
+        fill(255);
+      }
+      scale(st);
+      triangle(x1, y1, x2, y2, x3, y3);
+      if(changeTrix>changeTime+changeActive) { //actived
+        resetTrix();
+      }
+    } 
+    
+    
     popMatrix();
+    
+   
+
   }
 
 
@@ -295,6 +322,7 @@ class Trixel {
     return (0.5* abs((a*d)-(b*c)));
   }
   
+
   
   void resetTrix() {
     range = int(random(rangeTrixType));
