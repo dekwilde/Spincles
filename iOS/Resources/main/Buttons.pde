@@ -122,9 +122,9 @@ class ButtonAgain {
         } else {
           stroke(255);
         }
-        noFill();
-        rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
         fill(0);
+        rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
+        fill(255,204,0);
         textFont(fontText, fSize);
         text("TRY AGAIN", pX, pY);
         

@@ -177,10 +177,12 @@ class Trixel {
       rotate(radians(180));
     }  
         
-    
+        
+        
     if(range == 0) { //enemy
-      fill(0);   
+      noFill();
     }
+    
     if(range == 1) { //energy/score
       stroke(255);
       strokeWeight(1);
@@ -252,8 +254,8 @@ class Trixel {
     if(effect) {
       stroke(255,204,0);
       triangle(x1, y1, x2, y2, x3, y3);
-      strokeWeight(2);
-      stroke(255);
+      strokeWeight(1);
+      stroke(0);
       point(x1, y1);
       point(x2, y2);
       point(x3, y3);
@@ -265,12 +267,9 @@ class Trixel {
     
     
     if(range == 0) { //enemy
-      stroke(255);
-      noFill();
-      for(int i=0;i<10;i++) {
-        point(random(-rad/5,rad/5), random(-rad/5,rad/5));
-      }
-      triangle(x1, y1, x2, y2, x3, y3);
+      trifract(0, 0, radius,int(random(1,4)), false);
+      trifract(0, 0, radius/2,int(random(3)), true);
+      //trifract(0, 0, radius/4,int(random(1,4)), false);
     }
     
     //layout
@@ -292,12 +291,9 @@ class Trixel {
       }
     } 
     
-    
     popMatrix();
-    
-   
 
-  }
+  } //end draw
 
 
 
@@ -305,15 +301,15 @@ class Trixel {
 
   boolean checkCollision(float cx, float cy) {
     float tArea,t1Area,t2Area,t3Area,totalArea;
-    tArea  = triangleArea(x1,y1,x3,y3,x2,y2);
-    t1Area = triangleArea(cx,cy,x2,y2,x3,y3);
-    t2Area = triangleArea(cx,cy,x3,y3,x1,y1);
-    t3Area = triangleArea(cx,cy,x2,y2,x1,y1);    
+    tArea  = triArea(x1,y1,x3,y3,x2,y2);
+    t1Area = triArea(cx,cy,x2,y2,x3,y3);
+    t2Area = triArea(cx,cy,x3,y3,x1,y1);
+    t3Area = triArea(cx,cy,x2,y2,x1,y1);    
     totalArea = t1Area+t2Area+t3Area;
     return (totalArea == tArea);
   } 
   
-  float triangleArea(float p1, float p2, float p3, float p4, float p5, float p6) {
+  float triArea(float p1, float p2, float p3, float p4, float p5, float p6) {
     float a,b,c,d;
     a = p1 - p5;
     b = p2 - p6;
@@ -322,6 +318,25 @@ class Trixel {
     return (0.5* abs((a*d)-(b*c)));
   }
   
+  void trifract(float x, float y, float l, int level, boolean inv){
+    fill(0,random(128));
+    pushMatrix();
+    rotate(radians(180));
+    if(inv) {
+      rotate(radians(180));
+    }    
+    noStroke();
+    triangle(x, y+l,x+l*sqrt(3)/2, y-l/2,x-l*sqrt(3)/2, y-l/2);
+    popMatrix();
+    
+    if (level>1){
+        l*=.5;
+        level= level-1;
+        trifract(x, y+l, l, level, inv);
+        trifract(x+l*sqrt(3)/2, y-l/2, l, level, inv);
+        trifract(x-l*sqrt(3)/2, y-l/2, l, level, inv);
+    }    
+  }
 
   
   void resetTrix() {
@@ -339,5 +354,8 @@ class Trixel {
     changeTime = 0;
     changeTrix = 0;
   }
+  
+
+  
   
 }
