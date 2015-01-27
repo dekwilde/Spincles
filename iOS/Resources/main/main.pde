@@ -43,7 +43,8 @@ PSound soundBG1, soundBG2, soundLoopBG, soundTransIN, soundTransOUT, soundStartU
 Tbody body;
 TrixelMatrix trixelmatrix;
 
-int scW, scH;
+int scW = screen.width;
+int scH = screen.height;
 int wCount, hCount;
 
 int numSegment = 4;
@@ -266,6 +267,10 @@ void draw() {
     
     case "Score":
       dialog.draw("score","+1", "");
+    break;
+    
+    case "Setup":
+      dialog.draw("complete","OK", "");
     break;
     
     case "Start":

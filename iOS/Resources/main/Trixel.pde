@@ -92,7 +92,7 @@ class Trixel {
   int range;
   int changeTrix = 0;
   int changeTime = 10000;
-  int changeActive = 20;
+  int changeActive = 30;
   
   float collisionX, collisionY;
 
@@ -180,7 +180,7 @@ class Trixel {
         
         
     if(range == 0) { //enemy
-      noFill();
+      fill(0);
     }
     
     if(range == 1) { //energy/score
@@ -250,7 +250,7 @@ class Trixel {
         
     // draw triangle      
 
-    
+    /*
     if(effect) {
       stroke(255,204,0);
       triangle(x1, y1, x2, y2, x3, y3);
@@ -261,31 +261,45 @@ class Trixel {
       point(x3, y3);
     } else {
       strokeWeight(1);
-      stroke(255,255-alphaBG*2);
+      stroke(255,255-alphaBG);
       triangle(x1, y1, x2, y2, x3, y3);
     }
+    */
+    
+    strokeWeight(1);
+    stroke(255,255-alphaBG);
+    triangle(x1, y1, x2, y2, x3, y3);
     
     
     if(range == 0) { //enemy
-      trifract(0, 0, radius,int(random(1,4)), false);
+      trifract(0, 0, radius,int(random(4)), false);
       trifract(0, 0, radius/2,int(random(3)), true);
       //trifract(0, 0, radius/4,int(random(1,4)), false);
     }
     
-    //layout
+    //change Animation
     changeTrix = changeTrix + 1;
     if(changeTrix>changeTime) { //warnning
-      range = rangeTrixType;
       
-      fill(0,floor((changeTrix-changeTime)*6));
-      stroke(255);
-      float st = ((changeTrix-changeTime)*(100/changeActive))/100;
+      int fl = floor((changeTrix-changeTime)*(128/changeActive));
+      float st = ((changeTrix-changeTime)*(150/changeActive))/100;
       if(st>1.0) {
         st = 1.0;
-        fill(255);
+        fl = int(random(255));
+        range = rangeTrixType;
       }
-      scale(st);
+      if(range > 1) {
+        fill(0,fl);
+        scale(st);
+      }
+      if(range == 0) { //0 == enemy 
+        fill(255,fl);
+        scale(1);
+      }
+      //stroke(255);
+      noStroke();
       triangle(x1, y1, x2, y2, x3, y3);
+      
       if(changeTrix>changeTime+changeActive) { //actived
         resetTrix();
       }
@@ -319,14 +333,23 @@ class Trixel {
   }
   
   void trifract(float x, float y, float l, int level, boolean inv){
-    fill(0,random(128));
     pushMatrix();
     rotate(radians(180));
     if(inv) {
       rotate(radians(180));
-    }    
+    } 
+    
+    stroke(255);  
+    if(int(random(2)) == 0){line(x, y+l,x+l*sqrt(3)/2, y-l/2);}
+    if(int(random(2)) == 0){line(x+l*sqrt(3)/2, y-l/2,x-l*sqrt(3)/2, y-l/2);}
+    if(int(random(2)) == 0){line(x, y+l,x-l*sqrt(3)/2, y-l/2);}
+    
+    
+    /*
+    fill(0,random(128));
     noStroke();
     triangle(x, y+l,x+l*sqrt(3)/2, y-l/2,x-l*sqrt(3)/2, y-l/2);
+    */
     popMatrix();
     
     if (level>1){

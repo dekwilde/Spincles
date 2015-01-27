@@ -74,12 +74,13 @@ class ScoreInfo {
       fill(0);
       noStroke();
       rect(px, py, energy, dh);
-    
+      
+      /*
       stroke(255);
       line(px+10, py+dh/2, px+80, py+dh/2);
       line(px+10, py+ dh/5, px+10, py+ dh - dh/5);
       line(px+80, py+ dh/5, px+80, py+ dh - dh/5);    
-      
+      */
 
       textFont(fontText, 14);
       textAlign(RIGHT);

@@ -120,12 +120,11 @@ void share() {
 }
 
 void stateSetup() {
- 
-  //size(320, 480);
   scW = screen.width;
   scH = screen.height;
-  
-  size(scW, scH);
+  pebug("width: " + scW + " " + "height: " + scH);
+  size(scW, scH, P2D);
+
   
   //rectMode(CENTER_RADIUS);
   rectMode(CORNER);
@@ -215,12 +214,14 @@ void stateSetup() {
   gameState = "Start";
   gameTransions = "Static";
   gameSound = "Intro";
-  gameDialog = "Null";
+  gameDialog = "Setup";
+ 
 }
 
 
 void stateStart() {
   background(255,204,0);
+  
   /*
   ctx.rect(0,0,width,height);
   fill(255,204,0,20);
