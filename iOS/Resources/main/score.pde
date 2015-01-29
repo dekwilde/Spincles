@@ -52,7 +52,7 @@ class ScoreInfo {
       else if(energy>1 && energy<9) {
         numSegment = 1;
         numOfArms = 3;  
-        WeightSegmentTouch = random(8.0, 12.0 + hurtTimer/10);
+        WeightSegmentTouch = random(12.0, 16.0 + hurtTimer/10);
         angleSpeedTouch =  - random(0.05, 0.3);
         angleRadiusTouch =  - random(-6.0, 6.0);
       }

@@ -50,6 +50,7 @@ void photoSelected(file) {
 }
 
 void photoScreenShot(file) {
+    //loop();
     gameState = "Load";
     iphone.viewDocument(file);
     setTimeout(function() {

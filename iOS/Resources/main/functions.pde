@@ -117,6 +117,7 @@ void gameOver() {
 void share() {
   iphone.screenShot();
   pebug("screenshot");
+  //noLoop();
 }
 
 void stateSetup() {
@@ -146,7 +147,7 @@ void stateSetup() {
     wCount = 4;
     hCount = 2; 
     rad = 430;
-    iScale = 2.4;
+    iScale = 1.2;
     videoscale = 24;
   } else {
     //iphone
