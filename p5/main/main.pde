@@ -159,7 +159,7 @@ void draw() {
 
         pi++;
         
-          GL gl = pgl.beginGL();
+        GL gl = pgl.beginGL();
   // copy to texture, to send to Syphon.
   int[] texID = new int[1];
   gl.glEnable(gl.GL_TEXTURE_RECTANGLE_EXT);

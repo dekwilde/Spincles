@@ -26,7 +26,7 @@ margin:0;
 padding:0;
 background-color:transparent;
 -webkit-user-select:none; 
-mix-blend-mode: overlay;
+mix-blend-mode: screen;
 background-image: url(data/glitch.gif); 
 background-size: 100% 100%; 
 background-repeat: no-repeat;\">" > main.html    
@@ -40,8 +40,7 @@ width:100%;
 height:100%; 
 margin:0;
 padding:0; 
-background-color:transparent; 
-mix-blend-mode: screen;\" 
+background-color:transparent;\" 
 data-processing-sources=\"$codeList\"></canvas>" >> main.html
 echo "</body>
 </html>" >> main.html
