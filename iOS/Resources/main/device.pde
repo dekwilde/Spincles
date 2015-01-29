@@ -223,3 +223,24 @@ void orientationChanged() {
 void shakeEvent() {
   pebug("shaked");
 }
+
+
+
+function doOnOrientationChange() {
+  switch(window.orientation) {  
+    case -90:
+      orientationMode = "landscape inverse";
+    break;
+    case 90:
+      orientationMode = "landscape";
+    break; 
+    case 0:
+      orientationMode = "portrait";
+    break; 
+    case 180:
+      orientationMode = "inverse";
+    break;   
+  }   
+  pebug(orientationMode);
+}
+window.addEventListener('orientationchange', doOnOrientationChange);
