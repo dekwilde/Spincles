@@ -103,9 +103,9 @@ NSString * const ktest3Javascript = @"Ti.App={};Ti.API={};Ti.App._listeners={};T
 		webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 10, 1)];
 		
         // enable opengl or webgl
-        id webDocumentView = [webview performSelector:@selector(_browserView)];
-        id backingWebView = [webDocumentView performSelector:@selector(webView)];
-        [backingWebView _setWebGLEnabled:YES];
+        //id webDocumentView = [webview performSelector:@selector(_browserView)];
+        //id backingWebView = [webDocumentView performSelector:@selector(webView)];
+        //backingWebView setWebGLEnabled:YES];
         
         webview.delegate = self;
 		webview.opaque = NO;
