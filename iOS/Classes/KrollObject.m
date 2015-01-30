@@ -743,7 +743,8 @@ bool KrollSetProperty(TiContextRef jsContext, TiObjectRef object, TiStringRef pr
 		}
 		id result = [self _valueForKey:key];
 		// we can safely cache method objects
-		if ([result isKindOfClass:[KrollObject class]])
+		
+        if ([result isKindOfClass:[KrollObject class]])
 		{
 			[self setStaticValue:result forKey:key purgable:YES];
 		}
