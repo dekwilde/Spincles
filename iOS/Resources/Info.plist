@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>Brasilian</string>
 	<key>CFBundleDisplayName</key>
-	<string>${PRODUCT_NAME}</string>
+	<string>Spincles</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFiles</key>
@@ -21,13 +21,13 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>${PRODUCT_NAME}</string>
+	<string>Spincles</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>2.0.1</string>
 	<key>CFBundleSignature</key>
-	<string>????</string>
+	<string></string>
 	<key>CFBundleVersion</key>
 	<string>2.0.1</string>
 	<key>LSApplicationCategoryType</key>
@@ -36,10 +36,6 @@
 	<true/>
 	<key>UIPrerenderedIcon</key>
 	<true/>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>gamekit</string>
-	</array>
 	<key>UIStatusBarHidden</key>
 	<true/>
 	<key>UIStatusBarHidden~ipad</key>
