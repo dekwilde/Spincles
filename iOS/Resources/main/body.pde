@@ -44,7 +44,7 @@ class Arm {
       fill(255,255);
       noStroke();
       ellipse(0,0,2,2);
-      stroke(0, 80);
+      stroke(0, 90);
       line(0, 0, LengthSeg, 0);
   } 
 }

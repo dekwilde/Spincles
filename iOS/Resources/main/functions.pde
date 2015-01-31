@@ -200,9 +200,9 @@ void stateSetup() {
   soundGlitch     = iphone.loadSound("glitch.wav");
   soundEnemy      = iphone.loadSound("enemy.wav");
   soundTouchTimer = iphone.loadSound("glitch.wav");
-  soundStartUP    = iphone.loadSound("startup.wav");
-  soundTransIN    = iphone.loadSound("transIn.wav");
-  soundTransOUT   = iphone.loadSound("transOut.wav");
+  //soundStartUP    = iphone.loadSound("startup.wav");
+  //soundTransIN    = iphone.loadSound("transIn.wav");
+  //soundTransOUT   = iphone.loadSound("transOut.wav");
   soundLoopBG     = iphone.loadSound("loop1.wav");
   soundBG1        = iphone.loadSound("loop0.wav");
   
@@ -250,30 +250,30 @@ void stateStart() {
 }
 
 void stateOver() {
-  int Talign = 0;
+  int Talign = -240;
   initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
   background(255, 204, 0, initColorAlpha);
   fill(0);
   
   textAlign(CENTER);
   textFont(fontTitle, 40);
-  text("GAME", width/2, 80+Talign);
+  text("GAME", width/2, height/2+80+Talign);
   textFont(fontTitle, 48);
-  text("OVER", width/2, 160+Talign);
+  text("OVER", width/2, height/2+160+Talign);
   
   textFont(fontText);
   textSize(16);
-  text("score", width/2, 200+Talign);
+  text("score", width/2, height/2+200+Talign);
   textSize(36);
-  text(score, width/2, 230+Talign);
+  text(score, width/2, height/2+230+Talign);
   textSize(16);
-  text(scoreResult, width/2, 270+Talign);
+  text(scoreResult, width/2,height/2+270+Talign);
   textSize(36);
-  text(recordScore, width/2, 300+Talign);
+  text(recordScore, width/2, height/2+300+Talign);
   textSize(16);
-  text("level", width/2, 340+Talign);
+  text("level", width/2, height/2+340+Talign);
   textSize(36);
-  text(level, width/2, 370+Talign);
+  text(level, width/2, height/2+370+Talign);
   
   btAgain.draw();
 }
@@ -318,7 +318,7 @@ void stateHow() {
   noStroke();
   fill(0, 20);
   rect(0,0,width,height);
-  image(howImg, width/2, pInfo+height/2, width, height);
+  image(howImg, width/2, pInfo+height/2, 320, 480);
   fill(255);
   textAlign(CENTER);
   textFont(fontTitle, 20);
@@ -389,8 +389,8 @@ void stateNoTouch() {
   translate(0,0);
   scale(1.0);
   background(255, 204, 0);
-  
   tEff.draw1(); 
+  
   fill(0);
   textAlign(CENTER);
   textFont(fontTitle, 50);

@@ -306,8 +306,8 @@ class TrixelEffect {
   }
   void draw1() {
     noStroke();
-    for(int i=0; i<10;i++) {
-      for(int j=0; j<14;j++) {    
+    for(int i=0; i<((width/w)+1)*2;i++) {
+      for(int j=0; j<((height/h)+1)*2;j++) {    
           fill(255,random(255));
           for (float x = 0; x < width; x += w)
             for (float y = 0; y < height; y += 2*h)

@@ -25,12 +25,10 @@ echo "<html>
 margin:0;
 padding:0;
 background-color:transparent;
--webkit-user-select:none; 
-mix-blend-mode: screen;
+-webkit-user-select:none;
 background-image: url(data/glitch.gif); 
 background-size: 100% 100%; 
 background-repeat: no-repeat;\">" > main.html    
-
 
 echo "<canvas id=\"pde\" style=\"
 float:left; 

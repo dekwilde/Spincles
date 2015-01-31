@@ -243,7 +243,7 @@ void draw() {
     break;
     
     case "Start":
-      soundStartUP.play();
+      //soundStartUP.play();
       gameSound = "Null";
     break;
 

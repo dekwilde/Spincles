@@ -19,7 +19,6 @@ function dispose() {
     win.remove(overlay);
     overlay = null;
 }
-
 var mainCamera = Titanium.UI.createView({
                                         touchEnabled: false,
                                         enabled: false
@@ -29,17 +28,19 @@ win.add(mainCamera);
 
 var webview = Titanium.UI.createWebView({
                                         url:'../main.html',
-                                       	width:Ti.UI.SIZE,
-	                                    height:Ti.UI.SIZE,
-                                        //width:320,
+                                       	//width:320,
                                         //height:480,
+                                        width:Ti.UI.SIZE,
+	                                    height:Ti.UI.SIZE,
+                                        //width:'100%',
+                                        //height:'100%',
                                         layout: 'vertical',
 										top:0,
 										left:0,
                                         backgroundColor:'transparent'
                                         });
-webview.addEventListener('load', init);
 win.add(webview);
+webview.addEventListener('load', init);
 
 var keyboardCapture = Titanium.UI.createTextField({left:0,top:480});
 win.add(keyboardCapture);

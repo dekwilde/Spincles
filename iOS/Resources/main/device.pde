@@ -14,8 +14,8 @@ float compassDEGREE, targetDEGREE;
 
 
 void startSensor() {
-  iphone.squareCamera();
-  frame = requestImage(iphone.getCamera());
+  //iphone.squareCamera();
+  //frame = requestImage(iphone.getCamera());
   iphone.startMicMonitor();
   iphone.startAccelerometer();
   iphone.startCompass();
