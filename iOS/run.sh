@@ -28,7 +28,10 @@ background-color:transparent;
 -webkit-user-select:none;
 background-image: url(data/glitch.gif); 
 background-size: 100% 100%; 
-background-repeat: no-repeat;\">" > main.html    
+background-repeat: no-repeat;
+filter:alpha(opacity=80);
+opacity:.8;
+\">" > main.html    
 
 echo "<canvas id=\"pde\" style=\"
 float:left; 

@@ -19,12 +19,6 @@ function dispose() {
     win.remove(overlay);
     overlay = null;
 }
-var mainCamera = Titanium.UI.createView({
-                                        touchEnabled: false,
-                                        enabled: false
-                                       });
-//win.add(mainCamera);
-
 
 var webview = Titanium.UI.createWebView({
                                         url:'../main.html',
@@ -37,7 +31,8 @@ var webview = Titanium.UI.createWebView({
                                         layout: 'vertical',
 										top:0,
 										left:0,
-                                        backgroundColor:'transparent'
+                                        backgroundColor:'transparent',
+                                        zIndex: 2
                                         });
 win.add(webview);
 webview.addEventListener('load', init);
@@ -522,6 +517,14 @@ function updateCamera() {
 // square camera -----------------------------------------------
 var updateSquareTimer = null;
 function squareCamera() {
+    
+    var mainCamera = Titanium.UI.createView({
+                                            touchEnabled: false,
+                                            enabled: false,
+                                            zIndex: 1
+                                            });
+    win.add(mainCamera);
+    
 
     var SquareCamera = require('com.mfogg.squarecamera');
     Ti.API.info("2 - startSquareCamera => " + SquareCamera);

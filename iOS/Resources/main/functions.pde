@@ -72,7 +72,7 @@ void drawBG() {
   } else {
     effect = false;
     background(colorR, colorG, colorB, alphaBG*2);
-    fill(colorR, colorG, colorB, 128);
+    fill(colorR, colorG, colorB, 204);
     noStroke();        
     rect(0,0,width,height);  
   }
@@ -370,7 +370,7 @@ void stateGame() {
   compass();
 
   drawBG();
-  //Camera();
+  //cam();
   //Three();        
   control.draw();  
   trixelmatrix.draw();
