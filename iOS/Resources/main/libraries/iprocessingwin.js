@@ -23,7 +23,7 @@ var mainCamera = Titanium.UI.createView({
                                         touchEnabled: false,
                                         enabled: false
                                        });
-win.add(mainCamera);
+//win.add(mainCamera);
 
 
 var webview = Titanium.UI.createWebView({
