@@ -90,6 +90,17 @@ int hurtTimer = 0;
 int hurtValue = 128;
 int hurtLife = 20;
 
+float gx,gy;
+float mx, my; //mouse or object position middle;
+float trixelX, trixelY;
+float nX, nY;
+float angleCompass;
+float atan;
+
+//ENGINE GAME
+int rangeTrixType = 10;
+
+
 // Interface
 ButtonInfo btInfo;
 ButtonStart btStart;
@@ -105,12 +116,15 @@ Logo logo;
 TrixelEffect tEff;
 Dialog dialog;
 
+TrixParticle particleExplode, particleMagnetic;
+ArrayList particles;
+
 float pInfo = height;
 
 
 // Transitions
 
-String gameState, gameTransions, gameSound, gameDialog;
+String gameState, gameEnemy, gameTransions, gameSound, gameDialog;
 
 void setup() {  
   stateSetup();   
@@ -158,6 +172,16 @@ void draw() {
             
     
   } //end gameState
+    
+  switch( gameEnemy ) {
+    case "Null":
+    
+    break;
+    
+    case "Magnetic":
+      particleMagnetic.draw();
+    break;
+  } 
   
   
   switch( gameTransions ) {      
@@ -282,6 +306,7 @@ void draw() {
     break;
     
   }
+
   
   
 }

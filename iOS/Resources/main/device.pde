@@ -37,7 +37,7 @@ void photoCancelled() {
   loop();
 }
 
-void photoSelected(file) {  
+void photoSelected(String file) {  
   setTimeout(function() {
     iphone.viewDocument(file);
     gameState = "InfoShow";
@@ -287,7 +287,7 @@ void cam() {
 }
 
 
-
+/*
 function doOnOrientationChange() {
   switch(window.orientation) {  
     case -90:
@@ -306,3 +306,4 @@ function doOnOrientationChange() {
   pebug(orientationMode);
 }
 window.addEventListener('orientationchange', doOnOrientationChange);
+*/

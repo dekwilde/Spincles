@@ -1,19 +1,4 @@
 int rad; //triangle radius 215 is default
-float mx, my; //mouse or object position middle;
-float trixelX, trixelY;
-float angleCompass;
-float atan;
-
-//ENGINE GAME
-int rangeTrixType = 10;
-float nX, nY;
-
-
-//TrixParticle trixBAD;
-//TrixParticle trixGOOD;
-//ArrayList particles;
-
-
 class TrixelMatrix {  
   Trixel[] trixel;
   int n = 0;
@@ -177,8 +162,13 @@ class Trixel {
       rotate(radians(180));
     }  
         
-        
-        
+    if(range == 3) { //enemy
+    
+      fill(0);
+      particleMagnetic.reset(2, collisionX, collisionY);
+      gameEnemy = "Magnetic";
+      collisionTrix();  
+    }    
     if(range == 0) { //enemy
       fill(0);
     }
@@ -212,17 +202,10 @@ class Trixel {
       }
       
       if(range == 0) { //enemy 
-        iphone.vibrate();
-        iphone.beep();
-        energy = energy - hurtLife;
-        soundEnemy.play();
-        gameTransions = "Static";
-        hurtRange += hurtValue;
-        //hurt();
-        pebug("energy " + energy);
+        hurt();
         collisionTrix();
         //trixBAD.num = 0;
-        spinclesState();
+        
         
       }
       if(range == 1) { //score

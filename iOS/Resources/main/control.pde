@@ -1,4 +1,3 @@
-float gx,gy;
 class Control {
 
   float gravity = sqrt(width*width+height*height)/10;

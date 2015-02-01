@@ -373,23 +373,34 @@ class TrixelEffect {
 
 class TrixParticle {
   int num;
-  int amount = 5;
+  int amount;
   String tp;
+  float particleX = 0;
+  float particleY = 0;
   
   TrixParticle(String type) {
     tp = type;
+    amount = 3;
     particles = new ArrayList();
     num = 0;
   }
+  void reset(int n, float posX, float posY) {
+    num = 0;
+    amount = n;
+    particleX = posX;
+    particleY = posY;
+  }
+  
   
   void draw(){
     num += 1;
     if(num<amount) {
-      particles.add(new Particle(tp));
+      particles.add(new Particle(tp,particleX,particleY));
     }
     for(int i=0; i < particles.size(); i++){
       Particle p = (Particle) particles.get(i);
       p.draw();
+      p.collision();
       //p.gravity();
       p.display();
       p.conect();
@@ -407,56 +418,69 @@ class TrixParticle {
 class Particle{
   float x;
   float y;
-  float xspeed = 0;
-  float yspeed = 0;
-  float myDiameter= 2;
-  float distance = 90;
+  float r;
+  float xspeed= random(-2.0, 2.0);
+  float yspeed= random(-2.0, 2.0); 
+  float diameter= 20;
+  float distance = 300;
   float delay = random(0.001, 0.01);
-  float elastic = 0.98;
-  int life =0, lifeTime = 50+int(random(200));
+  float elastic = 0.7;
+  int life =0, lifeTime = 50+int(random(300));
   boolean death = false;
   String tp;
+  
+  Trix trix;
 
   
-  Particle(String type){
+  Particle(String type, float posX, float posY){
+    trix = new Trix(20);
     tp = type;
-    if(tp == "good") {
-      x= int(random(width));
-      y= int(random(height));
-    }
-    if(tp == "bad") {
-      x= spinX;
-      y= spinY;
-      xspeed= random(-2, 2);
-      yspeed= random(-2, 2);  
-    }
+    x= posX+random(-rad,rad);
+    y= posY+random(-rad,rad);
   }
     
-  void draw(){
-    strokeWeight(1);
-    if(tp == "good") {
-      float dx = spinX - x;
-      float dy = spinY - y;
-      xspeed = dx*delay+xspeed*elastic;
-      yspeed = dy*delay+yspeed*elastic;
-      x = x+xspeed;
-      y = y+yspeed;
-    }
-    if(tp == "bad") {
-      x = x+xspeed;
-      y = y+yspeed; 
+  void draw(){  
+    r = random(2);
+    switch( tp ) { 
+      case "explode":
+        x = x+xspeed;
+        y = y+yspeed; 
+      break; 
+      
+      case "magnetic":
+        float dx = spinX - x;
+        float dy = spinY - y;
+        xspeed = dx*delay+xspeed*elastic;
+        yspeed = dy*delay+yspeed*elastic;
+        x = x+xspeed;
+        y = y+yspeed;
+      break; 
     }
     
   }
     
   void display(){
+    strokeWeight(1);
     noStroke();
     fill(0);
-    ellipse(x, y, 2, 2);
+    pushMatrix();
+    translate(x,y);
+    rotate(r);
+    triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);
+    popMatrix();
+    //ellipse(x, y, 2, 2);
   }
   
   void gravity(){
     yspeed += 0.01;
+  }
+  
+  void collision() {
+    if(dist(x,y,spinX,spinY)<diameter) {
+      pebug("collisioon");
+      death = true;
+      hurt();
+    }
   }
   
   void dead() {
@@ -475,11 +499,18 @@ class Particle{
  
       if (this != other) {
         if (dist(x, y, other.x, other.y)<distance) {
-          stroke(0,0,0,70);
+          diameter= 40;
+          stroke(0,70);
           line(x, y, other.x, other.y);
           noStroke();
-          fill(0, 0, 0, random(100));
-          ellipse(x,y,myDiameter*5,myDiameter*5);
+          fill(0, random(100));
+          pushMatrix();
+          translate(x,y);
+          rotate(r);
+          scale(3);
+          triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);
+          popMatrix();
+          //ellipse(x,y,myDiameter*5,myDiameter*5);
         }
       }
     } //end for

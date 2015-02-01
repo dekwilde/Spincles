@@ -5,7 +5,13 @@ void pebug(String m) {
 
 
 void hurt() {
-  //
+  iphone.vibrate();
+  energy = energy - hurtLife;
+  soundEnemy.play();
+  gameTransions = "Static";
+  hurtRange += hurtValue;
+  spinclesState();
+  pebug("energy " + energy);
 }
 
 void clawTouchStart() {
@@ -111,6 +117,7 @@ void gameOver() {
   setScore();
   gameTransions = "Static";
   gameState = "Over";
+  gameEnemy = "Null";
  
 }
 
@@ -181,8 +188,8 @@ void stateSetup() {
   dialog = new Dialog();
 
   trixelmatrix = new TrixelMatrix();
-  //trixBAD = new TrixParticle("bad");
-  //trixGOOD = new TrixParticle("good");
+  particleExplode = new TrixParticle("explode");
+  particleMagnetic = new TrixParticle("magnetic");
     
 
   spinclesState();
@@ -213,6 +220,7 @@ void stateSetup() {
   pebug("4 - Start sequence: main.pde setup()");
     
   gameState = "Start";
+  gameEnemy = "Null";
   gameTransions = "Static";
   gameSound = "Intro";
   gameDialog = "Setup";
@@ -374,8 +382,6 @@ void stateGame() {
   //Three();        
   control.draw();  
   trixelmatrix.draw();
-  //trixBAD.draw();
-  //trixGOOD.draw();
   spinclesDraw();
   btInfo.draw();
   //btCamera.draw();
