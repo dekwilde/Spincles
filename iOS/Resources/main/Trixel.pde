@@ -163,12 +163,27 @@ class Trixel {
     }  
         
     if(range == 3) { //enemy
-    
+      stroke(255);
+      strokeWeight(1);
+      noFill();
+      triangle(x1,y1,x2,y2,x3,y3);
+      
+      rotate(radians(180));
+      
+      scale(0.12);
+      fill(0,random(100));
+      triangle(x1,y1,x2,y2,x3,y3);
+      
+      scale(0.4);
       fill(0);
-      particleMagnetic.reset(2, collisionX, collisionY);
-      gameEnemy = "Magnetic";
-      collisionTrix();  
+      triangle(x1,y1,x2,y2,x3,y3);
+      
+      if(changeTrix<1) {
+        //particleMagnetic.reset(2, x+mx, y+my);
+        //gameEnemy = "Magnetic";
+      }  
     }    
+    
     if(range == 0) { //enemy
       fill(0);
     }
@@ -208,6 +223,13 @@ class Trixel {
         
         
       }
+      if(range == 3) { //enemy
+      
+        particleMagnetic.reset(2, x-nX,y-nY);
+        gameEnemy = "Magnetic";
+        collisionTrix();
+      }  
+      
       if(range == 1) { //score
        
         energy = energy + 2;

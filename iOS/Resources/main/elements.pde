@@ -424,8 +424,8 @@ class Particle{
   float diameter= 20;
   float distance = 300;
   float delay = random(0.001, 0.01);
-  float elastic = 0.7;
-  int life =0, lifeTime = 50+int(random(300));
+  float elastic = 0.8;
+  int life =0, lifeTime = 50+int(random(150));
   boolean death = false;
   String tp;
   
@@ -437,6 +437,8 @@ class Particle{
     tp = type;
     x= posX+random(-rad,rad);
     y= posY+random(-rad,rad);
+    //x= posX;
+    //y= posY;
   }
     
   void draw(){  
@@ -499,7 +501,7 @@ class Particle{
  
       if (this != other) {
         if (dist(x, y, other.x, other.y)<distance) {
-          diameter= 40;
+          diameter= 30;
           stroke(0,70);
           line(x, y, other.x, other.y);
           noStroke();
