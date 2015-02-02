@@ -89,8 +89,6 @@ void drawBG() {
 
 
 void activeGame() {
-  gameSound = "Start";
-  //gameTransions = "Flash";
   trixelmatrix.reset();
 }
 
@@ -115,6 +113,7 @@ void resetGame() {
 
 void gameOver() {
   setScore();
+  activeGame();
   gameTransions = "Static";
   gameState = "Over";
   gameEnemy = "Null";

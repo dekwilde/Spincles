@@ -1,4 +1,5 @@
 int rad; //triangle radius 215 is default
+int rangeTrixType = 10;
 class TrixelMatrix {  
   Trixel[] trixel;
   int n = 0;
@@ -58,6 +59,7 @@ class TrixelMatrix {
     
   void reset() {
     for (int i = 0; i < count; i++) {
+      trixel[i].range = rangeTrixType;
       trixel[i].changeTrix = 0;
       trixel[i].changeTime = 0;
     } 
@@ -171,8 +173,8 @@ class Trixel {
       stroke(255);
       strokeWeight(1);
       if(enemyActive) {
-        fill(255,204,0);
-        particleExplode.draw();
+        particleExplode.draw(collisionX,collisionY);
+        fill(255,204,0, 128);
       } else {
         noFill();
       }
@@ -229,7 +231,7 @@ class Trixel {
       }
       if(range == 3 && !enemyDraw) { //enemy
           gameTransions = "Blackout";
-          particleExplode.init(2, collisionX, collisionY);
+          particleExplode.init(2, collisionX+random(-60,60), collisionY+random(-60,60));
           //particleMagnetic.init(2, spinX+random(-rad+100,rad+100),spinY+random(-rad+100,rad+100));
           //gameEnemy = "Magnetic";
           enemyActive = true;

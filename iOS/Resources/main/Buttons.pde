@@ -132,6 +132,8 @@ class ButtonAgain {
             overButton = false;
             soundClick.play();
             resetGame();
+            //activeGame();
+            
         }
     } 
     

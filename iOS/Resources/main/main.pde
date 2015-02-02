@@ -97,10 +97,6 @@ float nX, nY;
 float angleCompass;
 float atan;
 
-//ENGINE GAME
-int rangeTrixType = 10;
-
-
 // Interface
 ButtonInfo btInfo;
 ButtonStart btStart;
@@ -179,7 +175,7 @@ void draw() {
     break;
     
     case "Magnetic":
-      particleMagnetic.draw();
+      particleMagnetic.draw(spinX,spinY);
     break;
   } 
   

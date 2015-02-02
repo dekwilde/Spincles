@@ -392,7 +392,7 @@ class TrixParticle {
   }
   
   
-  void draw(){
+  void draw(float cx, float cy){
     num += 1;
     if(num<=amount) {
       particles.add(new Particle(tp,particleX,particleY));
@@ -400,7 +400,7 @@ class TrixParticle {
     for(int i=0; i < particles.size(); i++){
       Particle p = (Particle) particles.get(i);
       p.draw();
-      p.collision();
+      p.collision(cx,cy);
       //p.gravity();
       p.display();
       p.conect();
@@ -420,7 +420,7 @@ class Particle{
   float y;
   float r;
   float xspeed,yspeed;
-  float diameter= 20;
+  float diameter= 15;
   float distance = 200;
   float delay = random(0.001, 0.01);
   float elastic = 0.8;
@@ -482,8 +482,8 @@ class Particle{
     yspeed += 0.01;
   }
   
-  void collision() {
-    if(dist(x,y,spinX,spinY)<diameter) {
+  void collision(float cx, float cy) {
+    if(dist(x,y,cx,cy)<diameter) {
       pebug("collisioon");
       death = true;
       hurt();
@@ -506,7 +506,7 @@ class Particle{
  
       if (this != other) {
         if (dist(x, y, other.x, other.y)<distance) {
-          diameter= 30;
+          diameter = 30;
           stroke(0,70);
           line(x, y, other.x, other.y);
           noStroke();
