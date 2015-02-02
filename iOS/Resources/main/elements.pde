@@ -400,10 +400,10 @@ class TrixParticle {
     for(int i=0; i < particles.size(); i++){
       Particle p = (Particle) particles.get(i);
       p.draw();
-      p.collision(cx,cy);
       //p.gravity();
       p.display();
       p.conect();
+      p.collision(cx,cy);
       p.dead();
       if(p.death){
         particles.remove(i);
@@ -420,8 +420,8 @@ class Particle{
   float y;
   float r;
   float xspeed,yspeed;
-  float diameter = 15;
-  float distance = 200;
+  float diameter = rad/25;
+  float distance = rad/2;
   float delay = random(0.001, 0.01);
   float elastic = 0.8;
   int life =0, lifeTime = 50+int(random(150));
@@ -432,7 +432,7 @@ class Particle{
 
   
   Particle(String type, float posX, float posY){
-    trix = new Trix(20);
+    trix = new Trix(rad*.05);
     tp = type;
     x= posX;
     y= posY;
@@ -500,7 +500,7 @@ class Particle{
   }
   
   void conect() { 
-    diameter = 15;
+    diameter = rad/25;
     for (int i = 0; i <particles.size() ; i++) {
       
       Particle other = (Particle) particles.get(i);
@@ -509,7 +509,7 @@ class Particle{
         if (dist(x, y, other.x, other.y)<distance) {
           
           if(tp == "magnetic") {
-            diameter = 30;
+            diameter = diameter*2;
           }
           if(tp == "explode") {
             diameter = 0;

@@ -259,9 +259,10 @@ void stateStart() {
 
 void stateOver() {
   int Talign = -240;
-  initColorAlpha = initColorAlpha + (255 - initColorAlpha)/20;
-  background(255, 204, 0, initColorAlpha);
-  fill(0);
+  fill(0, 3);
+  noStroke();
+  rect(0,0,width,height);
+  fill(255);
   
   textAlign(CENTER);
   textFont(fontTitle, 40);

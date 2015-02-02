@@ -26,8 +26,6 @@ var webview = Titanium.UI.createWebView({
                                         //height:480,
                                         width:Ti.UI.SIZE,
 	                                    height:Ti.UI.SIZE,
-                                        //width:'100%',
-                                        //height:'100%',
                                         layout: 'vertical',
 										top:0,
 										left:0,

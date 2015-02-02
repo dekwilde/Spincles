@@ -253,7 +253,22 @@ class Trixel {
       
       if(range == 4 && !enemyDraw) { //enemyMagnetic
         gameTransions = "Blackout"; 
-        particleMagnetic.init(1, spinX+random(-rad+50,rad+50),spinY+random(-rad+50,rad+50));
+        float radrandX = random(-rad+50,rad+50);
+        float radrandY = random(-rad+50,rad+50);
+        if(radrandX>-rad/4) {
+          radrandX = -rad/4;
+        }
+        if(radrandX<rad/4) {
+          radrandX = rad/4;
+        }
+        if(radrandY>-rad/4) {
+          radrandY = -rad/4;
+        }
+        if(radrandY<rad/4) {
+          radrandY = rad/4;
+        }
+        
+        particleMagnetic.init(1, spinX+radrandX,spinY+radrandY);
         enemyActive = true;
         enemyDraw = true;    
       }
@@ -261,7 +276,23 @@ class Trixel {
       
       if(range == 3 && !enemyDraw) { //enemy
         gameTransions = "Blackout";
-        particleExplode.init(2, collisionX, collisionY);
+        
+        float radrandX = random(-rad/2,rad/2);
+        float radrandY = random(-rad/2,rad/2);
+        if(radrandX>-rad/20) {
+          radrandX = -rad/20;
+        }
+        if(radrandX<rad/20) {
+          radrandX = rad/20;
+        }
+        if(radrandY>-rad/20) {
+          radrandY = -rad/20;
+        }
+        if(radrandY<rad/20) {
+          radrandY = rad/20;
+        }
+        
+        particleExplode.init(2, collisionX+radrandX, collisionY+radrandY);
         enemyActive = true;
         enemyDraw = true;     
       }  
