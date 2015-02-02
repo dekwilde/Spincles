@@ -169,7 +169,31 @@ class Trixel {
       rotate(radians(180));
     }  
         
-    if(range == 3) { //enemy
+    if(range == 4) { //enemyMagnetic
+      stroke(255);
+      strokeWeight(1);
+      if(enemyActive) {
+        gameEnemy = "Magnetic";
+        fill(255,204,0, 128);
+      } else {
+        noFill();
+      }
+      triangle(x1,y1,x2,y2,x3,y3);
+      
+      rotate(radians(180));
+      
+      scale(0.12);
+      fill(0,random(100));
+      triangle(x1,y1,x2,y2,x3,y3);
+      
+      scale(0.4);
+      fill(0);
+      triangle(x1,y1,x2,y2,x3,y3);
+      
+    }
+    
+    
+    if(range == 3) { //enemyExplode
       stroke(255);
       strokeWeight(1);
       if(enemyActive) {
@@ -190,16 +214,13 @@ class Trixel {
       scale(0.4);
       fill(0);
       triangle(x1,y1,x2,y2,x3,y3);
-
-      
-
     }    
     
     if(range == 0) { //enemy
       fill(0);
     }
     
-    if(range == 1) { //energy/score
+    if(range == 1) { //energyArea
       stroke(255);
       strokeWeight(1);
       noFill();
@@ -229,13 +250,20 @@ class Trixel {
         hurt();
         collisionTrix();
       }
+      
+      if(range == 4 && !enemyDraw) { //enemyMagnetic
+        gameTransions = "Blackout"; 
+        particleMagnetic.init(1, spinX+random(-rad+50,rad+50),spinY+random(-rad+50,rad+50));
+        enemyActive = true;
+        enemyDraw = true;    
+      }
+      
+      
       if(range == 3 && !enemyDraw) { //enemy
-          gameTransions = "Blackout";
-          particleExplode.init(2, collisionX+random(-60,60), collisionY+random(-60,60));
-          //particleMagnetic.init(2, spinX+random(-rad+100,rad+100),spinY+random(-rad+100,rad+100));
-          //gameEnemy = "Magnetic";
-          enemyActive = true;
-          enemyDraw = true;     
+        gameTransions = "Blackout";
+        particleExplode.init(2, collisionX, collisionY);
+        enemyActive = true;
+        enemyDraw = true;     
       }  
       
       if(range == 1) { //score
@@ -376,6 +404,7 @@ class Trixel {
 
   
   void resetTrix() {
+    gameEnemy = "Null";
     enemyActive = false;
     enemyDraw = false;
     range = int(random(rangeTrixType));

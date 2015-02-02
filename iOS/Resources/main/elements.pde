@@ -420,7 +420,7 @@ class Particle{
   float y;
   float r;
   float xspeed,yspeed;
-  float diameter= 15;
+  float diameter = 15;
   float distance = 200;
   float delay = random(0.001, 0.01);
   float elastic = 0.8;
@@ -437,8 +437,8 @@ class Particle{
     x= posX;
     y= posY;
     if(tp == "magnetic") {
-      xspeed= random(1.0, 3.0);
-      yspeed= random(1.0, 3.0); 
+      xspeed= random(1.0, 4.0);
+      yspeed= random(1.0, 4.0); 
     }
     if(tp == "explode") {
       xspeed= random(-4.0, 4.0);
@@ -499,14 +499,21 @@ class Particle{
     } 
   }
   
-  void conect() {
+  void conect() { 
+    diameter = 15;
     for (int i = 0; i <particles.size() ; i++) {
       
       Particle other = (Particle) particles.get(i);
  
       if (this != other) {
         if (dist(x, y, other.x, other.y)<distance) {
-          diameter = 30;
+          
+          if(tp == "magnetic") {
+            diameter = 30;
+          }
+          if(tp == "explode") {
+            diameter = 0;
+          }
           stroke(0,70);
           line(x, y, other.x, other.y);
           noStroke();
