@@ -68,6 +68,7 @@ class TrixelMatrix {
 
 class Trixel {
   Trix trix;
+  TrixParticle particleExplode;
   float x1, y1, x2, y2, x3, y3;
   float s, h, radius, angle;
   float x, y;
@@ -80,8 +81,12 @@ class Trixel {
   int changeActive = 30;
   
   float collisionX, collisionY;
+  
+  boolean enemyActive = false;
+  boolean enemyDraw = false;
 
   Trixel(float tx, float ty, int inv, int num) {
+      particleExplode = new TrixParticle("explode");
       trix = new Trix(rad);
       
       id = num;
@@ -165,9 +170,15 @@ class Trixel {
     if(range == 3) { //enemy
       stroke(255);
       strokeWeight(1);
-      noFill();
+      if(enemyActive) {
+        fill(255,204,0);
+        particleExplode.draw();
+      } else {
+        noFill();
+      }
       triangle(x1,y1,x2,y2,x3,y3);
       
+            
       rotate(radians(180));
       
       scale(0.12);
@@ -177,11 +188,9 @@ class Trixel {
       scale(0.4);
       fill(0);
       triangle(x1,y1,x2,y2,x3,y3);
+
       
-      if(changeTrix<1) {
-        //particleMagnetic.reset(2, x+mx, y+my);
-        //gameEnemy = "Magnetic";
-      }  
+
     }    
     
     if(range == 0) { //enemy
@@ -211,23 +220,20 @@ class Trixel {
     if(checkCollision(collisionX,collisionY)){
       
       if(range > 1) {
-       fill(255,204,0,int(random(128))); 
-       //pebug display
-       //fill(0,0,200); 
+       fill(255,204,0,int(random(204))); 
       }
       
       if(range == 0) { //enemy 
         hurt();
         collisionTrix();
-        //trixBAD.num = 0;
-        
-        
       }
-      if(range == 3) { //enemy
-      
-        particleMagnetic.reset(2, x-nX,y-nY);
-        gameEnemy = "Magnetic";
-        collisionTrix();
+      if(range == 3 && !enemyDraw) { //enemy
+          gameTransions = "Blackout";
+          particleExplode.init(2, collisionX, collisionY);
+          //particleMagnetic.init(2, spinX+random(-rad+100,rad+100),spinY+random(-rad+100,rad+100));
+          //gameEnemy = "Magnetic";
+          enemyActive = true;
+          enemyDraw = true;     
       }  
       
       if(range == 1) { //score
@@ -368,6 +374,8 @@ class Trixel {
 
   
   void resetTrix() {
+    enemyActive = false;
+    enemyDraw = false;
     range = int(random(rangeTrixType));
     changeTime = 10 + int(random(50-microfone, 100-microfone*2))*int(random(10-microfone/100));
     if(changeTime<0) {

@@ -188,7 +188,8 @@ void stateSetup() {
   dialog = new Dialog();
 
   trixelmatrix = new TrixelMatrix();
-  particleExplode = new TrixParticle("explode");
+  
+  
   particleMagnetic = new TrixParticle("magnetic");
     
 

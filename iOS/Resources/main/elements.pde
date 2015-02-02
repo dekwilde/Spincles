@@ -384,7 +384,7 @@ class TrixParticle {
     particles = new ArrayList();
     num = 0;
   }
-  void reset(int n, float posX, float posY) {
+  void init(int n, float posX, float posY) {
     num = 0;
     amount = n;
     particleX = posX;
@@ -394,7 +394,7 @@ class TrixParticle {
   
   void draw(){
     num += 1;
-    if(num<amount) {
+    if(num<=amount) {
       particles.add(new Particle(tp,particleX,particleY));
     }
     for(int i=0; i < particles.size(); i++){
@@ -419,10 +419,9 @@ class Particle{
   float x;
   float y;
   float r;
-  float xspeed= random(-2.0, 2.0);
-  float yspeed= random(-2.0, 2.0); 
+  float xspeed,yspeed;
   float diameter= 20;
-  float distance = 300;
+  float distance = 200;
   float delay = random(0.001, 0.01);
   float elastic = 0.8;
   int life =0, lifeTime = 50+int(random(150));
@@ -435,10 +434,16 @@ class Particle{
   Particle(String type, float posX, float posY){
     trix = new Trix(20);
     tp = type;
-    x= posX+random(-rad,rad);
-    y= posY+random(-rad,rad);
-    //x= posX;
-    //y= posY;
+    x= posX;
+    y= posY;
+    if(tp == "magnetic") {
+      xspeed= random(1.0, 3.0);
+      yspeed= random(1.0, 3.0); 
+    }
+    if(tp == "explode") {
+      xspeed= random(-4.0, 4.0);
+      yspeed= random(-4.0, 4.0); 
+    }
   }
     
   void draw(){  

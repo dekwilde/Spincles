@@ -116,7 +116,7 @@ Logo logo;
 TrixelEffect tEff;
 Dialog dialog;
 
-TrixParticle particleExplode, particleMagnetic;
+TrixParticle particleMagnetic;
 ArrayList particles;
 
 float pInfo = height;
