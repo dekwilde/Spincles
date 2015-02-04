@@ -211,7 +211,7 @@ void stateSetup() {
   //soundTransIN    = iphone.loadSound("transIn.wav");
   //soundTransOUT   = iphone.loadSound("transOut.wav");
   soundLoopBG     = iphone.loadSound("loop1.wav");
-  soundBG1        = iphone.loadSound("loop0.wav");
+  soundStart      = iphone.loadSound("loopstart.wav");
   
   
   //setupThree();

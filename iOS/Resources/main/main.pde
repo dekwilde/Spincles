@@ -39,7 +39,7 @@ IPhone iphone;
 
 
 
-PSound soundBG1, soundBG2, soundLoopBG, soundTransIN, soundTransOUT, soundStartUP, soundGlitch, soundEnemy, soundClick, soundScore, soundMagnetic, soundTouchTimer;
+PSound soundStart, soundBG2, soundLoopBG, soundTransIN, soundTransOUT, soundStartUP, soundGlitch, soundEnemy, soundClick, soundScore, soundMagnetic, soundTouchTimer;
 Tbody body;
 TrixelMatrix trixelmatrix;
 
@@ -257,8 +257,10 @@ void draw() {
       //
     break;
     case "Intro":
-      soundBG1.play();
-      soundBG1.loop();
+      
+      soundStart.play();
+      soundStart.loop();
+      soundStart.setVolume(0.1);
       gameSound = "Null";
     break;
     
@@ -268,7 +270,7 @@ void draw() {
     break;
 
     case "Game": 
-      soundBG1.stop();
+      soundStart.stop();
       soundLoopBG.play();
       soundLoopBG.loop();
       gameSound = "Null";
