@@ -1,0 +1,99 @@
+#zigcursor {
+	position: fixed;
+	z-index:71;
+	display : none;
+	width : 1px;
+	height : 1px;
+	background-color : black;
+}
+
+#zigcursor.pushed {
+	background-color: red;
+}
+#zigcursor.clicked {
+	background-color: green;
+}  
+
+#delaycursor {
+	position: fixed;
+	z-index:9998;
+	display : none;
+	width : 50px;
+	height : 50px;
+} 
+#handR, #handL {
+	position:fixed;
+	z-index:9999;
+	top:50%;
+	left:50%;
+	width:40px;
+	height:40px;
+	padding:5px;
+	border-radius:25px;
+	border: 3px solid #FFF;
+	
+	-webkit-box-shadow: 0px 0px 5px rgba(0,0,0,0.8);
+	   -moz-box-shadow: 0px 0px 5px rgba(0,0,0,0.8);
+	        box-shadow: 0px 0px 5px rgba(0,0,0,0.8);	
+}
+#handR.disable, #handL.disable {
+	opacity: 0.5;
+	-moz-opacity: 0.5;
+	filter:alpha(opacity=50);
+}
+#handR.enable, #handL.enable {
+	opacity: 1.0;
+	-moz-opacity: 1.0;
+	filter:alpha(opacity=100);
+}
+
+#circle {
+	position:absolute;
+	top:0px;
+	margin:10px;
+ 	width : 30px;
+	height : 30px;
+	-webkit-background-clip: padding-box; /* fix WebKit background bleed on border-radius */
+	-webkit-border-radius: 15px;
+	   -moz-border-radius: 15px;
+	        border-radius: 15px;
+	-webkit-box-shadow: 0px 0px 5px rgba(0,0,0,0.8);
+	   -moz-box-shadow: 0px 0px 5px rgba(0,0,0,0.8);
+	        box-shadow: 0px 0px 5px rgba(0,0,0,0.8);  
+	background-color : white;  
+	color:#000;
+	text-align:center;
+	font-size:10px;   
+}
+
+#circle.pushed {
+	border: 1px solid white;
+	background-color: black;
+}
+#circle.clicked {
+	background-color: green;
+}
+
+#radar {
+	width: 	200px;
+	height: 200px;
+	border-radius: 15px;
+	bottom: 150px;
+	right: 20px;
+	background-color: rgba(255,255,255, 0.6);
+	overflow:hidden;
+	position: fixed;
+}
+ 
+#radar .user {
+	width:	20px;
+	height: 20px;
+	-webkit-border-radius: 10px;
+	   -moz-border-radius: 10px;
+	        border-radius: 10px;
+	
+	background-color: black;
+	position:relative;
+}
+
+

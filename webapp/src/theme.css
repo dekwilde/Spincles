@@ -1,0 +1,49 @@
+@import url("fonts/fontface.css");
+
+body {
+	font-family: Arial, "MS Trebuchet", sans-serif;
+}     
+h1, h2, h3, h4, a {
+   font-family: "CaeciliaLTStd-Heavy", Arial, sans-serif; 
+}
+.actived {
+	background-color: #007e7a !important;
+}
+
+#init {
+	background-color: #141414;
+	color: white;
+}                
+#home li {  
+	background-color: #1c1d1d;
+	border-left: 1px solid #2e2e2e; 
+	border-right: 1px solid #000000; 
+}
+
+#home li a {
+	color:white;
+	background-color: #222;
+	-webkit-box-shadow: 0px -1px 8px rgba(0,0,0,0.8);
+	   -moz-box-shadow: 0px -1px 8px rgba(0,0,0,0.8); 
+	        box-shadow: 0px -1px 8px rgba(0,0,0,0.8);       		
+} 
+#home a {
+	color:white;
+} 
+#home h3 {
+	color:white;
+} 
+#home p {
+	color:#ebac12;     
+	font-size: 18px;
+}     
+#logo {
+	font-family: "CaeciliaLTStd-Heavy", Arial, sans-serif;
+	color:white;
+	font-size:18px;
+}
+#slide .caption .cap-title {
+	color:#ebac12; 	
+}
+
+
