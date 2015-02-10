@@ -450,8 +450,7 @@ class ButtonCamera {
           pressButton = true;
           overButton = false;
           cameraShow = true;
-          pebug("camera " + cameraShow);
-          iphone.squareCamera();    
+          pebug("camera " + cameraShow);   
           noStroke();
           fill(255);
  

@@ -10,55 +10,11 @@ float targetLT = -21.793933;
 float targetLG = -48.170929;
 float currentLT;
 float currentLG;
-float compassDEGREE, targetDEGREE;
+float compassDEGREE = 0, targetDEGREE = 0;
 
 
-void startSensor() {
-  //iphone.squareCamera();
-  //frame = requestImage(iphone.getCamera());
-  iphone.startMicMonitor();
-  iphone.startAccelerometer();
-  iphone.startCompass();
-  //iphone.startLocation();
-
-}
-
-void stopSensor() {
-  iphone.stopMicMonitor();
-  iphone.stopAccelerometer();
-  iphone.stopCompass();
-  //iphone.stopLocation();
-  //iphone.squareCamera();
-}
 
 
-void photoCancelled() {
-  gameState = "InfoShow";
-  loop();
-}
-
-void photoSelected(String file) {  
-  setTimeout(function() {
-    iphone.viewDocument(file);
-    gameState = "InfoShow";
-    loop();
-  }, 1000);
-  pebug("viewDocument: " + file);
-  //var mailto_link = "mailto:"+emailto+"?from="+emailfrom +"&body=" + encodeURIComponent( message ) + "&subject=" + encodeURIComponent("Subject") + "&attachment=" + file;
-  //link("mailto:a@gmail.com?subject=myreport&body=seeattachment&attachment='" + file + "'");
-
-}
-
-void photoScreenShot(file) {
-    //loop();
-    gameState = "Load";
-    iphone.viewDocument(file);
-    setTimeout(function() {
-      //iphone.openPhotos(true);
-      gameState = "InfoShow";
-    }, 15000);
-    pebug("viewDocument: " + file);
-}
 
 
 void gestureStarted() {
@@ -83,82 +39,72 @@ void gestureStopped() {
   startEscala = iScale;
 }
 
-void touch1Started() {
-  //GEsture Drag Spincles
-  if (touch1X > bx-bs && touch1X < bx+bs && 
-  touch1Y > by-bs && touch1Y < by+bs) {
-       bover = true;       
-  } else {
+
+// For touchscreens
+void touchStart(t) {
+  for (int i = 0; i < t.touches.length; i++) {
+    var id = t.touches[i].identifier;
+    if (!touches[id]) {
+      touches[id] = color(random(255), random(255), random(255));
+    }
+
+    if(id == 0) {
+      touch1X = t.touches[id].offsetX;
+      touch1Y = t.touches[id].offsetY;
+    }
+
+    fill(touches[id]);
+    ellipse(t.touches[i].offsetX, t.touches[i].offsetY, 10, 10);
+    
 
     
-  }
+    if (touch1X > bx-bs && touch1X < bx+bs && 
+    touch1Y > by-bs && touch1Y < by+bs) {
+         bover = true;       
+    } else {
   
-  if(bover) { 
-    locked = true;
+      
+    }
     
-  } else {
-    locked = false;
+    if(bover) { 
+      locked = true;
+      
+    } else {
+      locked = false;
+    }
+    bdifx = touch1X-bx; 
+    bdify = touch1Y-by; 
+    
   }
-  bdifx = touch1X-bx; 
-  bdify = touch1Y-by; 
 }
 
-void touch1Moved() {
+void touchMove(t) {
+  for (int i = 0; i < t.touches.length; i++) {
+    var id = t.touches[i].identifier;
+    fill(touches[id]);
+    ellipse(t.touches[i].offsetX, t.touches[i].offsetY, 10, 10);
+  }
+  
+  if(id == 0) {
+    touch1X = t.touches[0].offsetX;
+    touch1Y = t.touches[0].offsetY;
+  }
+  
   if(locked) {
     bx = touch1X-bdifx; 
     by = touch1Y-bdify;
   }
-}
-
-
-void touch1Stopped() {  
-  if (touch1X > bx-bs && touch1X < bx+bs && 
-  touch1Y > by-bs && touch1Y < by+bs) {
-         //hurt();
-  }
   
-  // click info var
-  //btClose.overButton = false;
-  //btInfo.overButton = false;
-  //btSupport.overButton = false;
-  //btContact.overButton = false;
-  
-  // gesture var
-  //bover = false;
-  locked = false;
+} 
+void touchEnd(t) {
+  locked = false;  
 }
 
 
-void location() {
-   int currentTime = millis();
-   if (currentTime > lastTime+interval) {
-        Location loc = iphone.getLocation();
-        lt = loc.latitude;
-        lg = loc.longitude;
-        al = loc.altitude;
-        hd = loc.heading;
-        sp = loc.speed;
+void locationChanged() {
+  println(coords.longitude + ", " + coords.latitude);
+}  
 
-        lastTime = currentTime;
-        iphone.getCurrentLocation();
-        pebug("location LT:" + lt + " LG:" + lg + " AL:" +al + " HD:" + hd + " SP:" + sp);
-
-    }
-    //fill(0); 
-    //text("location LT:" + lt + " LG:" + lg + " AL:" +al + " HD:" + hd + " SP:" + sp, 10, 40);
-
-}
-
-
-void compassEvent() {
-  //pebug(compassHeading);
-  compassDEGREE = compassHeading;
-}
-
-void locationEvent() {
-  //text("locationEvent LT:" + locLatitude + " LG:" + locLongitude + " AL:" +locAltitude + " HD:" + locHeading, 10, 80);
-  //pebug("locationEvent LT:" + locLatitude + " LG:" + locLongitude + " AL:" +locAltitude + " HD:" + locHeading);
-}
 
 void pointCompass() {
     currentLT = lt;
@@ -191,119 +137,36 @@ void pointCompass() {
 }
 
 void acce() {
-  gravityX = iphone.getAcceleration().x;
-  gravityY = -iphone.getAcceleration().y;
+
+  // Remap axis value to something within the sketch bounds
+  gravityX = map(acceleration.x, -1.0, 1.0, 0, width);
+  gravityY = map(acceleration.y, -1.0, 1.0, 0, height);    
   //pebug("x: " + gravityX + " " + "y: " + gravityY);  
 }
 void mic() {
-  microfone = iphone.getMicLevel()*mic_perc;  
   //pebug("Mic: " + microfone);
 }
 void compass() {
-  angleCompass = compassDEGREE + iAngle;
-  
-  if (angleCompass > 360) {
-          angleCompass = angleCompass - 360;
-  }
-  if (angleCompass < 0) {
-          angleCompass = 360 + angleCompass;
-  }
-  
-  //pebug(angleCompass);
-  
-}
-
-
-void orientationChanged() {
-  pebug(iphone.getOrientation()); 
-  pebug(orientation);
-}
-
-
-void shakeEvent() {
-  pebug("shaked");
-}
-
-
-PImage video, frame;
-
-int index = 0;
-int brightestX = 0; // X-coordinate of the brightest video pixel
-int brightestY = 0; // Y-coordinate of the brightest video pixel
-int videoscale;
-
-boolean loadCamera = false;
-boolean checkCamera = false;
-
-void cam() {
-  //background(0,0,0,0);
-  checkCamera = iphone.checkCamera();
-  if (checkCamera && !loadCamera) {
-    pebug("4 - getCamera in pde: " + iphone.getCamera());
-    video = requestImage(iphone.getCamera());
-    loadCamera = true;
-  } //end if checkCamera
-  if(video.width ==0) {
-    pebug("cam loading");
-  } else if(video.width == -1) {
-    pebug("error load cam");
-  } else {
-    if(loadCamera) {
-      frame = video.get();
-      
-      pebug("6 - loaded image - ready Pixels Image");
-      
-      
-      float maxCol = 0;
-
-      for (int i=0; i < video.width; i++) {
-        for (int j=0; j < video.height; j++) {
-          // lies den Farbwert für jeden Pixel aus
-          color c = video.get(i, j);
-          // Wenn heller als aktuelles Maximum
-          // -> ersetze Tracking-Koordinaten
-          if (brightness (c) > maxCol) {
-            maxCol = brightness (c);
-            brightestX = i;
-            brightestY = j;
-          }
-        }
-      }
-      
-      pebug("brigh: " + brightestY + " " + brightestX); 
-      
-            
-      loadCamera = false;
-      iphone.updateSquare();
+  // Only show the compass if the device supports one
+  if (orientation.compassHeading >= 0 && orientation.compassAccuracy >= 0) {
+    // Ease the previous heading to the current heading
+    float theta = orientation.compassHeading;
+    float dtheta = theta - compassDEGREE;
+    if (abs(dtheta) < 180) {
+      compassDEGREE += dtheta * easing;
+    } else {
+      compassDEGREE = theta;
     }
-  }
   
-  //pebug display
-  //image(frame, width/2, height/2, width, height);
-  noStroke();
-  fill(0,0,255);
-  ellipse(width-brightestX*videoscale, brightestY*videoscale, 50, 50);
+    // Convert degree heading to an x/y co-ordinate;
+    int compassX = 100 * sin(radians(compassDEGREE));
+    int compassY = 100 * cos(radians(compassDEGREE));
+    
+    //display
+    ellipse(width/2 - compassX, height/2 - compassY, 20, 20);
+  }  
   
 }
 
 
-/*
-function doOnOrientationChange() {
-  switch(window.orientation) {  
-    case -90:
-      orientationMode = "landscape inverse";
-    break;
-    case 90:
-      orientationMode = "landscape";
-    break; 
-    case 0:
-      orientationMode = "portrait";
-    break; 
-    case 180:
-      orientationMode = "inverse";
-    break;   
-  }   
-  pebug(orientationMode);
-}
-window.addEventListener('orientationchange', doOnOrientationChange);
-*/
+

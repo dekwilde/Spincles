@@ -102,23 +102,25 @@ void clearScore() {
   level = 0;
   score = 0;
   recordScore = 0;
-  iphone.saveState("");  
+  //iphone.saveState("");  
 }
 
 void loadScore() {
-      // Load the previously saved state of the app
+    /*
+    // Load the previously saved state of the app
     Array[] load = split(iphone.loadState(), ",");
     if (load.length >= 2) {
       recordScore = int(load[0]);
       level = int(load[1]);
     }
+    */
 }
 
 void saveScore() {
   if(score>recordScore) {
-    iphone.saveState(score+","+level);
+    //iphone.saveState(score+","+level);
   } else {
-    iphone.saveState(recordScore+","+level);
+    //iphone.saveState(recordScore+","+level);
   }
 }
 
@@ -127,14 +129,14 @@ void setScore() {
     //First time score
   if(!recordScore || recordScore == null || recordScore == "null") {
     recordScore = score;
-    iphone.saveState(recordScore+","+level);
+    //iphone.saveState(recordScore+","+level);
     scoreResult = "New Record";
   } else {
     //check if the score is a new record
     if(score>recordScore) {
       scoreResult = "New Record";
       recordScore = score;
-      iphone.saveState(recordScore+","+level);
+      //iphone.saveState(recordScore+","+level);
     } else {
       scoreResult = "Record";
     }     

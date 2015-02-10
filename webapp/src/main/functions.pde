@@ -5,7 +5,7 @@ void pebug(String m) {
 
 
 void hurt() {
-  iphone.vibrate();
+  //iphone.vibrate();
   energy = energy - hurtLife;
   soundEnemy.play();
   gameTransions = "Static";
@@ -50,8 +50,6 @@ void clawTouchStop() {
   }
   //pebug("hurt " + hurtTimer);
 }
-
-
 
 void drawBG() {
   colorR = 255; 
@@ -121,7 +119,7 @@ void gameOver() {
 }
 
 void share() {
-  iphone.screenShot();
+  //iphone.screenShot();
   pebug("screenshot");
   //noLoop();
 }
@@ -129,6 +127,10 @@ void share() {
 void stateSetup() {
   scW = screen.width;
   scH = screen.height;
+  
+  //scW = window.innerWidth;
+  //scH = window.innerHeight;
+ 
   pebug("width: " + scW + " " + "height: " + scH);
   size(scW, scH, P2D);
 
@@ -166,9 +168,6 @@ void stateSetup() {
   
   pebug("wCount: " + wCount + ", hCount: " + hCount);
 
-  
-  iphone = new IPhone();
-  startSensor();
   pebug("Start sensor");
 
   control = new Control();
@@ -199,21 +198,7 @@ void stateSetup() {
   by = height/2;
   iAngle = 0;
   initPosY = height + 100;
-
-  
-  soundMagnetic   = iphone.loadSound("energy.wav");
-  soundScore      = iphone.loadSound("score.wav");
-  soundClick      = iphone.loadSound("click.wav");
-  soundGlitch     = iphone.loadSound("glitch.wav");
-  soundEnemy      = iphone.loadSound("enemy.wav");
-  soundTouchTimer = iphone.loadSound("glitch.wav");
-  //soundStartUP    = iphone.loadSound("startup.wav");
-  //soundTransIN    = iphone.loadSound("transIn.wav");
-  //soundTransOUT   = iphone.loadSound("transOut.wav");
-  soundLoopBG     = iphone.loadSound("loop1.wav");
-  soundStart      = iphone.loadSound("loopstart.wav");
-  
-  
+    
   //setupThree();
   //video = loadImage("cam.png");
   

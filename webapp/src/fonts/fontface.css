@@ -1,40 +1,12 @@
 @font-face{    
-	font-family:"CaeciliaLTStd-Bold";		
-	src:	url('caecilialtstd-bold-webfont.eot');
-	src:	url('caecilialtstd-bold-webfont.eot?#iefix') format('embedded-opentype'),			
-			url('caecilialtstd-bold-webfont.svg#CaeciliaLTStdLightBold') format('svg'),			
-			url('caecilialtstd-bold-webfont.ttf') format('truetype'),			
-			url('caecilialtstd-bold-webfont.woff') format('woff');		
+	font-family:"HelveticaNeueLTStd-BdCn";		
+	src:	url('HelveticaNeueLTStd-BdCn.eot');
+	src:	url('HelveticaNeueLTStd-BdCn.otf')  format('opentype'), 
+			url('HelveticaNeueLTStd-BdCn.eot?#iefix') format('embedded-opentype'),			
+			url('HelveticaNeueLTStd-BdCn.svg#HelveticaNeueLTStd-BdCn') format('svg'),			
+			url('HelveticaNeueLTStd-BdCn.ttf') format('truetype'),			
+			url('HelveticaNeueLTStd-BdCn.woff') format('woff');		
 	font-weight:normal;     
 	font-style:normal
-}              
-@font-face{    
-	font-family:"CaeciliaLTStd-Heavy";		
-	src:	url('caecilialtstd-heavy-webfont.eot');		
-	src:	url('caecilialtstd-heavy-webfont.eot?#iefix') format('embedded-opentype'),         
-			url('caecilialtstd-heavy-webfont.svg#CaeciliaLTStdRomanBold') format('svg'),			
-			url('caecilialtstd-heavy-webfont.ttf') format('truetype'),         
-			url('caecilialtstd-heavy-webfont.woff') format('woff');    
-	font-weight:normal;     
-	font-style:normal
-}
-@font-face{    
-	font-family:"CaeciliaLTStd-Light";		
-	src:	url('caecilialtstd-light-webfont.eot');		
-	src:	url('caecilialtstd-light-webfont.eot?#iefix') format('embedded-opentype'),         
-			url('caecilialtstd-light-webfont.svg#CaeciliaLTStdLightRegular') format('svg'),        
-			url('caecilialtstd-light-webfont.ttf') format('truetype'),         
-			url('caecilialtstd-light-webfont.woff') format('woff');    
-	font-weight:normal;     
-	font-style:normal
-}
-@font-face{    
-	font-family:"CaeciliaLTStd-Roman";		
-	src:	url('caecilialtstd-roman-webfont.eot');		
-	src:	url('caecilialtstd-roman-webfont.eot?#iefix') format('embedded-opentype'),         
-			url('caecilialtstd-roman-webfont.svg#CaeciliaLTStdRomanRegular') format('svg'),        
-			url('caecilialtstd-roman-webfont.ttf') format('truetype'),         
-			url('caecilialtstd-roman-webfont.woff') format('woff');	
-	font-weight:normal;		
-	font-style:normal
-}
+}  
+

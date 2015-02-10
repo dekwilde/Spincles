@@ -3,7 +3,6 @@ transparent="true";
 crisp="false";
 font="data/MicroN55.ttf, data/hexagonica.ttf"; 
 preload="data/how.png"; */
-
 PFont fontTitle, fontText;
 
 float easing = 0.20;
@@ -11,6 +10,8 @@ float spring = 0.02;
 float gravity = 10.0;
 float gravityX = 0.0;
 float gravityY = 0.0;
+float touch1X = 0.0;
+float touch1Y = 0.0
 float bx;
 float by;
 int bs = 120;
@@ -35,11 +36,7 @@ PGraphics pimg;
 int dim = 1300;
 
 Control control;
-IPhone iphone;
 
-
-
-PSound soundStart, soundBG2, soundLoopBG, soundTransIN, soundTransOUT, soundStartUP, soundGlitch, soundEnemy, soundClick, soundScore, soundMagnetic, soundTouchTimer;
 Tbody body;
 TrixelMatrix trixelmatrix;
 
