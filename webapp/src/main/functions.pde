@@ -15,7 +15,7 @@ void hurt() {
 }
 
 void clawTouchStart() {
-  //soundTouchTimer.volume = map(hurtTimer/100,0,100,0.0, 1.0);
+  soundTouchTimer.volume(hurtTimer/100);
   
   if(hurtTimer<1) {
     soundTouchTimer.play();
@@ -43,7 +43,7 @@ void clawTouchStart() {
 void clawTouchStop() {
   
   hurtTimer -= 1;
-  //soundTouchTimer.volume = map(hurtTimer/100,0,100,0.0, 1.0);
+  soundTouchTimer.volume(hurtTimer/100);
   if(hurtTimer<0) {
     hurtTimer = 0;
     soundTouchTimer.stop();
@@ -324,7 +324,7 @@ void stateHow() {
       btClose.draw(255);
   }
   pInfo = pInfo - pInfo/6;
-  //soundTouchTimer.volume = 0.0;
+  soundTouchTimer.volume(0.0);
 }
 
 

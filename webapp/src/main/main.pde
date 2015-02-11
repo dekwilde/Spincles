@@ -257,7 +257,7 @@ void draw() {
       
       soundStart.play();
       soundStart.loop();
-      //soundStart.volume = 0.8;
+      soundStart.volume(0.8);
       gameSound = "Null";
     break;
     

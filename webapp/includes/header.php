@@ -123,7 +123,7 @@
 
 <!-- PROCESSING -->  
 <script src="lib/processing/jprocessingjs-0.9.js"></script>
-<script src="lib/processing/processing.1.4.8.js"></script>
+<script src="lib/processing/processing.js"></script>
 <script src="lib/processing/processing-mobile.js"></script>
 <!-- <script src="lib/processing/Tween.lib"></script> -->
 
@@ -159,7 +159,7 @@
 <script src="src/tracker.js"></script> 
 <!--<script src="src/add2home.js"></script>--> 
 <script src="src/lang.js"></script>  
-<script src="src/buzz.js"></script>
+<script src="src/howler.js"></script>
 <script src="src/app.js"></script>
 
 <!--<script src="src/drag.js"></script> -->
