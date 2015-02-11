@@ -24,8 +24,8 @@ void gestureStarted() {
 }
 
 void gestureChanged() {
-  iAngle = startAngle + gestureRotation;
-  //iScale = startEscala * gestureScale;
+  iAngle = startAngle + gesture.rotation;
+  iScale = startEscala * gesture.scale;
   if (iAngle > 360) {
           iAngle = iAngle - 360;
   }

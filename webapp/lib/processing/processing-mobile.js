@@ -39,7 +39,9 @@
  **/
 
 (function(Processing, window, navigator) {
+   
 
+  ///////////////////////////////////// init //////////////////// 
   // Cache Processing ctor
   var P5 = Processing,
       Pp = Processing.prototype;
@@ -70,9 +72,16 @@
       gamma: 0,
       compassAccuracy: -1,
       compassHeading: -1
+    },
+    // Defaults for gesture data
+    gesture: {
+      scale: 0,
+      rotation: 0
     }
   };
 
+
+  //////////////////////////////////////////////////// location ///////////////////////////////////////////////////////// 
   function attachLocationCallback(p) {
     // Start a geolocation watch timeout if a locationChanged callback is provided.
     if (p.locationChanged &&
@@ -124,17 +133,23 @@
       attachLocationCallback(instance);
     });
   }, false);
+  
 
+
+  /////////////////////////////////////////////////////// acceleration //////////////////////////////////////////////////////// 
   window.addEventListener('devicemotion', function(event) {
     var acceleration = event.accelerationIncludingGravity || event.acceleration,
-      mAcceleration = mobile.acceleration;
+    mAcceleration = mobile.acceleration;
 
     // Values are in m/s^2
     mAcceleration.x = acceleration.x;
     mAcceleration.y = acceleration.y;
     mAcceleration.z = acceleration.z;
   }, false);
+  
 
+
+  ////////////////////////////////////////////////////////// COMPASS ////////////////////////////////////////////////////////
   function orientationhandler(e) {
     
 	// For FF3.6+
@@ -183,8 +198,75 @@
 
   window.addEventListener('deviceorientation',  orientationhandler, false);
   window.addEventListener('MozOrientation',     orientationhandler, false);
+  
 
-  ['orientation', 'acceleration', 'coords'].forEach(function(objName) {
+  ////////////////////////////////////////////////////// GESTURE //////////////////////////////////////////////////////////////////////// 
+	var pgestureScale = 0;	
+	var pgestureRotation = 0;																													
+	var gestureScale = 0;	
+	var gestureRotation = 0;
+	var p = null; 
+
+  window.addEventListener("gesturechange", function(e) {
+		var mGesture = mobile.gesture;
+	
+		pgestureScale = mGesture.scale;	
+		pgestureRotation = mGesture.rotation;	
+		mGesture.scale = e.scale;
+		mGesture.rotation = e.rotation;   
+        if(p) {
+			if ( p.gestureChanged ) {
+				p.gestureChanged();
+			}
+		}
+		
+	}, false);	
+
+  window.addEventListener("gesturestart", function(e) {
+		var mGesture = mobile.gesture; 
+		p = Processing.getInstanceById("pde");
+		pgestureScale = mGesture.scale;	
+		pgestureRotation = mGesture.rotation;
+		mGesture.scale = e.scale;
+		mGesture.rotation = e.rotation;
+        
+		if(p) {
+			if ( typeof p.gestureStarted == "function" ) {
+				p.gestureStarted();
+			} else {
+				p.gestureStarted = true;
+			}			
+		}
+
+	
+	
+	}, false);	
+
+	window.addEventListener("gestureend", function(e) {
+		var mGesture = mobile.gesture;
+
+		pgestureScale = mGesture.scale;	
+		pgestureRotation = mGesture.rotation;
+        
+		if(p) {
+			if ( typeof p.gestureStarted != "function" ) {
+				p.gestureStarted = false;
+			}
+
+			if ( p.gestureStopped ) {
+				p.gestureStopped();
+			}			
+		}
+
+        p = null;
+		mGesture.scale = null;		
+		mGesture.rotation = null;
+	}, false);
+
+
+
+
+  ['orientation', 'acceleration', 'coords', 'gesture'].forEach(function(objName) {
     Pp.__defineGetter__(objName, function() {
       return mobile[objName];
     });

@@ -29,13 +29,3 @@ var soundMagnetic,
 	  	volume: 0.6
 	});
         
-
-	var sound = new Howl({
-	  urls: ['sound.mp3', 'sound.ogg', 'sound.wav'],
-	  autoplay: true,
-	  loop: true,
-	  volume: 0.5,
-	  onend: function() {
-	    alert('Finished!');
-	  }
-	});
