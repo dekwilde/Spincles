@@ -112,19 +112,35 @@ void touchEnd(t) {
   unLocked();
 }
 
-
+boolean mouse = false;
 void mousePressed() {
+  mouse = true;
   touch1X = mouseX;
-  touch1Y = mouseY;  
+  touch1Y = mouseY; 
   Bover();
+  //bx = mouseX;
+  //by = mouseY;
 }
 void mouseDragged() {
-  touch1X = mouseX;
-  touch1Y = mouseY;
   Locked();
+  //display pebug
+  stroke(0);
+  noFill();
+  line(bx,by,mouseX, mouseY);
+  ellipse(bx,by,bs,bs);
+  iAngle = degrees(atan2(mouseY-by, mouseX-bx));
+  
+}
+void mouseMoved() {
+  //mouse = true;
+  if(!mousePressed) {
+    gravityX = (mouseX - width/2)/1000;
+    gravityY = (mouseY - height/2)/1000;
+  }
 }
 
 void mouseReleased() {
+  //mouse = false;
   unLocked();
 }
 
@@ -165,10 +181,11 @@ void pointCompass() {
 }
 
 void acce() {
-
-  gravityX = acceleration.x/10;
-  gravityY = -acceleration.y/10;    
-  //pebug("x: " + gravityX + " " + "y: " + gravityY);  
+  if(!mouse) {
+    gravityX = acceleration.x/10;
+    gravityY = -acceleration.y/10;    
+    //pebug("x: " + gravityX + " " + "y: " + gravityY);     
+  }
 }
 void mic() {
   //pebug("Mic: " + microfone);

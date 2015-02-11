@@ -66,7 +66,6 @@ class Spring2D {
         bx = x;
         by = y;
         bover = true;
-
         if(locked) {
           clawTouchStart();
         } 
