@@ -19,7 +19,7 @@ void clawTouchStart() {
   
   if(hurtTimer<1) {
     soundTouchTimer.play();
-    soundTouchTimer.loop();
+    soundTouchTimer.loop(true);
   }
   
   hurtTimer += 4;

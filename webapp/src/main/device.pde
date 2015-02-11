@@ -41,6 +41,36 @@ void gestureStopped() {
 }
 
 
+void Bover() {
+  if (touch1X > bx-bs && touch1X < bx+bs && 
+  touch1Y > by-bs && touch1Y < by+bs) {
+       bover = true;       
+  } else {
+    //
+  }
+  if(bover) { 
+    locked = true;
+    
+  } else {
+    locked = false;
+  }
+  bdifx = touch1X-bx; 
+  bdify = touch1Y-by; 
+}
+
+void Locked() {
+  if(locked) {
+    bx = touch1X-bdifx; 
+    by = touch1Y-bdify;
+  }  
+}
+void unLocked() {
+  locked = false;  
+  touch1X = -1;
+  touch1Y = -1;  
+}
+
+
 void touchStart(t) {
     
   for (int i = 0; i < t.touches.length; i++) {
@@ -49,36 +79,18 @@ void touchStart(t) {
       touches[id] = color(random(255), random(255), random(255), 128);
     }
 
-    touch1X = t.touches[0].offsetX;
-    touch1Y = t.touches[0].offsetY;
-    
     //pebug("touch "+ touch1X + " " + touch1Y);
     
     //disply pebug
     noStroke();
     fill(touches[id]);
-    ellipse(t.touches[i].offsetX, t.touches[i].offsetY, 30, 30);
-    
-
-    
-    if (touch1X > bx-bs && touch1X < bx+bs && 
-    touch1Y > by-bs && touch1Y < by+bs) {
-         bover = true;       
-    } else {
-  
-      
-    }
-    
-    if(bover) { 
-      locked = true;
-      
-    } else {
-      locked = false;
-    }
-    bdifx = touch1X-bx; 
-    bdify = touch1Y-by; 
-    
+    ellipse(t.touches[i].offsetX, t.touches[i].offsetY, 30, 30); 
   }
+  
+  touch1X = t.touches[0].offsetX;
+  touch1Y = t.touches[0].offsetY;
+  Bover();
+  
 }
 
 void touchMove(t) {
@@ -93,16 +105,27 @@ void touchMove(t) {
   touch1X = t.touches[0].offsetX;
   touch1Y = t.touches[0].offsetY;
   
-  if(locked) {
-    bx = touch1X-bdifx; 
-    by = touch1Y-bdify;
-  }
+  Locked();
   
 } 
 void touchEnd(t) {
-  locked = false;  
-  touch1X = -1;
-  touch1Y = -1;
+  unLocked();
+}
+
+
+void mousePressed() {
+  touch1X = mouseX;
+  touch1Y = mouseY;  
+  Bover();
+}
+void mouseDragged() {
+  touch1X = mouseX;
+  touch1Y = mouseY;
+  Locked();
+}
+
+void mouseReleased() {
+  unLocked();
 }
 
 

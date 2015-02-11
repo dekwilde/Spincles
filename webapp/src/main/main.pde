@@ -256,7 +256,7 @@ void draw() {
     case "Intro":
       
       soundStart.play();
-      soundStart.loop();
+      soundStart.loop(true);
       soundStart.volume(0.8);
       gameSound = "Null";
     break;
@@ -269,7 +269,7 @@ void draw() {
     case "Game": 
       soundStart.stop();
       soundLoopBG.play();
-      soundLoopBG.loop();
+      soundLoopBG.loop(true);
       gameSound = "Null";
     break;
     
