@@ -15,33 +15,6 @@ var touches = {};
 
 
 
-
-
-boolean gestureiOS = false;
-void gestureStarted() {
-  gestureiOS = true;
-  startAngle = iAngle;
-  startEscala = iScale;
-}
-
-void gestureChanged() {
-  iAngle = startAngle + gesture.rotation;
-  iScale = startEscala * gesture.scale;
-  if (iAngle > 360) {
-          iAngle = iAngle - 360;
-  }
-  if (iAngle < 0) {
-          iAngle = 360 + iAngle;
-  }
-        
-}
-
-void gestureStopped() {
-  startAngle = iAngle;
-  startEscala = iScale;
-}
-
-
 void Bover() {
   if (touch1X > bx-bs && touch1X < bx+bs && 
   touch1Y > by-bs && touch1Y < by+bs) {
@@ -71,6 +44,33 @@ void unLocked() {
   touch1Y = -1;  
 }
 
+
+
+
+boolean gestureiOS = false;
+void gestureStarted() {
+  gestureiOS = true;
+  startAngle = iAngle;
+  startEscala = iScale;
+}
+
+void gestureChanged() {
+  iAngle = startAngle + gesture.rotation;
+  iScale = startEscala * gesture.scale;
+  if (iAngle > 360) {
+          iAngle = iAngle - 360;
+  }
+  if (iAngle < 0) {
+          iAngle = 360 + iAngle;
+  }
+        
+}
+
+void gestureStopped() {
+  startAngle = iAngle;
+  startEscala = iScale;
+}
+
 float pinchDistance = 0;
 float pinchAngle = 0;
 void touchStart(t) {
@@ -97,7 +97,7 @@ void touchStart(t) {
     if(t.touches.length>1) {
       startAngle = iAngle;
       startEscala = iScale;
-      float pinchDistance = sqrt(pow((t.touches[1].offsetX - t.touches[0].offsetX),2)+pow((t.touches[1].offsetY - t.touches[0].offsetY),2));
+      pinchDistance = dist(t.touches[1].offsetX, t.touches[1].offsetY, t.touches[0].offsetX, t.touches[0].offsetY);
     } else {
       pinchDistance = 0;
       pinchAngle = 0
@@ -127,11 +127,11 @@ void touchMove(t) {
   
   
   if(!gestureiOS) {
-    if(pinchDistance > 0) {
-      float newDistance = sqrt(pow((t.touches[1].offsetX - t.touches[0].offsetX),2)+pow((t.touches[1].offsetY - t.touches[0].offsetY),2));
-      pinchAngle = atan2(t.touches[1].offsetY - t.touches[0].offsetY, t.touches[1].offsetX - t.touches[0].offsetX);  
+    if(!(pinchDistance <= 0)) {
+      float newDistance = dist(t.touches[1].offsetX, t.touches[1].offsetY, t.touches[0].offsetX, t.touches[0].offsetY);
+      pinchAngle = degrees(atan2(t.touches[1].offsetY - t.touches[0].offsetY, t.touches[1].offsetX - t.touches[0].offsetX));  
       
-      iAngle = startAngle + degrees(pinchAngle);
+      iAngle = startAngle + pinchAngle;
       iScale = startEscala * (newDistance/pinchDistance);
       if (iAngle > 360) {
               iAngle = iAngle - 360;
