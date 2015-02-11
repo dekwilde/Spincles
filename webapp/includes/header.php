@@ -115,18 +115,21 @@
 <script type="text/javascript" src="lib/jquery/jquery.maskedinput.js"></script>
  
 <!-- BUZZ -->
-<script type='text/javascript' src="lib/buzz/buzz.js"></script>
+<script type='text/javascript' src="lib/buzz/buzz.js"></script> 
+
+<!-- howler -->
+<script type='text/javascript' src="lib/howler/howler.js"></script>
 
 
 <!-- PROCESSING -->  
-<script src="lib/pjs/jprocessingjs-0.9.js"></script>
-<script src="lib/pjs/processing.js"></script>
-<script src="lib/pjs/processing-mobile.js"></script>
-<script src="lib/pjs/Tween.lib"></script>
+<script src="lib/processing/jprocessingjs-0.9.js"></script>
+<script src="lib/processing/processing.1.4.8.js"></script>
+<script src="lib/processing/processing-mobile.js"></script>
+<!-- <script src="lib/processing/Tween.lib"></script> -->
 
 
 <!-- ZIGFU -->
-<script src="lib/zig/zig.js"></script>
+<!--<script src="lib/zig/zig.js"></script> -->
 
 <!-- RAPHAEL CIRCLES -->
 <script type="text/javascript" src="lib/custom/raphael-min.js"></script>
@@ -156,8 +159,9 @@
 <script src="src/tracker.js"></script> 
 <!--<script src="src/add2home.js"></script>--> 
 <script src="src/lang.js"></script>  
-<script src="src/app.js"></script>
 <script src="src/buzz.js"></script>
+<script src="src/app.js"></script>
+
 <!--<script src="src/drag.js"></script> -->
 <!-- <script src="src/slick.js"></script>  -->
 <!--<script src="src/mask.js"></script> -->

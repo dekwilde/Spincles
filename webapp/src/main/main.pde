@@ -11,9 +11,9 @@ float gravity = 10.0;
 float gravityX = 0.0;
 float gravityY = 0.0;
 float touch1X = 0.0;
-float touch1Y = 0.0
-float bx;
-float by;
+float touch1Y = 0.0;
+float bx = 0.0;
+float by = 0.0;
 int bs = 120;
 boolean bover = false;
 boolean locked = false;
@@ -257,7 +257,7 @@ void draw() {
       
       soundStart.play();
       soundStart.loop();
-      soundStart.setVolume(0.1);
+      //soundStart.volume = 0.8;
       gameSound = "Null";
     break;
     

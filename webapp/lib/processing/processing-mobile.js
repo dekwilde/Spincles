@@ -135,19 +135,50 @@
     mAcceleration.z = acceleration.z;
   }, false);
 
-  function orientationhandler(evt) {
-    // For FF3.6+
-    if (!evt.gamma && !evt.beta) {
-      evt.gamma = -(evt.x * (180 / Math.PI));
-      evt.beta = -(evt.y * (180 / Math.PI));
+  function orientationhandler(e) {
+    
+	// For FF3.6+
+    if (!e.gamma && !e.beta) {
+      e.gamma = -(e.x * (180 / Math.PI));
+      e.beta = -(e.y * (180 / Math.PI));
+    }
+	
+	var dir = 0, ref = 0;
+	var direction, delta, heading;
+	
+	if (typeof e.webkitCompassHeading !== 'undefined') {
+        direction = e.webkitCompassHeading;
+        if (typeof window.orientation !== 'undefined') {
+            direction += window.orientation;
+        }
+    } else {
+        direction = 360 - e.alpha;
+    }
+
+    delta = Math.round(direction) - ref;
+    ref = Math.round(direction);
+    if (delta < -180)
+        delta += 360;
+    if (delta > 180)
+        delta -= 360;
+    dir += delta;
+
+    heading = direction;
+    while (heading >= 360) {
+        heading -= 360;
+    }
+    while (heading < 0) {
+        heading += 360;
     }
 
     var mOrientation = mobile.orientation;
-    mOrientation.alpha = evt.alpha;
-    mOrientation.beta = evt.beta;
-    mOrientation.gamma = evt.gamma;
-    mOrientation.compassAccuracy = evt.webkitCompassAccuracy ? evt.webkitCompassAccuracy : -1;
-    mOrientation.compassHeading = evt.webkitCompassHeading ? evt.webkitCompassHeading + window.orientation : -1;
+    mOrientation.alpha = e.alpha;
+    mOrientation.beta = e.beta;
+    mOrientation.gamma = e.gamma;
+    mOrientation.compassAccuracy = e.webkitCompassAccuracy ? e.webkitCompassAccuracy : -1;
+    //mOrientation.compassHeading = e.webkitCompassHeading ? e.webkitCompassHeading + window.orientation : -1;
+	//mOrientation.compassHeading = e.webkitCompassHeading ? e.webkitCompassHeading + window.orientation : 360 - e.alpha;
+	mOrientation.compassHeading = heading;
   }
 
   window.addEventListener('deviceorientation',  orientationhandler, false);

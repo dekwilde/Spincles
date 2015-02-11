@@ -11,6 +11,7 @@ float targetLG = -48.170929;
 float currentLT;
 float currentLG;
 float compassDEGREE = 0, targetDEGREE = 0;
+var touches = {};
 
 
 
@@ -40,21 +41,23 @@ void gestureStopped() {
 }
 
 
-// For touchscreens
 void touchStart(t) {
+    
   for (int i = 0; i < t.touches.length; i++) {
     var id = t.touches[i].identifier;
     if (!touches[id]) {
-      touches[id] = color(random(255), random(255), random(255));
+      touches[id] = color(random(255), random(255), random(255), 128);
     }
 
-    if(id == 0) {
-      touch1X = t.touches[id].offsetX;
-      touch1Y = t.touches[id].offsetY;
-    }
-
+    touch1X = t.touches[0].offsetX;
+    touch1Y = t.touches[0].offsetY;
+    
+    //pebug("touch "+ touch1X + " " + touch1Y);
+    
+    //disply pebug
+    noStroke();
     fill(touches[id]);
-    ellipse(t.touches[i].offsetX, t.touches[i].offsetY, 10, 10);
+    ellipse(t.touches[i].offsetX, t.touches[i].offsetY, 30, 30);
     
 
     
@@ -81,14 +84,14 @@ void touchStart(t) {
 void touchMove(t) {
   for (int i = 0; i < t.touches.length; i++) {
     var id = t.touches[i].identifier;
+    //disply pebug
+    noStroke();
     fill(touches[id]);
-    ellipse(t.touches[i].offsetX, t.touches[i].offsetY, 10, 10);
+    ellipse(t.touches[i].offsetX, t.touches[i].offsetY, 30, 30);
   }
   
-  if(id == 0) {
-    touch1X = t.touches[0].offsetX;
-    touch1Y = t.touches[0].offsetY;
-  }
+  touch1X = t.touches[0].offsetX;
+  touch1Y = t.touches[0].offsetY;
   
   if(locked) {
     bx = touch1X-bdifx; 
@@ -98,6 +101,8 @@ void touchMove(t) {
 } 
 void touchEnd(t) {
   locked = false;  
+  touch1X = -1;
+  touch1Y = -1;
 }
 
 
@@ -138,33 +143,37 @@ void pointCompass() {
 
 void acce() {
 
-  // Remap axis value to something within the sketch bounds
-  gravityX = map(acceleration.x, -1.0, 1.0, 0, width);
-  gravityY = map(acceleration.y, -1.0, 1.0, 0, height);    
+  gravityX = acceleration.x/10;
+  gravityY = -acceleration.y/10;    
   //pebug("x: " + gravityX + " " + "y: " + gravityY);  
 }
 void mic() {
   //pebug("Mic: " + microfone);
 }
+
+
+
+
 void compass() {
-  // Only show the compass if the device supports one
-  if (orientation.compassHeading >= 0 && orientation.compassAccuracy >= 0) {
-    // Ease the previous heading to the current heading
-    float theta = orientation.compassHeading;
-    float dtheta = theta - compassDEGREE;
-    if (abs(dtheta) < 180) {
-      compassDEGREE += dtheta * easing;
-    } else {
-      compassDEGREE = theta;
-    }
   
-    // Convert degree heading to an x/y co-ordinate;
-    int compassX = 100 * sin(radians(compassDEGREE));
-    int compassY = 100 * cos(radians(compassDEGREE));
-    
-    //display
-    ellipse(width/2 - compassX, height/2 - compassY, 20, 20);
-  }  
+  //pebug(orientation.compassHeading);
+
+  float theta = orientation.compassHeading;
+  float dtheta = theta - compassDEGREE;
+  if (abs(dtheta) < 180) {
+    compassDEGREE += dtheta * easing;
+  } else {
+    compassDEGREE = theta;
+  }
+  
+  angleCompass = compassDEGREE + iAngle;
+  
+  if (angleCompass > 360) {
+          angleCompass = angleCompass - 360;
+  }
+  if (angleCompass < 0) {
+          angleCompass = 360 + angleCompass;
+  }
   
 }
 

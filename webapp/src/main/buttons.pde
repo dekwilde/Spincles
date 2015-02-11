@@ -318,6 +318,7 @@ class ButtonStart {
         line(pX,pY,fX,fY);
         if (dist(fX,fY,pX,pY)<15 && (angleCompass<65 && angleCompass>55 || angleCompass<185 && angleCompass>175 || angleCompass<305 && angleCompass>295)) {
           target = true;
+          
           fill(0); 
           stroke(255);  
           strokeWeight(2);

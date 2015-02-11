@@ -15,7 +15,7 @@ void hurt() {
 }
 
 void clawTouchStart() {
-  soundTouchTimer.setVolume(hurtTimer/100);
+  //soundTouchTimer.volume = map(hurtTimer/100,0,100,0.0, 1.0);
   
   if(hurtTimer<1) {
     soundTouchTimer.play();
@@ -43,7 +43,7 @@ void clawTouchStart() {
 void clawTouchStop() {
   
   hurtTimer -= 1;
-  soundTouchTimer.setVolume(hurtTimer/100);
+  //soundTouchTimer.volume = map(hurtTimer/100,0,100,0.0, 1.0);
   if(hurtTimer<0) {
     hurtTimer = 0;
     soundTouchTimer.stop();
@@ -125,12 +125,13 @@ void share() {
 }
 
 void stateSetup() {
-  scW = screen.width;
-  scH = screen.height;
+  //scW = screen.width;
+  //scH = screen.height;
   
-  //scW = window.innerWidth;
-  //scH = window.innerHeight;
+  scW = window.innerWidth;
+  scH = window.innerHeight;
  
+  pebug("build 3");
   pebug("width: " + scW + " " + "height: " + scH);
   size(scW, scH, P2D);
 
@@ -323,7 +324,7 @@ void stateHow() {
       btClose.draw(255);
   }
   pInfo = pInfo - pInfo/6;
-  soundTouchTimer.setVolume(0);
+  //soundTouchTimer.volume = 0.0;
 }
 
 

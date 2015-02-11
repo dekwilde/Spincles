@@ -24,9 +24,9 @@ var FBscope = "publish_actions, publish_stream, photo_upload, publish_checkins, 
 var FBplace_id = "129793527037644";
 var FBlatitude = "-23.516016449899";
 var FBlongitude = "-46.636754669443";
-var FBmessage = "Mensagem padrão";
+var FBmessage = "Mensagem padrão";   
 
-
+	
 ///////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////   
 function showPageLoadingMsg(th, txt) {
 	$.mobile.loading( "show", {
@@ -81,8 +81,22 @@ function canvas2ImageCrop(x1,y1,w,h) {
 $(document).ready(function(){    
 
 	/////////////////////////////////////////////// Init /////////////////////////////////////////////
-	function init() {	  
-			trackView("init"); 
+	function init() {  		
+		//Processing.reload();
+		Processing.loadSketchFromSources('pde', [
+			"src/main/main.pde", 
+			"src/main/Three.pde", 
+			"src/main/Trixel.pde", 
+			"src/main/body.pde", 
+			"src/main/buttons.pde", 
+			"src/main/control.pde", 
+			"src/main/device.pde", 
+			"src/main/elements.pde", 
+			"src/main/functions.pde", 
+			"src/main/score.pde"
+		]);
+    
+		trackView("init"); 
 	}
 
 	init();

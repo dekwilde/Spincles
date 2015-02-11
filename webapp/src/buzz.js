@@ -7,9 +7,8 @@ var soundMagnetic,
 	soundLoopBG,
 	soundStart;
 
-window.onload=function(){
-	// Go check the great Buzz library for playing sounds in JS.
-	// The sounds you hear come frome http://buzz.jaysalvat.com
+
+
 
 	var baseURL = "data/";
 	var soundProps = {
@@ -24,6 +23,46 @@ window.onload=function(){
 	soundTouchTimer = new buzz.sound(baseURL + "glitch", soundProps)
 	soundLoopBG =  	new buzz.sound(baseURL + "loop1", soundProps);
 	soundStart =  	new buzz.sound(baseURL + "loopstart", soundProps);   
+
+
+
+
+
+
+
+document.addEventListener("touchstart", handleSound, false);
+function handleSound(e) {
+	document.removeEventListener("touchstart", handleSound, false);
+	/*		
+	soundMagnetic.load();
+	soundScore.load();
+	soundClick.load();
+	soundGlitch.load();
+	soundEnemy.load();
+	soundTouchTimer.load();
+	soundLoopBG.load();
+	soundStart.load();
 	
-    //buzz.all().play();
+	soundMagnetic.play();
+	soundScore.play();
+	soundClick.play();
+	soundGlitch.play();
+	soundEnemy.play();
+	soundTouchTimer.play();
+	soundLoopBG.play();
+	soundStart.play();
+	*/
+	
+	buzz.all().load();
+	
+	buzz.all().bind("canplaythrough", function(e) {
+		buzz.all().play();
+	})
+	//buzz.all().play();
+	//buzz.all().stop();
 }
+
+
+	
+    
+
