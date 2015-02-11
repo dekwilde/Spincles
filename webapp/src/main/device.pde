@@ -17,8 +17,9 @@ var touches = {};
 
 
 
-
+boolean gestureiOS = false;
 void gestureStarted() {
+  gestureiOS = true;
   startAngle = iAngle;
   startEscala = iScale;
 }
@@ -70,7 +71,8 @@ void unLocked() {
   touch1Y = -1;  
 }
 
-
+float pinchDistance = 0;
+float pinchAngle = 0;
 void touchStart(t) {
     
   for (int i = 0; i < t.touches.length; i++) {
@@ -80,7 +82,6 @@ void touchStart(t) {
     }
 
     //pebug("touch "+ touch1X + " " + touch1Y);
-    
     //disply pebug
     noStroke();
     fill(touches[id]);
@@ -91,7 +92,25 @@ void touchStart(t) {
   touch1Y = t.touches[0].offsetY;
   Bover();
   
+  //GESTURE
+  if(!gestureiOS) {
+    if(t.touches.length>1) {
+      startAngle = iAngle;
+      startEscala = iScale;
+      float pinchDistance = sqrt(pow((t.touches[1].offsetX - t.touches[0].offsetX),2)+pow((t.touches[1].offsetY - t.touches[0].offsetY),2));
+    } else {
+      pinchDistance = 0;
+      pinchAngle = 0
+    }
+  }
+  
+  
 }
+
+
+
+
+
 
 void touchMove(t) {
   for (int i = 0; i < t.touches.length; i++) {
@@ -104,13 +123,47 @@ void touchMove(t) {
   
   touch1X = t.touches[0].offsetX;
   touch1Y = t.touches[0].offsetY;
-  
   Locked();
   
+  
+  if(!gestureiOS) {
+    if(pinchDistance > 0) {
+      float newDistance = sqrt(pow((t.touches[1].offsetX - t.touches[0].offsetX),2)+pow((t.touches[1].offsetY - t.touches[0].offsetY),2));
+      pinchAngle = atan2(t.touches[1].offsetY - t.touches[0].offsetY, t.touches[1].offsetX - t.touches[0].offsetX);  
+      
+      iAngle = startAngle + degrees(pinchAngle);
+      iScale = startEscala * (newDistance/pinchDistance);
+      if (iAngle > 360) {
+              iAngle = iAngle - 360;
+      }
+      if (iAngle < 0) {
+              iAngle = 360 + iAngle;
+      }
+    }
+  }
+  
 } 
+
+
+
+
+
 void touchEnd(t) {
   unLocked();
+  
+  if(!gestureiOS) {
+    startAngle = iAngle;
+    startEscala = iScale;
+    pinchDistance = 0;
+    pinchAngle = 0;
+  }
+  
 }
+
+
+
+
+
 
 boolean mouse = false;
 void mousePressed() {
@@ -132,7 +185,6 @@ void mouseDragged() {
   
 }
 void mouseMoved() {
-  //mouse = true;
   if(!mousePressed) {
     gravityX = (mouseX - width/2)/1000;
     gravityY = (mouseY - height/2)/1000;
@@ -140,7 +192,6 @@ void mouseMoved() {
 }
 
 void mouseReleased() {
-  //mouse = false;
   unLocked();
 }
 

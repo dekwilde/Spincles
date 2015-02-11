@@ -206,66 +206,148 @@
 	var gestureScale = 0;	
 	var gestureRotation = 0;
 	var p = null; 
-
-  window.addEventListener("gesturechange", function(e) {
-		var mGesture = mobile.gesture;
 	
-		pgestureScale = mGesture.scale;	
-		pgestureRotation = mGesture.rotation;	
-		mGesture.scale = e.scale;
-		mGesture.rotation = e.rotation;   
-        if(p) {
-			if ( p.gestureChanged ) {
-				p.gestureChanged();
+	
+	/////////////////////////////////////////////////////// iOS	////////////////////////////////////////////////
+  	//if ((navigator.userAgent.indexOf('iPhone') != -1) || (navigator.userAgent.indexOf('iPod') != -1) || (navigator.userAgent.indexOf('iPad') != -1)) {
+		window.addEventListener("gesturestart", function(e) {
+			var mGesture = mobile.gesture; 
+			p = Processing.getInstanceById("pde");
+			pgestureScale = mGesture.scale;	
+			pgestureRotation = mGesture.rotation;
+			mGesture.scale = e.scale;
+			mGesture.rotation = e.rotation;
+
+			if(p) {
+				if ( typeof p.gestureStarted == "function" ) {
+					p.gestureStarted();
+				} else {
+					p.gestureStarted = true;
+				}			
 			}
-		}
+		}, false);	
+
+
+		window.addEventListener("gesturechange", function(e) {
+			var mGesture = mobile.gesture;
+
+			pgestureScale = mGesture.scale;	
+			pgestureRotation = mGesture.rotation;	
+			mGesture.scale = e.scale;
+			mGesture.rotation = e.rotation;   
+	        if(p) {
+				if ( p.gestureChanged ) {
+					p.gestureChanged();
+				}
+			}
+
+		}, false);
+
+		window.addEventListener("gestureend", function(e) {
+			var mGesture = mobile.gesture;
+
+			pgestureScale = mGesture.scale;	
+			pgestureRotation = mGesture.rotation;
+
+			if(p) {
+				if ( typeof p.gestureStarted != "function" ) {
+					p.gestureStarted = false;
+				}
+
+				if ( p.gestureStopped ) {
+					p.gestureStopped();
+				}			
+			}
+
+	        p = null;
+			mGesture.scale = null;		
+			mGesture.rotation = null;
+		}, false);        
+	//} //end if userAgent iOS
+
+	/*
+	/////////////////////////////////////////////////////// Android	////////////////////////////////////////////////
+	// not working!
+	if ( (navigator.userAgent.indexOf('Android') != -1) ) {
+		var pinchDistance = 0;
+		var pinchAngle = 0
 		
-	}, false);	
+		window.addEventListener('touchstart',function(e){
+		    if(e.touches.length > 1){
+		        pinchDistance = Math.sqrt(Math.pow((e.touches[1].pageX - e.touches[0].pageX),2)+Math.pow((e.touches[1].pageY - e.touches[0].pageY),2));
+		    } else {
+		        pinchDistance = 0;
+				pinchAngle = 0
+		    }
 
-  window.addEventListener("gesturestart", function(e) {
-		var mGesture = mobile.gesture; 
-		p = Processing.getInstanceById("pde");
-		pgestureScale = mGesture.scale;	
-		pgestureRotation = mGesture.rotation;
-		mGesture.scale = e.scale;
-		mGesture.rotation = e.rotation;
-        
-		if(p) {
-			if ( typeof p.gestureStarted == "function" ) {
-				p.gestureStarted();
-			} else {
-				p.gestureStarted = true;
-			}			
-		}
+			var mGesture = mobile.gesture;
+			pgestureScale = mGesture.scale;	
+			pgestureRotation = mGesture.rotation;	
+			p = Processing.getInstanceById("pde");
 
-	
-	
-	}, false);	
+			if(p) {
+				if ( typeof p.gestureStarted == "function" ) {
+					p.gestureStarted();
+				} else {
+					p.gestureStarted = true;
+				}			
+			}
+		},false);
 
-	window.addEventListener("gestureend", function(e) {
-		var mGesture = mobile.gesture;
 
-		pgestureScale = mGesture.scale;	
-		pgestureRotation = mGesture.rotation;
-        
-		if(p) {
-			if ( typeof p.gestureStarted != "function" ) {
-				p.gestureStarted = false;
+		window.addEventListener('touchmove', function (e) {
+		    if (pinchDistance <= 0) {
+		        return;
+		    }
+		    var newDistance = Math.sqrt(Math.pow((e.touches[1].pageX - e.touches[0].pageX),2)+Math.pow((e.touches[1].pageY - e.touches[0].pageY),2));
+			var pinchAngle = Math.atan2(e.touches[1].pageY - e.touches[0].pageY, e.touches[1].pageX - e.touches[0].pageX);	
+
+			var mGesture = mobile.gesture; 
+			pgestureScale = mGesture.scale;	
+			pgestureRotation = mGesture.rotation;
+			mGesture.scale = newDistance / pinchDistance;
+			mGesture.rotation = pinchAngle * (180 / Math.PI);
+
+			if(p) {
+				if ( typeof p.gestureStarted == "function" ) {
+					p.gestureStarted();
+				} else {
+					p.gestureStarted = true;
+				}			
 			}
 
-			if ( p.gestureStopped ) {
-				p.gestureStopped();
-			}			
-		}
 
-        p = null;
-		mGesture.scale = null;		
-		mGesture.rotation = null;
-	}, false);
+		},false);
 
 
 
+		window.addEventListener('touchend', function (e) {
+		    if (pinchDistance <= 0) {
+		        return;
+		    }
+		    var mGesture = mobile.gesture;
+			pgestureScale = mGesture.scale;	
+			pgestureRotation = mGesture.rotation;
+			if(p) {
+				if ( typeof p.gestureStarted != "function" ) {
+					p.gestureStarted = false;
+				}
 
+				if ( p.gestureStopped ) {
+					p.gestureStopped();
+				}			
+			}
+	        p = null;
+			mGesture.scale = null;		
+			mGesture.rotation = null;
+		},false);
+	        
+	} //end if userAgent Android
+	*/
+	
+
+
+/////////////////////////////////////////////////////////////// end ///////////////////////////////////////////////////////////
   ['orientation', 'acceleration', 'coords', 'gesture'].forEach(function(objName) {
     Pp.__defineGetter__(objName, function() {
       return mobile[objName];
