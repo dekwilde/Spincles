@@ -188,7 +188,7 @@ void mousePressed() {
 void mouseDragged() {
   Locked();
   //display pebug
-  stroke(0);
+  stroke(255);
   noFill();
   line(bx,by,mouseX, mouseY);
   ellipse(bx,by,bs,bs);

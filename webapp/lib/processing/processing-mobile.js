@@ -271,40 +271,40 @@
 	var old_level_L = 0;
 	window.AudioContext = window.AudioContext || window.webkitAudioContext;
 	navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
 	var audioContext = new AudioContext();
-
-	navigator.getUserMedia(
-		{audio:true, video:false}, 
-		function(stream){    
+    if (navigator.getUserMedia) {
+		navigator.getUserMedia(
+			{audio:true, video:false}, 
+			function(stream){    
 		
 			
-			var mic = audioContext.createMediaStreamSource(stream);
-			var javascriptNode = audioContext.createScriptProcessor(1024, 1, 1);
-			mic.connect(javascriptNode);
-			javascriptNode.connect(audioContext.destination); 
+				var mic = audioContext.createMediaStreamSource(stream);
+				var javascriptNode = audioContext.createScriptProcessor(1024, 1, 1);
+				mic.connect(javascriptNode);
+				javascriptNode.connect(audioContext.destination); 
 			
-			console.log("micStart");
-			javascriptNode.onaudioprocess = function(event){
+				console.log("micStart");
+				javascriptNode.onaudioprocess = function(event){
 
-				var inpt_L = event.inputBuffer.getChannelData(0);
-				var instant_L = 0.0;
+					var inpt_L = event.inputBuffer.getChannelData(0);
+					var instant_L = 0.0;
 
-				var sum_L = 0.0;
-				for(var i = 0; i < inpt_L.length; ++i) {
-					sum_L += inpt_L[i] * inpt_L[i];
-				}
-				instant_L = Math.sqrt(sum_L / inpt_L.length);
-				max_level_L = Math.max(max_level_L, instant_L);				
-				instant_L = Math.max( instant_L, old_level_L -0.008 );
-				old_level_L = instant_L;  
+					var sum_L = 0.0;
+					for(var i = 0; i < inpt_L.length; ++i) {
+						sum_L += inpt_L[i] * inpt_L[i];
+					}
+					instant_L = Math.sqrt(sum_L / inpt_L.length);
+					max_level_L = Math.max(max_level_L, instant_L);				
+					instant_L = Math.max( instant_L, old_level_L -0.008 );
+					old_level_L = instant_L;  
 			    
-				mMedia = mobile.media;
-				mMedia.miclevel = instant_L/max_level_L;	
-			}
-		},
-		function(e){ console.log(e); }
-	);
+					mMedia = mobile.media;
+					mMedia.miclevel = instant_L/max_level_L;	
+				}
+			},
+			function(e){ console.log(e); }
+		);
+	}
                   
 
 

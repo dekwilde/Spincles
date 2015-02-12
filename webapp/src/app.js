@@ -49,8 +49,8 @@ function goPage(page) {
       
 
 function resizeCanvas() {
-    Processing.getInstanceById("eraser").size(window.innerWidth, window.innerWidth/1.3333);
-    Processing.getInstanceById("eraser").scale(window.innerWidth / 1024, (window.innerWidth/1.3333) / 768);
+    Processing.getInstanceById("pde").size(window.innerWidth, window.innerHeight);
+    //Processing.getInstanceById("pde").scale(window.innerWidth, window.innerHeight);
 }
 
 
@@ -82,7 +82,8 @@ $(document).ready(function(){
 
 	/////////////////////////////////////////////// Init /////////////////////////////////////////////
 	function init() {  		
-		//Processing.reload();
+		//Processing.reload(); 
+		
 		Processing.loadSketchFromSources('pde', [
 			"src/main/main.pde", 
 			"src/main/Three.pde", 
@@ -120,7 +121,12 @@ $(document).ready(function(){
 		}     
 	}
 	window.addEventListener('orientationchange', doOnOrientationChange);
-	doOnOrientationChange();
+	doOnOrientationChange();    
+	
+	
+	
+	window.addEventListener("resize", resizeCanvas);
+	
 	
 	///////////////////////////////////////////////////// GLOBAL - pageShow /////////////////////////////////////////////
 	$( "div" ).on( 'pageshow',function(event, ui){

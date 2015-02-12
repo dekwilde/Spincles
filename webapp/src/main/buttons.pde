@@ -1,7 +1,6 @@
 class ButtonClose {
     boolean overButton = false;
-    int pX = width - 30;
-    int pY = 30;
+    int pX, pY;
     int dm = 15; 
     
     ButtonClose() {  
@@ -9,6 +8,9 @@ class ButtonClose {
     }
     
     void draw(int c) {
+        pX = width - 30;
+        pY = 30;
+      
         checkButton();
               // Left buttom
         if (overButton == true) {          
@@ -46,23 +48,21 @@ class ButtonClose {
 
 
 class MenuSlider {
-    float st_x;
-    float st_y;
+    float st_x = width/2;
+    float st_y = height/2 -120;
     int st_s = 30;
     float st_difx = 0.0; 
     float st_dify = 0.0; 
-    float init = width/2 - 160 + 35;
-    float end = width/2 - 160 + 285;
+    float init, end;
     
     
     MenuSlider() {  
-      st_x = 160;
-      st_y = height/2 -120;
     }
     
     void draw() {
-      //Draw Line
-      
+      init = width/2 - 160 + 35;
+      end = width/2 - 160 + 285;
+      st_y = height/2 -120;
       
       // Draw the button
       if (st_x>end) {
@@ -70,26 +70,25 @@ class MenuSlider {
       }
       if (st_x<init) {
         st_x = init;
-      }
+      }     
+      mic_perc = (st_x-init) / ((end-init)/100);
+      //pebug(perc);
+      
+      if (touch1X > init-(st_s*1.5) && touch1X < end+(st_s*1.5) && 
+        touch1Y > st_y-(st_s*1.5) && touch1Y < st_y+(st_s*1.5)) {
+           st_x = touch1X;  
+           soundClick.play();
+         } else {
+           st_x = st_x;
+      } 
+      
+      
       stroke(255,204,0);
       fill(0);
       line(init, st_y, end, st_y);
       ellipse(st_x, st_y, st_s, st_s);
       
-
       
-      mic_perc = (st_x-init) / ((end-init)/100);
-      
-      //pebug(perc);
-      
-      
-      if (touch1X > st_x-(st_s*1.5) && touch1X < st_x+(st_s*1.5) && 
-        touch1Y > st_y-(st_s*1.5) && touch1Y < st_y+(st_s*1.5)) {
-           st_x = touch1X;
-           soundClick.play();
-         } else {
-           st_x = st_x;
-      }
       
     }
     
@@ -103,8 +102,7 @@ class MenuSlider {
 class ButtonAgain {
     boolean overButton = false;
     
-    int pX = width/2;
-    int pY = height/2+200;
+    int pX, pY;
     int dw = 160;
     int dh = 40;
     int fSize = 20;
@@ -114,6 +112,9 @@ class ButtonAgain {
     }
     
     void draw() {
+        pX = width/2;
+        pY = height/2+200;
+      
         checkButton();
         // Left buttom
         strokeWeight(1);
@@ -152,8 +153,7 @@ class ButtonAgain {
 class ButtonHow {
     boolean overButton = false;
     
-    int pX = width/2;
-    int pY = height/2+180;
+    int pX,pY;
     int dw = 200;
     int dh = 40;
     int fSize = 20;
@@ -163,6 +163,9 @@ class ButtonHow {
     }
     
     void draw() {
+        pX = width/2;
+        pY = height/2+180;
+      
         checkButton();
         // Left buttom
         strokeWeight(1);
@@ -195,8 +198,7 @@ class ButtonHow {
 class ButtonClear {
     boolean overButton = false;
     
-    int pX = width/2;
-    int pY = height/2+120;
+    int pX,pY;
     int dw = 200;
     int dh = 40;
     int fSize = 20;
@@ -206,6 +208,10 @@ class ButtonClear {
     }
     
     void draw() {
+      
+        pX = width/2;
+        pY = height/2+120;
+      
         checkButton();
         // Left buttom
         strokeWeight(1);
@@ -237,8 +243,7 @@ class ButtonClear {
 class ButtonShare {
     boolean overButton = false;
     
-    int pX = width/2;
-    int pY = height/2+60;
+    int pX, pY;
     int dw = 200;
     int dh = 40;
     int fSize = 20;
@@ -247,7 +252,11 @@ class ButtonShare {
       //
     }
     
-    void draw() {      
+    void draw() {
+
+        pX = width/2;
+        pY = height/2+60;
+      
         if (overButton == true) {
           fill(255,204,0);
         } else {
@@ -294,8 +303,7 @@ class ButtonStart {
     boolean overButton = false;
     boolean target = false;
     
-    float pX = width/2;
-    float pY = height/2;
+    float pX, pY;
     float fX, fY;
     
     int dw = 120;
@@ -308,6 +316,8 @@ class ButtonStart {
     }
     
     void draw() {
+        pX = width/2;
+        pY = height/2;
         fX = control.x;
         fY = control.y;
         
@@ -389,13 +399,16 @@ class ButtonStart {
 class ButtonInfo {
     boolean overButton = false;
     int dm = 20;   
-    int pX = width - dm - 10;
-    int pY = height - dm - 10;
+    int pX,pY;
 
     
     ButtonInfo() {  
     }    
     void draw() {
+      
+        pX = width - dm - 10;
+        pY = height - dm - 10;
+      
         checkButton();
         strokeWeight(1);
         if (overButton == true) {

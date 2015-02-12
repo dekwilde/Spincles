@@ -229,7 +229,7 @@ void stateStart() {
   */
 
   
-  int Talign = -140;
+  int Talign = -150;
   fill(0);
   textFont(fontTitle, 10);
   text("Welcome to", width/2, height/2-40+Talign); 
@@ -237,7 +237,7 @@ void stateStart() {
 
   logo.draw(Talign);
   
-  control.draw(); 
+  control.draw();
   btStart.draw();
   
 

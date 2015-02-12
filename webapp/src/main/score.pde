@@ -6,8 +6,7 @@ int recordScore = 0;
 class ScoreInfo {
     int dw = 100;
     int dh = 10;
-    float px = width - dw - 10;
-    float py = 30;  
+    float px,py;  
     
 
   
@@ -16,6 +15,9 @@ class ScoreInfo {
     }
     
     void draw() {
+      
+      px = width - dw - 10;
+      py = 30;
       
       if(energy > 100) {
           levelUp();
