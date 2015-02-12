@@ -77,7 +77,10 @@
     gesture: {
       scale: 0,
       rotation: 0
-    }
+    },
+	media: {
+		miclevel: 0
+	}
   };
 
 
@@ -206,149 +209,107 @@
 	var gestureScale = 0;	
 	var gestureRotation = 0;
 	var p = null; 
-	
-	
-	/////////////////////////////////////////////////////// iOS	////////////////////////////////////////////////
-  	//if ((navigator.userAgent.indexOf('iPhone') != -1) || (navigator.userAgent.indexOf('iPod') != -1) || (navigator.userAgent.indexOf('iPad') != -1)) {
-		window.addEventListener("gesturestart", function(e) {
-			var mGesture = mobile.gesture; 
-			p = Processing.getInstanceById("pde");
-			pgestureScale = mGesture.scale;	
-			pgestureRotation = mGesture.rotation;
-			mGesture.scale = e.scale;
-			mGesture.rotation = e.rotation;
 
-			if(p) {
-				if ( typeof p.gestureStarted == "function" ) {
-					p.gestureStarted();
-				} else {
-					p.gestureStarted = true;
-				}			
+	window.addEventListener("gesturestart", function(e) {
+		var mGesture = mobile.gesture; 
+		p = Processing.getInstanceById("pde");
+		pgestureScale = mGesture.scale;	
+		pgestureRotation = mGesture.rotation;
+		mGesture.scale = e.scale;
+		mGesture.rotation = e.rotation;
+
+		if(p) {
+			if ( typeof p.gestureStarted == "function" ) {
+				p.gestureStarted();
+			} else {
+				p.gestureStarted = true;
+			}			
+		}
+	}, false);	
+
+
+	window.addEventListener("gesturechange", function(e) {
+		var mGesture = mobile.gesture;
+
+		pgestureScale = mGesture.scale;	
+		pgestureRotation = mGesture.rotation;	
+		mGesture.scale = e.scale;
+		mGesture.rotation = e.rotation;   
+        if(p) {
+			if ( p.gestureChanged ) {
+				p.gestureChanged();
 			}
-		}, false);	
+		}
 
+	}, false);
 
-		window.addEventListener("gesturechange", function(e) {
-			var mGesture = mobile.gesture;
+	window.addEventListener("gestureend", function(e) {
+		var mGesture = mobile.gesture;
 
-			pgestureScale = mGesture.scale;	
-			pgestureRotation = mGesture.rotation;	
-			mGesture.scale = e.scale;
-			mGesture.rotation = e.rotation;   
-	        if(p) {
-				if ( p.gestureChanged ) {
-					p.gestureChanged();
-				}
-			}
+		pgestureScale = mGesture.scale;	
+		pgestureRotation = mGesture.rotation;
 
-		}, false);
-
-		window.addEventListener("gestureend", function(e) {
-			var mGesture = mobile.gesture;
-
-			pgestureScale = mGesture.scale;	
-			pgestureRotation = mGesture.rotation;
-
-			if(p) {
-				if ( typeof p.gestureStarted != "function" ) {
-					p.gestureStarted = false;
-				}
-
-				if ( p.gestureStopped ) {
-					p.gestureStopped();
-				}			
+		if(p) {
+			if ( typeof p.gestureStarted != "function" ) {
+				p.gestureStarted = false;
 			}
 
-	        p = null;
-			mGesture.scale = null;		
-			mGesture.rotation = null;
-		}, false);        
-	//} //end if userAgent iOS
+			if ( p.gestureStopped ) {
+				p.gestureStopped();
+			}			
+		}
 
-	/*
-	/////////////////////////////////////////////////////// Android	////////////////////////////////////////////////
-	// not working!
-	if ( (navigator.userAgent.indexOf('Android') != -1) ) {
-		var pinchDistance = 0;
-		var pinchAngle = 0
+        p = null;
+		mGesture.scale = null;		
+		mGesture.rotation = null;
+	}, false);        
+
+
+
+/////////////////////////////////////////////// MICROPHONE LEVEL ////////////////////////////////////////////////////////////
+ 	var max_level_L = 0;
+	var old_level_L = 0;
+	window.AudioContext = window.AudioContext || window.webkitAudioContext;
+	navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+	var audioContext = new AudioContext();
+
+	navigator.getUserMedia(
+		{audio:true, video:false}, 
+		function(stream){    
 		
-		window.addEventListener('touchstart',function(e){
-		    if(e.touches.length > 1){
-		        pinchDistance = Math.sqrt(Math.pow((e.touches[1].pageX - e.touches[0].pageX),2)+Math.pow((e.touches[1].pageY - e.touches[0].pageY),2));
-		    } else {
-		        pinchDistance = 0;
-				pinchAngle = 0
-		    }
+			
+			var mic = audioContext.createMediaStreamSource(stream);
+			var javascriptNode = audioContext.createScriptProcessor(1024, 1, 1);
+			mic.connect(javascriptNode);
+			javascriptNode.connect(audioContext.destination); 
+			
+			console.log("micStart");
+			javascriptNode.onaudioprocess = function(event){
 
-			var mGesture = mobile.gesture;
-			pgestureScale = mGesture.scale;	
-			pgestureRotation = mGesture.rotation;	
-			p = Processing.getInstanceById("pde");
+				var inpt_L = event.inputBuffer.getChannelData(0);
+				var instant_L = 0.0;
 
-			if(p) {
-				if ( typeof p.gestureStarted == "function" ) {
-					p.gestureStarted();
-				} else {
-					p.gestureStarted = true;
-				}			
-			}
-		},false);
-
-
-		window.addEventListener('touchmove', function (e) {
-		    if (pinchDistance <= 0) {
-		        return;
-		    }
-		    var newDistance = Math.sqrt(Math.pow((e.touches[1].pageX - e.touches[0].pageX),2)+Math.pow((e.touches[1].pageY - e.touches[0].pageY),2));
-			var pinchAngle = Math.atan2(e.touches[1].pageY - e.touches[0].pageY, e.touches[1].pageX - e.touches[0].pageX);	
-
-			var mGesture = mobile.gesture; 
-			pgestureScale = mGesture.scale;	
-			pgestureRotation = mGesture.rotation;
-			mGesture.scale = newDistance / pinchDistance;
-			mGesture.rotation = pinchAngle * (180 / Math.PI);
-
-			if(p) {
-				if ( typeof p.gestureStarted == "function" ) {
-					p.gestureStarted();
-				} else {
-					p.gestureStarted = true;
-				}			
-			}
-
-
-		},false);
-
-
-
-		window.addEventListener('touchend', function (e) {
-		    if (pinchDistance <= 0) {
-		        return;
-		    }
-		    var mGesture = mobile.gesture;
-			pgestureScale = mGesture.scale;	
-			pgestureRotation = mGesture.rotation;
-			if(p) {
-				if ( typeof p.gestureStarted != "function" ) {
-					p.gestureStarted = false;
+				var sum_L = 0.0;
+				for(var i = 0; i < inpt_L.length; ++i) {
+					sum_L += inpt_L[i] * inpt_L[i];
 				}
-
-				if ( p.gestureStopped ) {
-					p.gestureStopped();
-				}			
+				instant_L = Math.sqrt(sum_L / inpt_L.length);
+				max_level_L = Math.max(max_level_L, instant_L);				
+				instant_L = Math.max( instant_L, old_level_L -0.008 );
+				old_level_L = instant_L;  
+			    
+				mMedia = mobile.media;
+				mMedia.miclevel = instant_L/max_level_L;	
 			}
-	        p = null;
-			mGesture.scale = null;		
-			mGesture.rotation = null;
-		},false);
-	        
-	} //end if userAgent Android
-	*/
-	
+		},
+		function(e){ console.log(e); }
+	);
+                  
 
 
 /////////////////////////////////////////////////////////////// end ///////////////////////////////////////////////////////////
-  ['orientation', 'acceleration', 'coords', 'gesture'].forEach(function(objName) {
+  ['orientation', 'acceleration', 'coords', 'gesture', 'media'].forEach(function(objName) {
     Pp.__defineGetter__(objName, function() {
       return mobile[objName];
     });

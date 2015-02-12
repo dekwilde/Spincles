@@ -279,8 +279,9 @@ class pL {
     iY = py;
   }
   void draw() {
-    x = random(iX-rand, iX+rand);
-    y = random(iY-rand, iY+rand);
+    float rm = rand*(1+microfone/20);
+    x = random(iX-rm, iX+rm);
+    y = random(iY-rm, iY+rm);
     if(n>timer) {
       change();
       n = 0;

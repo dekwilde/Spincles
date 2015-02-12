@@ -217,6 +217,10 @@ void stateSetup() {
 void stateStart() {
   background(255,204,0);
   
+  acce();
+  mic();
+  compass();
+  
   /*
   ctx.rect(0,0,width,height);
   fill(255,204,0,20);
@@ -232,9 +236,6 @@ void stateStart() {
 
 
   logo.draw(Talign);
-
-  acce();
-  compass();
   
   control.draw(); 
   btStart.draw();
