@@ -1,5 +1,5 @@
 void pebug(String m) {
-  println(m);
+  //println(m);
 }
 
 
@@ -225,7 +225,7 @@ void stateStart() {
   */
 
   
-  int Talign = -160;
+  int Talign = -140;
   fill(0);
   textFont(fontTitle, 10);
   text("Welcome to", width/2, height/2-40+Talign); 

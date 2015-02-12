@@ -7,7 +7,7 @@ class ScoreInfo {
     int dw = 100;
     int dh = 10;
     float px = width - dw - 10;
-    float py = 10;  
+    float py = 30;  
     
 
   
@@ -102,25 +102,22 @@ void clearScore() {
   level = 0;
   score = 0;
   recordScore = 0;
-  //iphone.saveState("");  
+  saveStrings("record", 0);
+  saveStrings("level", 0);  
 }
 
 void loadScore() {
-    /*
-    // Load the previously saved state of the app
-    Array[] load = split(iphone.loadState(), ",");
-    if (load.length >= 2) {
-      recordScore = int(load[0]);
-      level = int(load[1]);
-    }
-    */
+      recordScore = int(loadStrings("record"));
+      level = int(loadStrings("level"));
 }
 
 void saveScore() {
   if(score>recordScore) {
-    //iphone.saveState(score+","+level);
+    saveStrings("record",score);
+    saveStrings("level",level);
   } else {
-    //iphone.saveState(recordScore+","+level);
+    saveStrings("record",recordScore);
+    saveStrings("level",level);
   }
 }
 
@@ -129,14 +126,16 @@ void setScore() {
     //First time score
   if(!recordScore || recordScore == null || recordScore == "null") {
     recordScore = score;
-    //iphone.saveState(recordScore+","+level);
+    saveStrings("record",recordScore);
+    saveStrings("level",level);
     scoreResult = "New Record";
   } else {
     //check if the score is a new record
     if(score>recordScore) {
       scoreResult = "New Record";
       recordScore = score;
-      //iphone.saveState(recordScore+","+level);
+      saveStrings("record",recordScore);
+      saveStrings("level",level);
     } else {
       scoreResult = "Record";
     }     

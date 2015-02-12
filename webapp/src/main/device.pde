@@ -40,16 +40,18 @@ void Locked() {
 }
 void unLocked() {
   locked = false;  
-  touch1X = -1;
-  touch1Y = -1;  
+  touch1X = 0;
+  touch1Y = 0;  
+  touch2X = 0;
+  touch2Y = 0;  
 }
 
 
 
 
-boolean gestureiOS = false;
+boolean gestureMobile = false;
 void gestureStarted() {
-  gestureiOS = true;
+  gestureMobile = true;
   startAngle = iAngle;
   startEscala = iScale;
 }
@@ -71,6 +73,8 @@ void gestureStopped() {
   startEscala = iScale;
 }
 
+
+
 float pinchDistance = 0;
 float pinchAngle = 0;
 void touchStart(t) {
@@ -90,14 +94,16 @@ void touchStart(t) {
   
   touch1X = t.touches[0].offsetX;
   touch1Y = t.touches[0].offsetY;
+  touch2X = t.touches[1].offsetX;
+  touch2Y = t.touches[1].offsetY;
   Bover();
   
   //GESTURE
-  if(!gestureiOS) {
+  if(!gestureMobile) {
     if(t.touches.length>1) {
       startAngle = iAngle;
       startEscala = iScale;
-      pinchDistance = dist(t.touches[1].offsetX, t.touches[1].offsetY, t.touches[0].offsetX, t.touches[0].offsetY);
+      pinchDistance = dist(touch2X, touch2Y, touch1X, touch1Y);
     } else {
       pinchDistance = 0;
       pinchAngle = 0
@@ -123,13 +129,15 @@ void touchMove(t) {
   
   touch1X = t.touches[0].offsetX;
   touch1Y = t.touches[0].offsetY;
+  touch2X = t.touches[1].offsetX;
+  touch2Y = t.touches[1].offsetY;
   Locked();
   
   
-  if(!gestureiOS) {
+  if(!gestureMobile) {
     if(!(pinchDistance <= 0)) {
-      float newDistance = dist(t.touches[1].offsetX, t.touches[1].offsetY, t.touches[0].offsetX, t.touches[0].offsetY);
-      pinchAngle = degrees(atan2(t.touches[1].offsetY - t.touches[0].offsetY, t.touches[1].offsetX - t.touches[0].offsetX));  
+      float newDistance = dist(touch2X, touch2Y, touch1X, touch1Y);
+      pinchAngle = degrees(atan2(touch2Y - touch1Y, touch2X - touch1X));  
       
       iAngle = startAngle + pinchAngle;
       iScale = startEscala * (newDistance/pinchDistance);
@@ -151,7 +159,7 @@ void touchMove(t) {
 void touchEnd(t) {
   unLocked();
   
-  if(!gestureiOS) {
+  if(!gestureMobile) {
     startAngle = iAngle;
     startEscala = iScale;
     pinchDistance = 0;
@@ -171,8 +179,11 @@ void mousePressed() {
   touch1X = mouseX;
   touch1Y = mouseY; 
   Bover();
-  //bx = mouseX;
-  //by = mouseY;
+  
+  startAngle = iAngle;
+  startEscala = iScale;
+  pinchDistance = dist(mouseX, mouseY, bx, by);
+  
 }
 void mouseDragged() {
   Locked();
@@ -181,7 +192,18 @@ void mouseDragged() {
   noFill();
   line(bx,by,mouseX, mouseY);
   ellipse(bx,by,bs,bs);
-  iAngle = degrees(atan2(mouseY-by, mouseX-bx));
+  pinchAngle = degrees(atan2(mouseY-by, mouseX-bx));
+  float newDistance = dist(mouseX, mouseY, bx, by);
+  
+  iAngle = startAngle + pinchAngle;
+  iScale = startEscala * (newDistance/pinchDistance);
+  if (iAngle > 360) {
+          iAngle = iAngle - 360;
+  }
+  if (iAngle < 0) {
+          iAngle = 360 + iAngle;
+  }
+  
   
 }
 void mouseMoved() {
@@ -193,6 +215,12 @@ void mouseMoved() {
 
 void mouseReleased() {
   unLocked();
+  
+  startAngle = iAngle;
+  startEscala = iScale;
+  pinchDistance = 0;
+  pinchAngle = 0;
+  
 }
 
 

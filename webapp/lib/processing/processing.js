@@ -8764,9 +8764,9 @@
     */
     p.loadStrings = function(filename) {
       if (localStorage[filename]) {
-        return localStorage[filename].split("\n");
+        return localStorage[filename];
       }
-
+      /*
       var filecontent = ajax(filename);
       if(typeof filecontent !== "string" || filecontent === "") {
         return [];
@@ -8776,7 +8776,8 @@
       // Mac uses \r, and we actually expect \n
       filecontent = filecontent.replace(/(\r\n?)/g,"\n").replace(/\n$/,"");
 
-      return filecontent.split("\n");
+      return filecontent.split("\n");   
+	  */
     };
 
     // Writes an array of strings to a file, one line per string
@@ -8791,7 +8792,7 @@
     * @see saveBytes
     */
     p.saveStrings = function(filename, strings) {
-      localStorage[filename] = strings.join('\n');
+      localStorage[filename] = strings;
     };
 
     /**
