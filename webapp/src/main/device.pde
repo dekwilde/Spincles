@@ -267,7 +267,7 @@ void acce() {
   }
 }
 void mic() {
-  microfone = media.miclevel*100;
+  microfone = media.miclevel*mic_perc;
   pebug("Mic: " + microfone);
 }
 

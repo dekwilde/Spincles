@@ -1,12 +1,13 @@
-//GLOBAL VARIABLES
-var endSessionTime;
-var engage = false;
-var found  = false;
+
 $(document).ready(function(){    
 
 	
 	///////////////////////////////////////////////////////// INIT ///////////////////////////////////////////////////////////		                                                                                                     
-    var cursorX = 0, cursorY = 0;
+	//GLOBAL VARIABLES
+	var endSessionTime;
+	var engage = false;
+	var found  = false; 
+   	var cursorX = 0, cursorY = 0;
 	var cX = 0, cY = 0;
 	var rX = 0, rY = 0, rAngle = 0, rdX = 0, rdY = 0;
 	var lX = 0, lY = 0, lAngle = 0, ldX = 0, ldY = 0;
@@ -39,8 +40,6 @@ $(document).ready(function(){
 	//$(this).click(function(e){ e.preventDefault(); });
 	$("#container").css("opacity", 0.0);
 	$("#user_control").hide();
-	$("#slide").hide();
-	$("#slide").css('opacity', 0.0);
 	cd.style.display = 'none';
 	handR.style.display = 'none'; 
 	handL.style.display = 'none'; 
@@ -62,49 +61,6 @@ $(document).ready(function(){
 	});
 	
 	
-	/////////////////////////////////////////////////////////// VIDEO /////////////////////////////////////////////////////// 
-
-	var player, timePlay = 60000;   
-	
-	player = document.getElementById("player");    
-	
-	player.onended = function(e) {
-	      disableVideo();
-		  videoLoop();
-	};
-
-
-	document.addEventListener('play', function(e){
-	    var videos = document.getElementsByTagName('video');
-	    for(var i = 0, len = videos.length; i < len;i++){
-	        if(videos[i] != e.target){
-	            videos[i].pause();
-	        }
-	    }
-	}, true);
-
-	function videoLoop() {
-		setTimeout(enableVideo, timePlay);
-	}
-	function Pause() { 
-		player.pause();
-	}
-	function Play() {
-		player.play();
-	}
-
-	function disableVideo() {  
-		player.load();
-		Pause(); 	
-	}
-	function enableVideo() {
-		if(!engage) {
-			player.load();
-			Play();  
-	   	}
-	}
-
-	 
 	
 	/////////////////////////////////////////////////////// Control Panel ///////////////////////////////////////////////////
 	$("#bt_user_control").hide();
@@ -118,42 +74,24 @@ $(document).ready(function(){
 
 
 	$(document).keydown(function(e) {
-	  if(e.keyCode == 32) { // char "g"				
+	  if(e.keyCode == 32) { // SPACE				
 		if(!openControl) {
-			controlShow();	
+			openControl = true;
+		    $("#user_control").show();	
 		} else {
-			controlHide();
+			openControl = false;
+			$("#user_control").hide();
 		}
 	  }
 	});
 
 	
-	
-	
-	function controlShow() {
-		openControl = true;
-	    $("#user_control").show();
-		$("#user_control").animate({opacity: '1.0'}, 1000,'easeInOutExpo', 
-		function() {	
-			//
-		});  
-	}
-	function controlHide() {
-		openControl = false;
-		$("#user_control").animate({opacity: '0.0'}, 1500,'easeInOutExpo', 
-		function() {	
-			$("#user_control").hide();
-		});
-		
-	}
-
 	///////////////////////////////////////////////////////// NAVIGATION //////////////////////////////////////////////////////
 		
 	function sessionEnd() {
         //controlShow();
 	}
 	function sessionStart() {
-		disableVideo(); 
 		//controlHide();
 
 	} 
@@ -163,7 +101,6 @@ $(document).ready(function(){
 		$("#handR").show();
 		$("#handL").show();
 		$("#circle").show();
-		disableVideo();
 		enableLoop();
 		$("#container").animate({opacity: '1.0'}, 1500,'easeInOutExpo', 
 		function() {	
@@ -176,13 +113,7 @@ $(document).ready(function(){
 		$("#handL").hide();
 		$("#circle").hide();
 		sessionStart();
-		disableLoop();
-		closeSlide(); //GLOBAL inverte os bagulho mesmo!!!		
-		$("#container").delay(2000).animate({opacity: '0.0'}, 1000,'easeInOutExpo', 
-		function() {	
-			videoLoop();
-		});
-		 
+		disableLoop();		 
 	}
 	
 	
@@ -344,8 +275,8 @@ $(document).ready(function(){
 	function handsUpdate(user) {
 		rX = user.skeleton[zig.Joint.RightHand].position[0];
 		rY = user.skeleton[zig.Joint.RightHand].position[1];
-		rdX += (rX - rdX) / 10;
-	   	rdY += (rY - rdY) / 10;
+		rdX += (rX - rdX) / delayRate;
+	   	rdY += (rY - rdY) / delayRate;
 		rAngle = Math.round(rdX/8);
 
 
@@ -545,7 +476,6 @@ $(document).ready(function(){
 	function enableLoop() {
 		if(!zig.sensorConnected) {
 			loopMouse = setInterval(onLoopMouse, 10); 
-			loopScroll = setInterval(onLoopScroll, 10);
 			loopOver = setInterval(onLoopOver, 100); 
 		}
 		loopOut = setInterval(onLoopOut, 1000);  
@@ -560,7 +490,6 @@ $(document).ready(function(){
 	}
 	function onLoop() {
 		onLoopMouse();
-		onLoopScroll();
 		onLoopOver();
 		//onLoopOut();
 	}  
@@ -574,17 +503,7 @@ $(document).ready(function(){
 		cd.style.top = (cY - (cd.offsetHeight / 2)) + "px";
 		cd.style.display = 'block';
 	}
-	 
-	function onLoopScroll() {
-        if(!onSlide) {
-			$("body").scrollLeft(function(i, v) {
-		        var w = $(window).width();
-		        var x = cX - w / 2;
-		        return v + x * 0.10;
-		    }); 
-		}
 
-	}
 
     function onLoopOver() {
 		var el = getElementFromPoint(cX, cY);
@@ -670,6 +589,7 @@ $(document).ready(function(){
 			$("img[alt='Powered by Zigfu']").css("width", "1px");
 		}
 		if(!zig.sensorConnected) {
+			$("#zig").hide();
 			console.log("Sensor connected: " + zig.sensorConnected); 
 			var loopMouseDEBUG = setInterval(loopMouseDEBUG, 10); 
 		    function loopMouseDEBUG() {
@@ -697,8 +617,6 @@ $(document).ready(function(){
 			enableLoop();
 			userEngage();
 			sessionStart(); 
-		} else {
-			videoLoop(); // GLOBAL function   
 		}
 	} 
 	
@@ -716,7 +634,6 @@ $(document).ready(function(){
 	swipeDetector.addEventListener('swipeleft', function(pd) {
 		if(swipe) {
 			console.log('Swipe Left'); 
-			slideNext();
 			swipe = false;
 			setTimeout(swipeDelay, swipeTime);
 		}
@@ -724,7 +641,6 @@ $(document).ready(function(){
 	swipeDetector.addEventListener('swiperight', function(pd) {
 		if(swipe) {
 			console.log('Swipe Right');
-			slidePrev();
 			swipe = false;
 			swipeTimer = setTimeout(swipeDelay, swipeTime);
 		}

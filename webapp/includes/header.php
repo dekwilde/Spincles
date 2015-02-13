@@ -127,10 +127,6 @@
 <script src="lib/processing/processing-mobile.js"></script>
 <!-- <script src="lib/processing/Tween.lib"></script> -->
 
-
-<!-- ZIGFU -->
-<!--<script src="lib/zig/zig.js"></script> -->
-
 <!-- RAPHAEL CIRCLES -->
 <script type="text/javascript" src="lib/custom/raphael-min.js"></script>
 
@@ -146,6 +142,16 @@
 <script src="lib/add2home/addtohomescreen.js"></script>
 
 
+
+<!-- ZIGFU -->
+
+<!-- 
+<script src="lib/zig/zig.js"></script>
+<script src="src/zig.js"></script>
+<link href="src/zig.css" rel="stylesheet" type="text/css" media="screen" /> 
+<link href="src/draw.css" rel="stylesheet" type="text/css" media="screen" /> 
+-->
+
 <!-- ****************************************************** TEMPLATE ***************************************** -->
 <link href="src/fonts/fontface.css" rel="stylesheet" />  
 <link href="src/theme.css" rel="stylesheet">
@@ -155,12 +161,14 @@
 
 
 
+
 <!--[if gte IE 8]><link href="src/ie.css" rel="stylesheet" type="text/css" /><![endif]-->
 <script src="src/tracker.js"></script> 
 <!--<script src="src/add2home.js"></script>--> 
 <script src="src/lang.js"></script>  
 <script src="src/howler.js"></script>
 <script src="src/app.js"></script>
+
 
 <!--<script src="src/drag.js"></script> -->
 <!-- <script src="src/slick.js"></script>  -->

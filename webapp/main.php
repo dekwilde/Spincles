@@ -2,6 +2,7 @@
 <body>
 	<?php 
 		//require("view/audio.php");
+		//require("view/zig.php");
 		require("view/game.php"); 
 	?>
     <div id="fb-root"></div>
