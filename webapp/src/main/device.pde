@@ -94,8 +94,13 @@ void touchStart(t) {
   
   touch1X = t.touches[0].offsetX;
   touch1Y = t.touches[0].offsetY;
-  touch2X = t.touches[1].offsetX;
-  touch2Y = t.touches[1].offsetY;
+  if(t.touches.length>1) {
+    touch2X = t.touches[1].offsetX;
+    touch2Y = t.touches[1].offsetY;
+  } else {
+    touch2X = 0;
+    touch2Y = 0;
+  }
   Bover();
   
   //GESTURE
@@ -129,8 +134,13 @@ void touchMove(t) {
   
   touch1X = t.touches[0].offsetX;
   touch1Y = t.touches[0].offsetY;
-  touch2X = t.touches[1].offsetX;
-  touch2Y = t.touches[1].offsetY;
+  if(t.touches.length>1) {
+    touch2X = t.touches[1].offsetX;
+    touch2Y = t.touches[1].offsetY;
+  } else {
+    touch2X = 0;
+    touch2Y = 0;
+  }
   Locked();
   
   
