@@ -1,5 +1,5 @@
 <!-- CURSOR -->
-<div id="zig">
+
 	<div id="delaycursor">
 		<div id="circle"></div>
 	</div>
@@ -9,7 +9,6 @@
 	<img src="img/handL.png" id="handL" /> 
 
 	<!-- CONTROL -->
-	<a id="bt_user_control" href="#"><i class="fa fa-lg fa-gear"></i></a>
 	<div id="user_control">
 		<div id="radar"></div>
 		<div id="canvasCont">   	
@@ -25,5 +24,5 @@
 	    <param name="onload" value="ZigPluginLoaded" />
 	  </object>
 	</div>   
-</div>   
+  
 <!-- ZIGFU END -->

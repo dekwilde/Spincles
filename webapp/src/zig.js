@@ -1,4 +1,7 @@
-
+var zigCursorX = 0, zigCursorY = 0;
+var zigScale = 0, zigDegrees = 0;
+var zigPress = false, zigDrag = false;
+var zigDevice = false;
 $(document).ready(function(){    
 
 	
@@ -7,15 +10,14 @@ $(document).ready(function(){
 	var endSessionTime;
 	var engage = false;
 	var found  = false; 
-   	var cursorX = 0, cursorY = 0;
-	var cX = 0, cY = 0;
+	var zigX = 0, zigY = 0;
 	var rX = 0, rY = 0, rAngle = 0, rdX = 0, rdY = 0;
 	var lX = 0, lY = 0, lAngle = 0, ldX = 0, ldY = 0;
 	
 	var delayRate = 10;
-	var HandsSteadyActive = -80
+	var HandsSteadyActive = -200
 	var handsSteady = false;
-	var degreesHands = 0, distanceHands = 0;
+	var degreesHandsStart = 0, degreesHandsEnd = 0, distanceHandsStart = 0, distanceHandsEnd = 0;
 	
 	var loop, loopMouse, loopScroll, loopOver, loopOut, loopDrag;
 	var drag_el, degree_el = 0;
@@ -36,16 +38,11 @@ $(document).ready(function(){
 		
     setTimeout(noZigFu, 2000); // if not playvideo 
 
-	//$(this).unbind('mouseover').unbind('mouseout');
-	//$(this).click(function(e){ e.preventDefault(); });
-	$("#container").css("opacity", 0.0);
 	$("#user_control").hide();
-	cd.style.display = 'none';
-	handR.style.display = 'none'; 
-	handL.style.display = 'none'; 
-	$("*").css("cursor", "none");       
-	
-	//$("#player").hide();
+	$("#handR").hide();
+	$("#handL").hide();
+	$("#circle").hide();
+	$("delaycursor").hide();
 	
 	/////////////////////////////////////////////////////////// NAVEGATION ///////////////////////////////////////////////////////    
 	
@@ -63,16 +60,6 @@ $(document).ready(function(){
 	
 	
 	/////////////////////////////////////////////////////// Control Panel ///////////////////////////////////////////////////
-	$("#bt_user_control").hide();
-	var openControl = false;
-	$("#bt_user_control").click(function() {
-		controlShow();
-	});  
-	$("#user_control").click(function() {
-		controlHide();
-	});
-
-
 	$(document).keydown(function(e) {
 	  if(e.keyCode == 32) { // SPACE				
 		if(!openControl) {
@@ -88,31 +75,12 @@ $(document).ready(function(){
 	
 	///////////////////////////////////////////////////////// NAVIGATION //////////////////////////////////////////////////////
 		
-	function sessionEnd() {
-        //controlShow();
-	}
-	function sessionStart() {
-		//controlHide();
-
-	} 
-	
 	function userEngage() {
 		engage = true;
-		$("#handR").show();
-		$("#handL").show();
-		$("#circle").show();
 		enableLoop();
-		$("#container").animate({opacity: '1.0'}, 1500,'easeInOutExpo', 
-		function() {	
-			sessionEnd(); //inverte os bagulho mesmo!!!
-		}); 
 	}	
 	function userDisengage() {
 		engage = false;
-		$("#handR").hide();
-		$("#handL").hide();
-		$("#circle").hide();
-		sessionStart();
 		disableLoop();		 
 	}
 	
@@ -218,12 +186,14 @@ $(document).ready(function(){
 		
 		user.addEventListener('userupdate', function(user) { 			
 			//radarUpdate(user);
-			handsUpdate(user); // or this
-			onLoop();
+			if(zig.sensorConnected) {
+				handsUpdate(user); // or this
+				onLoop();
+			}
 	  	}); 
 	      
 		//handSession(user);   // or this
-	    //dragClick(); //quando tiver drag eu faço isso 
+	    zigClick(); //quando tiver drag eu faço isso 
 		
 		// setTimeout(function() {
 		// 	engager.onuserlost(user);
@@ -245,11 +215,9 @@ $(document).ready(function(){
 		var ControlHandSession = {
 			onsessionstart : function(p) {
 				clearTimeout(timeSession);
-				sessionStart(); 
 				console.log("sessionstart");
 			},  
 			onsessionend : function(user) {
-				timeSession = setTimeout(sessionEnd, endSessionTime);   
 				console.log("sessionend");
 			},
 			onsessionupdate : function(p) { 
@@ -306,49 +274,52 @@ $(document).ready(function(){
 
 		//Right Hand Steady
 		if (rdY > ldY) {
-			cursorX = rdX + window.innerWidth/2; 
-			cursorY = -rdY + window.innerHeight/2;
+			zigX = rdX + window.innerWidth/2; 
+			zigY = -rdY + window.innerHeight/2;
 			handL.style.display = 	"none";
 			handR.style.display = 	"block";
 		}
 
 		//Left Hand Steady
 		if (ldY > rdY) {
-			cursorX = ldX + window.innerWidth/2; 
-			cursorY = -ldY + window.innerHeight/2;
+			zigX = ldX + window.innerWidth/2; 
+			zigY = -ldY + window.innerHeight/2;
 			handR.style.display = 	"none";
 			handL.style.display = 	"block";
 		}
-
+		
 		//All HandsSteady
 		if(rdY > HandsSteadyActive && ldY > HandsSteadyActive) {
-			handsSteady = true;
 			hcX = (rdX + ldX)/2;
 			hcY = (rdY + ldY)/2;
 			hpX = (rdX - ldX);
-			hpY = (rdY - ldY);
-			distanceHands = Math.sqrt(hpX * hpX + hpY * hpY)
-			theta = Math.atan2(-hpY, hpX);
-
-			/*
-			// If you need nonnegative numbers
-			if (theta < 0) {
-			   theta += 2 * Math.PI;
+			hpY = (rdY - ldY);	
+					
+			if(!handsSteady) {
+				degreesHandsStart = degreesHandsEnd;
+				distanceHandsStart = Math.sqrt(hpX * hpX + hpY * hpY);
 			}
-			*/
-
-
-			degreesHands = theta * 180/Math.PI
-
-
-			cursorX = hcX + window.innerWidth/2;
-			cursorY = -hcY + window.innerHeight/2;
+			
+			//Scale
+			distanceHandsEnd = Math.sqrt(hpX * hpX + hpY * hpY);
+			zigScale = distanceHandsEnd/distanceHandsStart;
+			
+			//Degrees
+			theta = Math.atan2(-hpY, hpX);
+			degreesHandsEnd = theta * 180/Math.PI
+			zigDegrees = degreesHandsStart + degreesHandsEnd;
+			
+			zigX = hcX + window.innerWidth/2;
+			zigY = -hcY + window.innerHeight/2;
 			handL.style.display = 	"block";
 			handR.style.display = 	"block";
+			
+			handsSteady = true;
+			
 		} else {
 			handsSteady = false;
 		}
-
+		
 	}          
 
 
@@ -359,8 +330,8 @@ $(document).ready(function(){
 	   
 	// 2. move the cursor element on cursor move
 	c.addEventListener('move', function(cursor) {
-		cursorX = c.x * window.innerWidth;
-        cursorY = c.y * window.innerHeight; 				    	
+		zigX = c.x * window.innerWidth;
+        zigY = c.y * window.innerHeight; 				    	
 	});
 
 	/*
@@ -375,7 +346,7 @@ $(document).ready(function(){
 
 	// 4. Simulate mouse click on our virtual cursor
 	c.addEventListener('click', function(c) {
-		var el = getElementFromPoint(cX, cY);
+		var el = getElementFromPoint(zigCursorX, zigCursorY);
 		$(el).trigger('click'); 
 		console.log(el + " clicked"); 
 	});
@@ -383,32 +354,92 @@ $(document).ready(function(){
  
 
 	//////////////////////////////////////////////////////// PUSH ////////////////////////////////////////////////
-	function dragClick() {
+	function zigClick() {
 		var pushDetector = zig.controls.PushDetector();
 		//pushDetector.numberOfpushs = 3;
 		pushDetector.addEventListener('push', function(pd) {
+			zigPress = true;
+			zigDrag = true;
 			cc.classList.add('pushed');
-			var el = getElementFromPoint(cX, cY);
+			var el = getElementFromPoint(zigCursorX, zigCursorY);
+			//$(el).trigger('click');
+			$(el).trigger('mouseover');
 			drag_el = el;
-			loopDrag = setInterval(onLoopDrag, 10);
+			//loopDrag = setInterval(onLoopDrag, 10);
 			console.log(el + ' pushDetector: push');
 		});
 		pushDetector.addEventListener('click', function(pd) {
-			var el = getElementFromPoint(cX, cY);
-			$(el).trigger('click'); 
+			var el = getElementFromPoint(zigCursorX, zigCursorY);
+			//$(el).trigger('click'); 
+			$(el).trigger('mousedown');
 			console.log(el + ' pushDetector: click');
 			
 		});
 		pushDetector.addEventListener('release', function(pd) {
+			zigPress = false;
+			zigDrag = false;
 		  	cc.classList.remove('pushed');
-			clearInterval(loopDrag);
-			console.log('pushDetector: release');
+			var el = getElementFromPoint(zigCursorX, zigCursorY);
+			$(el).trigger('mouseup');
+			//clearInterval(loopDrag);
+			console.log(el + 'pushDetector: release');
 		});
 		
 		zig.singleUserSession.addListener(pushDetector);
 	}
 
-   
+
+	/////////////////////////////////////////////////////////// SWIPE ////////////////////////////////////////////////////////
+	var swipe = true;
+	var swipeTime = 1000;
+	var swipeDetector = zig.controls.SwipeDetector(1000);
+	
+	
+	function swipeDelay() {
+		swipe = true;
+	}
+
+	swipeDetector.addEventListener('swipeleft', function(pd) {
+		if(swipe) {
+			console.log('Swipe Left'); 
+			swipe = false;
+			setTimeout(swipeDelay, swipeTime);
+		}
+	});
+	swipeDetector.addEventListener('swiperight', function(pd) {
+		if(swipe) {
+			console.log('Swipe Right');
+			swipe = false;
+			swipeTimer = setTimeout(swipeDelay, swipeTime);
+		}
+	});
+	
+	//zig.singleUserSession.addListener(swipeDetector);	 //descomentar se quiser habilitar
+    
+
+
+	/////////////////////////////////////////////////////////// Steady //////////////////////////////////////////////////////// 
+	
+	var steadyDetector = zig.controls.SteadyDetector();
+	steadyDetector.addEventListener('steady', function(sd) {
+		console.log('SteadyDetector: Steady');
+	});
+	steadyDetector.addEventListener('unsteady', function(sd) {
+		console.log('SteadyDetector: Unsteady');
+	});
+	zig.singleUserSession.addListener(steadyDetector);
+
+
+	/////////////////////////////////////////////////////////// FADER ////////////////////////////////////////////////////////
+	var f = zig.controls.Fader(zig.Orientation.X);
+	f.addEventListener('valuechange', function (f) {
+		console.log('Fader value: ' + (f.value * 100));
+	})
+	//zig.singleUserSession.addListener(f);
+	
+	
+	 
+  
 	////////////////////////////////////////////////// Target Point Element ////////////////////////////////////////////////
 
 	function applyVisibility(vis) {
@@ -496,17 +527,17 @@ $(document).ready(function(){
 		
 	function onLoopMouse() {
 		// Delay cursor track
-		cX += (cursorX - cX) / delayRate;
-		cY += (cursorY - cY) / delayRate;
+		zigCursorX += (zigX - zigCursorX) / delayRate;
+		zigCursorY += (zigY - zigCursorY) / delayRate;
 
-		cd.style.left = (cX - (cd.offsetWidth / 2)) + "px";
-		cd.style.top = (cY - (cd.offsetHeight / 2)) + "px";
+		cd.style.left = (zigCursorX - (cd.offsetWidth / 2)) + "px";
+		cd.style.top = (zigCursorY - (cd.offsetHeight / 2)) + "px";
 		cd.style.display = 'block';
 	}
 
 
     function onLoopOver() {
-		var el = getElementFromPoint(cX, cY);
+		var el = getElementFromPoint(zigCursorX, zigCursorY);
 		$(el).trigger("mouseover"); 		
 		if (el.id == "out") {
 			updateCircle(activeTime); 
@@ -518,11 +549,10 @@ $(document).ready(function(){
 			}   
 		} else {
 			activeTime = 0;
-			
 		}	
 	}
 	function onLoopOut() {
-		var el = getElementFromPoint(cX, cY);
+		var el = getElementFromPoint(zigCursorX, zigCursorY);
 		if (el.id == "out") {
 			console.log("over the out");
 			$(el).addClass("actived");			
@@ -589,86 +619,48 @@ $(document).ready(function(){
 			$("img[alt='Powered by Zigfu']").css("width", "1px");
 		}
 		if(!zig.sensorConnected) {
-			$("#zig").hide();
 			console.log("Sensor connected: " + zig.sensorConnected); 
 			var loopMouseDEBUG = setInterval(loopMouseDEBUG, 10); 
 		    function loopMouseDEBUG() {
-				cX += (cursorX - cX) / delayRate;
-			   	cY += (cursorY - cY) / delayRate;
-				cd.style.left = cX + "px"; 
-				cd.style.top = 	cY + "px";
+				zigCursorX += (zigX - zigCursorX) / delayRate;
+			   	zigCursorY += (zigY - zigCursorY) / delayRate;
+				cd.style.left = zigCursorX + "px"; 
+				cd.style.top = 	zigCursorY + "px";
 				cd.style.display = 'block';
-
 			}		
 			$(document).keydown(function(e) {
 			  if(e.keyCode == 37) { // left
-				cursorX -= 50;
+				zigX -= 50;
+				$("#circle").show();
 			  }
 			  else if(e.keyCode == 39) { // right
-				cursorX += 50;
+				zigX += 50;
+				$("#circle").show();
 			  }
 			  else if(e.keyCode == 38) { // top
-				cursorY -= 50;
+				zigY -= 50;
+				$("#circle").show();
 			  }
 			  else if(e.keyCode == 40) { // bottom
-				cursorY += 50;
+				zigY += 50;
+				$("#circle").show();
 			  }  
 			});
+			
+			$(document).keyup(function(e) {
+			  $("#circle").hide()
+			});
+			
 			enableLoop();
-			userEngage();
-			sessionStart(); 
+			userEngage();			
+		} else {
+			$("*").css("cursor", "none");
+			$("#circle").show();
+			zigDevice = true;
 		}
+		
 	} 
-	
 
-	/////////////////////////////////////////////////////////// SWIPE ////////////////////////////////////////////////////////
-	var swipe = true;
-	var swipeTime = 1000;
-	var swipeDetector = zig.controls.SwipeDetector(1000);
-	
-	
-	function swipeDelay() {
-		swipe = true;
-	}
-
-	swipeDetector.addEventListener('swipeleft', function(pd) {
-		if(swipe) {
-			console.log('Swipe Left'); 
-			swipe = false;
-			setTimeout(swipeDelay, swipeTime);
-		}
-	});
-	swipeDetector.addEventListener('swiperight', function(pd) {
-		if(swipe) {
-			console.log('Swipe Right');
-			swipe = false;
-			swipeTimer = setTimeout(swipeDelay, swipeTime);
-		}
-	});
-	
-	//zig.singleUserSession.addListener(swipeDetector);	 //descomentar se quiser habilitar
-    
-
-
-	/////////////////////////////////////////////////////////// Steady //////////////////////////////////////////////////////// 
-	
-	var steadyDetector = zig.controls.SteadyDetector();
-	steadyDetector.addEventListener('steady', function(sd) {
-		console.log('SteadyDetector: Steady');
-	});
-	steadyDetector.addEventListener('unsteady', function(sd) {
-		console.log('SteadyDetector: Unsteady');
-	});
-	zig.singleUserSession.addListener(steadyDetector);
-
-
-	/////////////////////////////////////////////////////////// FADER ////////////////////////////////////////////////////////
-	/*
-	var f = zig.controls.Fader(zig.Orientation.X);
-	f.addEventListener('valuechange', function (f) {
-		console.log('Fader value: ' + (f.value * 100));
-	})
-	zig.singleUserSession.addListener(f);
-	*/                         
+	                        
 });  
  

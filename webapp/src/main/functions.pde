@@ -1,5 +1,5 @@
 void pebug(String m) {
-  //println(m);
+  println(m);
 }
 
 
@@ -215,18 +215,21 @@ void stateSetup() {
 
 
 void stateStart() {
-  background(255,204,0);
+  //background(255,204,0);
+  
+  
+  ctx.rect(0,0,width,height);
+  fill(255,204,0,100);
+  noStroke();        
+  rect(0,0,width,height);
+  
+   
   
   acce();
   mic();
   compass();
-  
-  /*
-  ctx.rect(0,0,width,height);
-  fill(255,204,0,20);
-  noStroke();        
-  rect(0,0,width,height);
-  */
+  zig();
+
 
   
   int Talign = -150;

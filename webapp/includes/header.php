@@ -103,9 +103,6 @@
 <!-- HTML2CANVAS -->   
 <script type="text/javascript" src="lib/html2canvas/html2canvas.js"></script>
 
-<!-- DRAG, RESIZE, ROTATE -->   
-<script type="text/javascript" src="lib/jquery.event.move/jquery.event.move.js"></script>
-
 
 <!-- ANIMATED, SCALE, ROTATE --> 
 <script type="text/javascript" src="lib/jquery/jquery-animate-css-rotate-scale.js"></script>
@@ -114,9 +111,6 @@
 <!-- MASKEDINPUT -->   
 <script type="text/javascript" src="lib/jquery/jquery.maskedinput.js"></script>
  
-<!-- BUZZ -->
-<script type='text/javascript' src="lib/buzz/buzz.js"></script> 
-
 <!-- howler -->
 <script type='text/javascript' src="lib/howler/howler.js"></script>
 
@@ -141,33 +135,33 @@
 <link  href="lib/add2home/addtohomescreen.css" rel="stylesheet"> 
 <script src="lib/add2home/addtohomescreen.js"></script>
 
-
-
 <!-- ZIGFU -->
-
-<!-- 
 <script src="lib/zig/zig.js"></script>
-<script src="src/zig.js"></script>
-<link href="src/zig.css" rel="stylesheet" type="text/css" media="screen" /> 
-<link href="src/draw.css" rel="stylesheet" type="text/css" media="screen" /> 
--->
+
 
 <!-- ****************************************************** TEMPLATE ***************************************** -->
+
+<!--
+	CSS
+-->
 <link href="src/fonts/fontface.css" rel="stylesheet" />  
 <link href="src/theme.css" rel="stylesheet">
 <link href="src/estructure.css" rel="stylesheet"  /> 
 <link href="src/style.css" rel="stylesheet" /> 
-<link href="src/drag.css" rel="stylesheet" /> 
-
-
-
-
+<link href="src/zig.css" rel="stylesheet" type="text/css" media="screen" /> 
+<link href="src/draw.css" rel="stylesheet" type="text/css" media="screen" />
 <!--[if gte IE 8]><link href="src/ie.css" rel="stylesheet" type="text/css" /><![endif]-->
+
+<!--
+	JS
+-->
 <script src="src/tracker.js"></script> 
 <!--<script src="src/add2home.js"></script>--> 
 <script src="src/lang.js"></script>  
 <script src="src/howler.js"></script>
 <script src="src/app.js"></script>
+<script src="src/zig.js"></script>
+
 
 
 <!--<script src="src/drag.js"></script> -->
