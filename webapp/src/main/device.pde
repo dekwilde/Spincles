@@ -233,6 +233,30 @@ void mouseReleased() {
   
 }
 
+boolean zigPressed = false;
+void zig() {
+  if(zigDevice) {    
+    gravityX = (zigCursorX - width/2)/1000;
+    gravityY = (zigCursorY - height/2)/1000;
+    
+    iAngle = zigDegrees;
+    iScale = zigScale;
+    
+    if(zigPush) {
+      if(!zigPressed) {
+        zigPressed = true;
+        touch1X = zigCursorX;
+        touch1Y = zigCursorY;
+        pebug("zigPressd: " + zigCursorX + ",  " + zigCursorY);        
+      }
+    } else {
+      zigPressed = false;  
+    }
+    
+  } 
+}
+
+
 
 void locationChanged() {
   println(coords.longitude + ", " + coords.latitude);
@@ -281,25 +305,6 @@ void mic() {
   microfone = media.miclevel*mic_perc;
   //pebug("Mic: " + microfone);
 }
-
-
-void zig() {
-  if(zigDevice) {    
-    gravityX = (zigCursorX - width/2)/1000;
-    gravityY = (zigCursorY - height/2)/1000;
-    
-    iAngle = zigDegrees;
-    iScale = zigScale;
-    
-    if(zigPress) {
-      touch1X = zigCursorX;
-      touch1Y = zigCursorY;
-      pebug("zigPressd");
-    }
-    
-  } 
-}
-
 
 
 

@@ -10,12 +10,10 @@
 
 	<!-- CONTROL -->
 	<div id="user_control">
-		<div id="radar"></div>
-		<div id="canvasCont">   	
-		    <div id="drawCan"><canvas id='depth' width='160' height='120'></canvas></div>    	
-		    <div id="drawCan"><canvas id='labelMap' width='160' height='120'></canvas></div>
-			<div id="drawCan"><canvas id='image' width='160' height='120'></canvas></div>    
-		</div> 
+		<div id="radar"></div>   
+	    <div id="drawCan"><canvas id='depth' width='160' height='120'></canvas></div>    	
+	    <div id="drawCan"><canvas id='labelMap' width='160' height='120'></canvas></div>
+		<div id="drawCan"><canvas id='image' width='160' height='120'></canvas></div>    
 	</div>   
 
 	<!-- ZIGFU START -->
