@@ -1,5 +1,5 @@
 void pebug(String m) {
-  println(m);
+  //println(m);
 }
 
 
@@ -367,6 +367,7 @@ void stateGame() {
   acce();
   mic();
   compass();
+  zig();
 
   drawBG();
   //cam();

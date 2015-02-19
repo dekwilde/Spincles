@@ -16,8 +16,8 @@ $(document).ready(function(){
 	var hX = 0, hZ = 0, hdX = 0, hdZ = 0;
 	
 	var delayRate = 10;
-	var HandsSteadyActive = -200 
-	var pushActive = 350;
+	var HandsSteadyActive = -150 
+	var pushActive = 400;
 	var handsSteady = false;
 	var degreesHandsStart = 0, degreesHandsEnd = 0, distanceHandsStart = 0, distanceHandsEnd = 0;
 	
@@ -250,7 +250,7 @@ $(document).ready(function(){
 
 	
 	
-	////////////////////////////////////////////////////// User RADAR ZigFu /////////////////////////////////////////////////////	 
+	//////////////////////////////////////////////////////  RADAR  /////////////////////////////////////////////////////	 
 	
 	function radarUpdate(user) {
 	    var radarDistance = 900;

@@ -238,11 +238,10 @@ void zig() {
   if(zigDevice) {    
     gravityX = (zigCursorX - width/2)/1000;
     gravityY = (zigCursorY - height/2)/1000;
-    
-    iAngle = zigDegrees;
-    iScale = zigScale;
-    
+   
     if(zigPush) {
+      iAngle = zigDegrees;
+      iScale = zigScale;
       if(!zigPressed) {
         zigPressed = true;
         touch1X = zigCursorX;
@@ -294,7 +293,7 @@ void pointCompass() {
 }
 
 void acce() {
-  if(!mouse) {
+  if(!mouse || !zigDevice) {
     gravityX = acceleration.x/10;
     gravityY = -acceleration.y/10;    
     //pebug("x: " + gravityX + " " + "y: " + gravityY);     
