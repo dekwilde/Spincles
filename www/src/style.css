@@ -1,0 +1,23 @@
+body {
+	margin:0;
+	padding:0;
+	background-color:transparent !important;
+	-webkit-user-select:none;
+	background-image: url(../data/glitch.gif) !important; 
+	background-size: 100% 100% !important; 
+	background-repeat: no-repeat;
+	filter:alpha(opacity=80);
+	opacity:.8;	
+}
+#game {
+	background: transparent !important;
+}
+
+#pde {
+	float:left;
+	width:100%; 
+	height:100%; 
+	margin:0;
+	padding:0; 
+	background:transparent !important;
+}
