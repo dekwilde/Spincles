@@ -293,7 +293,7 @@ void pointCompass() {
 }
 
 void acce() {
-  if(!mouse || !zigDevice) {
+  if(!mouse) {
     gravityX = acceleration.x/10;
     gravityY = -acceleration.y/10;    
     //pebug("x: " + gravityX + " " + "y: " + gravityY);     

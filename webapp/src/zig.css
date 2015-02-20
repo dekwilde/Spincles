@@ -30,7 +30,8 @@
 	height:40px;
 	padding:10px;
 	border-radius:40px;
-	border: 2px solid #FFF;
+	border: 2px solid #FFF; 
+	display:none;
      
 }
 #handR.disable, #handL.disable {

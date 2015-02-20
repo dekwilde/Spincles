@@ -1,10 +1,10 @@
-var inputuserfoto = "img/perfil.jpg"
-var checkinfoto = "img/perfil.jpg";  
-var canvasimage, gopage, fotofilter, postimage, imageCrop;
-var typeapp; 
-var cropped = false;
 var orientationMode, activePage;
-var textEmktHeader, textEmktFooter;
+var textEmktHeader, textEmktFooter;  
+
+var zigCursorX = 0, zigCursorY = 0;
+var zigScale = 0, zigDegrees = 0;
+var zigPush = false, zigDrag = false;
+var zigDevice = false;
 
 ////////////////////////////////////// Facebook Config //////////////////////////////////////////////
 var FBauthToken;
@@ -96,8 +96,6 @@ $(document).ready(function(){
 			"src/main/functions.pde", 
 			"src/main/score.pde"
 		]);
-    
-		trackView("init"); 
 	}
 
 	init();

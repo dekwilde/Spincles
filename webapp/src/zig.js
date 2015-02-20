@@ -1,7 +1,3 @@
-var zigCursorX = 0, zigCursorY = 0;
-var zigScale = 0, zigDegrees = 0;
-var zigPush = false, zigDrag = false;
-var zigDevice = false;
 $(document).ready(function(){    
 
 	
@@ -10,6 +6,7 @@ $(document).ready(function(){
 	var endSessionTime;
 	var engage = false;
 	var found  = false; 
+	var engager;
 	var zigX = 0, zigY = 0;
 	var rX = 0, rY = 0, rZ = 0, rAngle = 0, rdX = 0, rdY = 0, rdZ = 0;
 	var lX = 0, lY = 0, lZ = 0, lAngle = 0, ldX = 0, ldY = 0, ldZ = 0;  
@@ -103,30 +100,37 @@ $(document).ready(function(){
 
 	
 	////////////////////////////////////////////////////// User engaged ZigFu /////////////////////////////////////////////////////	
-	var engager = zig.EngageUsersWithSkeleton(1);
-	
-	engager.addEventListener('userengaged', function(user) {
-
-		console.log('Engaged: ' + user.id);
-		userEngage();  
+  
+   	
+	function zigEngage() {  
 		
-		user.addEventListener('userupdate', function(user) { 			
-			//radarUpdate(user);
-			if(zig.sensorConnected) {
-				skeletonUpdate(user); // or this
-				onLoop();
-			}
-	  	}); 
-	      
-	    //zigClick(); //quando tiver drag eu faço isso 
-         
-	});
-   
-	engager.addEventListener('userdisengaged', function(user) {
-		console.log('Disengaged: ' + user.id);		
-		userDisengage();		
-	});
-	zig.addListener(engager);
+		engager = zig.EngageUsersWithSkeleton(1);
+
+		engager.addEventListener('userengaged', function(user) {
+
+			console.log('Engaged: ' + user.id);
+			userEngage();  
+
+			user.addEventListener('userupdate', function(user) { 			
+				//radarUpdate(user);
+				if(zig.sensorConnected) {
+					skeletonUpdate(user); // or this
+					onLoop();
+				}
+		  	}); 
+
+		    //zigClick(); //quando tiver drag eu faço isso 
+
+		});
+
+		engager.addEventListener('userdisengaged', function(user) {
+			console.log('Disengaged: ' + user.id);		
+			userDisengage();		
+		});
+		
+		zig.addListener(engager);	
+	}
+	
 	
  
 
@@ -437,7 +441,8 @@ $(document).ready(function(){
 		if(zig.pluginInstalled) {
 			$("img[alt='Powered by Zigfu']").css("width", "1px");
 		}
-		if(!zig.sensorConnected) {
+		if(!zig.sensorConnected) {  
+			/*
 			console.log("Sensor connected: " + zig.sensorConnected); 
 			var loopMouseDEBUG = setInterval(loopMouseDEBUG, 10); 
 		    function loopMouseDEBUG() {
@@ -469,14 +474,15 @@ $(document).ready(function(){
 			$(document).keyup(function(e) {
 			  $("#circle").hide()
 			});
-			
 			enableLoop();
-			userEngage();			
+			userEngage();  
+			*/  		
 		} else { 
 			console.log("Sensor connected: " + zig.sensorConnected); 
 			$("*").css("cursor", "none");
 			$("#circle").show();
-			zigDevice = true;
+			zigDevice = true;    
+			zigEngage();
 		}
 		
 	} 
