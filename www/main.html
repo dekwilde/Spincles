@@ -25,7 +25,7 @@
 <meta http-equiv="imagetoolbar" content="no">
 
 <!-- APPLE -->
-<meta name="viewport" content = "width = device-width, height = device-height,  initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no" /> 
+<meta name="viewport" content = "width = device-width, height = device-height,  initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no, target-densitydpi=device-dpi" /> 
 <meta name="apple-touch-fullscreen" content="yes" />   
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -113,6 +113,7 @@
 <body>
 
 <!-- ZIGFU START -->  
+<div id="zig">
 	<!-- CURSOR -->
 
 	<div id="delaycursor">
@@ -120,8 +121,8 @@
 	</div>
 
 	<!-- HANDS --> 
-	<img src="img/handR.png" id="handR" /> 
-	<img src="img/handL.png" id="handL" /> 
+	<img src="src/images/handR.png" id="handR" /> 
+	<img src="src/images/handL.png" id="handL" /> 
 
 	<!-- CONTROL -->
 	<div id="user_control">
@@ -137,7 +138,7 @@
 	    <param name="onload" value="ZigPluginLoaded" />
 	  </object>
 	</div>   
-  
+</div>  
 <!-- ZIGFU END -->  
 
 <div data-role="page" data-control-title="Spincles" data-theme="a" id="game">

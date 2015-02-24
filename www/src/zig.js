@@ -1,3 +1,7 @@
+var zigCursorX = 0, zigCursorY = 0;
+var zigScale = 0, zigDegrees = 0;
+var zigPush = false, zigDrag = false;
+var zigDevice = false;
 $(document).ready(function(){    
 
 	
@@ -442,6 +446,7 @@ $(document).ready(function(){
 			$("img[alt='Powered by Zigfu']").css("width", "1px");
 		}
 		if(!zig.sensorConnected) {  
+			$("#zig").hide();
 			/*
 			console.log("Sensor connected: " + zig.sensorConnected); 
 			var loopMouseDEBUG = setInterval(loopMouseDEBUG, 10); 
@@ -477,7 +482,8 @@ $(document).ready(function(){
 			enableLoop();
 			userEngage();  
 			*/  		
-		} else { 
+		} else {
+			$("#zig").show(); 
 			console.log("Sensor connected: " + zig.sensorConnected); 
 			$("*").css("cursor", "none");
 			$("#circle").show();

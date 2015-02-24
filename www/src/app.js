@@ -1,11 +1,6 @@
 var orientationMode, activePage;
 var textEmktHeader, textEmktFooter;  
 
-var zigCursorX = 0, zigCursorY = 0;
-var zigScale = 0, zigDegrees = 0;
-var zigPush = false, zigDrag = false;
-var zigDevice = false;
-
 ////////////////////////////////////// Facebook Config //////////////////////////////////////////////
 var FBauthToken;
 var FBuser_name, FBuser_gender, Fbuser_email, FBuser_hometown, FBuser_location;
@@ -117,6 +112,9 @@ $(document).ready(function(){
 				orientationMode = "inverse";
 			break;   
 		}     
+		
+		
+		console.log(window.orientation);
 	}
 	window.addEventListener('orientationchange', doOnOrientationChange);
 	doOnOrientationChange();    

@@ -270,6 +270,7 @@ void draw() {
 
     case "Game": 
       soundStart.stop();
+      soundLoopBG.stop();
       soundLoopBG.play();
       soundLoopBG.loop(true);
       gameSound = "Null";

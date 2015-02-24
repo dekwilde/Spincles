@@ -93,6 +93,7 @@ void activeGame() {
 
 void startGame() {
     isGame = true;
+    gameTransions = "Flash";
     //setTimeout(function() { gameDialog = "Find"; }, 20000);
     loadScore();
     resetGame();
@@ -103,7 +104,7 @@ void resetGame() {
   hurtRange = 0;
   hurtTimer = 0;
   gameState = "Game";
-  gameTransions = "Flash";
+  //gameTransions = "Flash";
   gameSound = "Game";
   gameDialog = "Start";
 }

@@ -47,12 +47,13 @@ class Dialog {
 
 class Trix {
   float x1, y1, x2, y2, x3, y3;
-  float s, h, r, a;
+  float s, h, r, a, ri;
   
   Trix(float w) {
     s = w; 
     h = 0.5 * sqrt(3) * s; 
     r = sqrt(3)/3 * s;
+    ri = sqrt(3)/6 * s;
     a = (TWO_PI / 6) * 2;
        
     x1 = 0;
@@ -403,7 +404,7 @@ class TrixParticle {
       p.draw();
       //p.gravity();
       p.display();
-      p.conect();
+      //p.conect();
       p.collision(cx,cy);
       p.dead();
       if(p.death){
@@ -421,7 +422,7 @@ class Particle{
   float y;
   float r;
   float xspeed,yspeed;
-  float diameter = rad/25;
+  float diameter = rad*.15;
   float distance = rad/2;
   float delay = random(0.001, 0.01);
   float elastic = 0.8;
@@ -433,7 +434,7 @@ class Particle{
 
   
   Particle(String type, float posX, float posY){
-    trix = new Trix(rad*.05);
+    trix = new Trix(rad*.25);
     tp = type;
     x= posX;
     y= posY;
@@ -517,15 +518,6 @@ class Particle{
           }
           stroke(0,70);
           line(x, y, other.x, other.y);
-          noStroke();
-          fill(0, random(100));
-          pushMatrix();
-          translate(x,y);
-          rotate(r);
-          scale(3);
-          triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);
-          popMatrix();
-          //ellipse(x,y,myDiameter*5,myDiameter*5);
         }
       }
     } //end for
