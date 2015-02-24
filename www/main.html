@@ -80,33 +80,36 @@
 <script src="lib/processing/jprocessingjs-0.9.js"></script>
 <script src="lib/processing/processing.js"></script>
 <script src="lib/processing/processing-mobile.js"></script>
-<!-- <script src="lib/processing/Tween.lib"></script> -->
+<!-- <script src="lib/processing/Tween.lib"></script> -->       
 
-<!-- ZIGFU -->
-<script src="lib/zig/zig.js"></script>
+
+<!-- ZIGFU --> 
+<link href="src/zig.css" rel="stylesheet" type="text/css" media="screen" /> 
+<link href="src/zigdraw.css" rel="stylesheet" type="text/css" media="screen" /> 
+<script src="lib/zig/zig.js"></script> 
+<script src="src/zigapp.js"></script>
+<script src="src/zigdraw.js"></script>
 
 
 <!-- ****************************************************** TEMPLATE ***************************************** -->
 
-<!--
-	CSS
--->
+<!-- CSS -->
 <link href="src/theme.css" rel="stylesheet">
 <link href="src/style.css" rel="stylesheet" /> 
-<link href="src/zig.css" rel="stylesheet" type="text/css" media="screen" /> 
-<link href="src/zigdraw.css" rel="stylesheet" type="text/css" media="screen" />
+
 <!--[if gte IE 8]><link href="src/ie.css" rel="stylesheet" type="text/css" /><![endif]-->
 
-<!--
-	JS
--->
+<!-- JS -->              
+
 <!--<script src="src/tracker.js"></script>--> 
 <!--<script src="src/add2home.js"></script>--> 
 <script src="src/lang.js"></script>  
 <script src="src/howler.js"></script>
+<script src="cordova.js"></script>
+<script src="src/phonegap.js"></script>
 <script src="src/app.js"></script>
-<script src="src/zig.js"></script>
-<script src="src/zigdraw.js"></script> 
+      
+
 
 
 </head>
@@ -135,7 +138,7 @@
 
 	<div id="pluginContainer">
 	  <object id="ZigPlugin" type="application/x-zig" width="0" height="0">
-	    <param name="onload" value="ZigPluginLoaded" />
+	    <!--<param name="onload" value="ZigPluginLoaded" /> -->
 	  </object>
 	</div>   
 </div>  

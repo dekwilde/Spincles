@@ -1,3 +1,7 @@
+#zig {
+	display:none;
+}
+
 #zigcursor {
 	position: fixed;
 	z-index:71;

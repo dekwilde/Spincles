@@ -2,7 +2,8 @@ var zigCursorX = 0, zigCursorY = 0;
 var zigScale = 0, zigDegrees = 0;
 var zigPush = false, zigDrag = false;
 var zigDevice = false;
-$(document).ready(function(){    
+// zig.js main closure 
+//(function(){     
 
 	
 	///////////////////////////////////////////////////////// INIT ///////////////////////////////////////////////////////////		                                                                                                     
@@ -26,31 +27,17 @@ $(document).ready(function(){
 	var drag_el, degree_el = 0;
 	var activeTime = 0;
 	var timeSession;
-	endSessionTime = 3000;
-	// CURSORS
-	var c = zig.controls.Cursor();
-	var cd = document.getElementById('delaycursor');
-	var cc = document.getElementById('circle');
-	var handR = document.getElementById('handR');
-	var handL = document.getElementById('handL');
-		
-	console.log("Browser plugin installed: " + zig.pluginInstalled);
-	console.log("Browser plugin version: " + zig.pluginVersion); 
-	console.log("Sensor connected: " + zig.sensorConnected); 
-	console.log("Zig.js version: " + zig.version);   
+	endSessionTime = 3000;  
 	
-	zig.addEventListener('statuschange', function() {
-		console.log("Sensor connected: " + zig.sensorConnected);
-	});
-	
-		
-    setTimeout(noZigFu, 2000); // if not playvideo 
-
+	// USER
+	var cd, cc, handR, handL, radar;
+			
 	$("#user_control").hide();
 	$("#handR").hide();
 	$("#handL").hide();
 	$("#circle").hide();
 	$("delaycursor").hide();
+
 		
 	/////////////////////////////////////////////////////// Control Panel ///////////////////////////////////////////////////
 	var openControl = false
@@ -316,11 +303,11 @@ $(document).ready(function(){
 			delete user.radarElement;
 
 		}
+	}	
+	function enableRadar() {
+		zig.addListener(radar);  ///////////////////// disable or enable this method    		
 	}
 
-	// make sure you add <div id='radar'></div> to your html body
-	var radar = new usersRadar(document.getElementById('radar'));
-	zig.addListener(radar);  ///////////////////// disable or enable this method
 	
 	
 
@@ -362,56 +349,7 @@ $(document).ready(function(){
 		//zig.singleUserSession.addListener(pushDetector);
 	}
 
-
-	/////////////////////////////////////////////////////////// SWIPE ////////////////////////////////////////////////////////
-	var swipe = true;
-	var swipeTime = 1000;
-	var swipeDetector = zig.controls.SwipeDetector(1000);
-	
-	
-	function swipeDelay() {
-		swipe = true;
-	}
-
-	swipeDetector.addEventListener('swipeleft', function(pd) {
-		if(swipe) {
-			console.log('Swipe Left'); 
-			swipe = false;
-			setTimeout(swipeDelay, swipeTime);
-		}
-	});
-	swipeDetector.addEventListener('swiperight', function(pd) {
-		if(swipe) {
-			console.log('Swipe Right');
-			swipe = false;
-			swipeTimer = setTimeout(swipeDelay, swipeTime);
-		}
-	});
-	
-	//zig.singleUserSession.addListener(swipeDetector);	 //descomentar se quiser habilitar
-    
-
-
-	/////////////////////////////////////////////////////////// Steady //////////////////////////////////////////////////////// 
-	
-	var steadyDetector = zig.controls.SteadyDetector();
-	steadyDetector.addEventListener('steady', function(sd) {
-		console.log('SteadyDetector: Steady');
-	});
-	steadyDetector.addEventListener('unsteady', function(sd) {
-		console.log('SteadyDetector: Unsteady');
-	});
-	//zig.singleUserSession.addListener(steadyDetector);
-
-
-	/////////////////////////////////////////////////////////// FADER ////////////////////////////////////////////////////////
-	var f = zig.controls.Fader(zig.Orientation.X);
-	f.addEventListener('valuechange', function (f) {
-		console.log('Fader value: ' + (f.value * 100));
-	})
-	//zig.singleUserSession.addListener(f);
-	
-	
+   	
     /////////////////////////////////////////////////////////// LOOP ///////////////////////////////////////////////////////
 	function enableLoop() {
 		if(!zig.sensorConnected) {
@@ -437,18 +375,17 @@ $(document).ready(function(){
 		cd.style.display = 'block';
 	}
 
-	/////////////////////////////////////////////////NO ZIG //////////////////////////////////////////////////////
+	///////////////////////////////////////////////  DEVICE ZIG //////////////////////////////////////////////////////
 
 	
 	
-	function noZigFu() {
+	function deviceZigFu() {
 		if(zig.pluginInstalled) {
 			$("img[alt='Powered by Zigfu']").css("width", "1px");
 		}
-		if(!zig.sensorConnected) {  
-			$("#zig").hide();
+		if(!zig.sensorConnected) {
+			$("#zig").hide();  
 			/*
-			console.log("Sensor connected: " + zig.sensorConnected); 
 			var loopMouseDEBUG = setInterval(loopMouseDEBUG, 10); 
 		    function loopMouseDEBUG() {
 				zigCursorX += (zigX - zigCursorX) / delayRate;
@@ -484,15 +421,26 @@ $(document).ready(function(){
 			*/  		
 		} else {
 			$("#zig").show(); 
+			console.log("Browser plugin installed: " + zig.pluginInstalled);
+			console.log("Browser plugin version: " + zig.pluginVersion); 
 			console.log("Sensor connected: " + zig.sensorConnected); 
+			console.log("Zig.js version: " + zig.version);
 			$("*").css("cursor", "none");
-			$("#circle").show();
+			$("#circle").show(); 
+			// CURSORS
+			cd = document.getElementById('delaycursor');
+			cc = document.getElementById('circle');
+			handR = document.getElementById('handR');
+			handL = document.getElementById('handL');
+			radar = new usersRadar(document.getElementById('radar'));   
 			zigDevice = true;    
 			zigEngage();
+			enableRadar();
+			ZigPluginLoaded();
 		}
 		
 	} 
 
 	                        
-});  
+//}()); // zig.js closure   
  

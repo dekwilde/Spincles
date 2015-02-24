@@ -19,7 +19,30 @@ var FBscope = "publish_actions, publish_stream, photo_upload, publish_checkins, 
 var FBplace_id = "129793527037644";
 var FBlatitude = "-23.516016449899";
 var FBlongitude = "-46.636754669443";
-var FBmessage = "Mensagem padrão";   
+var FBmessage = "Mensagem padrão";    
+
+
+///////////////////////////////////////// MOBILE OR DESKTOP ///////////////////////////////////////////////// 
+var isMobile = {
+    Android: function() {
+        return navigator.userAgent.match(/Android/i);
+    },
+    BlackBerry: function() {
+        return navigator.userAgent.match(/BlackBerry/i);
+    },
+    iOS: function() {
+        return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+    },
+    Opera: function() {
+        return navigator.userAgent.match(/Opera Mini/i);
+    },
+    Windows: function() {
+        return navigator.userAgent.match(/IEMobile/i);
+    },
+    any: function() {
+        return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+    }
+};
 
 	
 ///////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////   
@@ -71,29 +94,38 @@ function canvas2ImageCrop(x1,y1,w,h) {
 		
 }
 
+/////////////////////////////////////////////// Init /////////////////////////////////////////////
+function loadPDE() {  		
+	//Processing.reload(); 
+	
+	Processing.loadSketchFromSources('pde', [
+		"src/main/main.pde", 
+		"src/main/Three.pde", 
+		"src/main/Trixel.pde", 
+		"src/main/body.pde", 
+		"src/main/buttons.pde", 
+		"src/main/control.pde", 
+		"src/main/device.pde", 
+		"src/main/elements.pde", 
+		"src/main/functions.pde", 
+		"src/main/score.pde"
+	]);
+}
 
+
+
+function init() {
+	if(isMobile.any()) {
+		app.initialize();
+	}  
+	deviceZigFu(); 
+	loadPDE(); 
+}
  
 $(document).ready(function(){    
 
-	/////////////////////////////////////////////// Init /////////////////////////////////////////////
-	function init() {  		
-		//Processing.reload(); 
-		
-		Processing.loadSketchFromSources('pde', [
-			"src/main/main.pde", 
-			"src/main/Three.pde", 
-			"src/main/Trixel.pde", 
-			"src/main/body.pde", 
-			"src/main/buttons.pde", 
-			"src/main/control.pde", 
-			"src/main/device.pde", 
-			"src/main/elements.pde", 
-			"src/main/functions.pde", 
-			"src/main/score.pde"
-		]);
-	}
 
-	init();
+	setTimeout(init, 2000); // if not playvideo   
 	
 
 	//////////////////////////////////////////// GLOBAL - orientation /////////////////////////////////////////////
@@ -117,19 +149,12 @@ $(document).ready(function(){
 		console.log(window.orientation);
 	}
 	window.addEventListener('orientationchange', doOnOrientationChange);
-	doOnOrientationChange();    
-	
-	
-	
 	window.addEventListener("resize", resizeCanvas);
 	
 	
 	///////////////////////////////////////////////////// GLOBAL - pageShow /////////////////////////////////////////////
-	$( "div" ).on( 'pageshow',function(event, ui){
-		
+	$( "div" ).on( 'pageshow',function(event, ui){ 
 		activePage = $.mobile.activePage.attr('id');  
-		doOnOrientationChange();
-
     });	
             
 });

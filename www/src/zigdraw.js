@@ -76,8 +76,8 @@ function drawDM(plugin) {
       data[i*4 + 3] = 255;
     }
     ctx.putImageData(pix, 0, 0);
-  }
-  function drawIM(plugin) {
+}
+function drawIM(plugin) {
     var im = plugin.imageMap;
     if (im.length == 0) return;
     var canv = document.getElementById('image');
@@ -93,9 +93,9 @@ function drawDM(plugin) {
       data[i*4 + 3] = 255;
     }
     ctx.putImageData(pix, 0, 0);
-  }
+}
 
-  function drawLM(plugin) {
+function drawLM(plugin) {
         var lm = plugin.labelMap;
         if (lm.length == 0) return;
         var canv = document.getElementById('labelMap');
@@ -118,6 +118,6 @@ function drawDM(plugin) {
             
         }
         ctx.putImageData(pix, 0, 0);
-    }
+}
 
 
