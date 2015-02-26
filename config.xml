@@ -16,10 +16,12 @@
     <preference name="prerendered-icon" value="true" />
     <preference name="stay-in-webview" value="false" />
     <preference name="ios-statusbarstyle" value="black-translucent" />
-    <preference name="detect-data-types" value="true" />
+	<preference name="StatusBarOverlaysWebView" value="true" />
+	<preference name="auto-hide-splash-screen" value="false" />
+	<preference name="AutoHideSplashScreen" value="false" />
+	<preference name="detect-data-types" value="true" />
     <preference name="exit-on-suspend" value="false" />
     <preference name="show-splash-screen-spinner" value="true" />
-    <preference name="auto-hide-splash-screen" value="true" />
     <preference name="disable-cursor" value="false" />
     <preference name="android-minSdkVersion" value="7" />
     <preference name="android-installLocation" value="auto" />
@@ -40,7 +42,8 @@
     <gap:plugin name="org.apache.cordova.media" />
     <gap:plugin name="org.apache.cordova.network-information" />
     <gap:plugin name="org.apache.cordova.splashscreen" />
-    <gap:plugin name="org.apache.cordova.vibration" />  
+    <gap:plugin name="org.apache.cordova.vibration" />
+	<gap:plugin name="org.apache.cordova.statusbar" />  
 
     <gap:plugin name="br.com.dekwilde.micVolume" />
 
