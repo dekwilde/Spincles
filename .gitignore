@@ -5,3 +5,5 @@ iOS/DerivedData
 iOS/.DS_Store
 iOS/lib/libTiCore.a
 iOS/Spincles.xcodeproj
+platforms
+plugins

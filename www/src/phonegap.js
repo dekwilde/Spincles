@@ -20,7 +20,6 @@ var app = {
     // Application Constructor
     initialize: function() {
         this.bindEvents();
-		alert("initialize");
     },
     // Bind Event Listeners
     //
@@ -36,7 +35,23 @@ var app = {
     onDeviceReady: function() {
         //app.receivedEvent('deviceready');
 		//loadPDE();
-		alert("deviceready");
+		
+	    var success = function(message) {
+	        alert(message);
+	    }
+
+	    var failure = function() {
+	        alert("Error calling Hello Plugin");
+	    }
+
+	    hello.greet("World", success, failure);
+	    
+	                
+	   	
+		console.log("deviceready");
+		
+		
+		
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {   

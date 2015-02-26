@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.phonegap.helloworld" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>Hello World</name>
+<widget id="br.com.dekwilde.Spincles" version="2.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+    <name>Spincles</name>
     <description>
-        Hello World sample application that responds to the deviceready event.
+       	Glitch Game
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
-        PhoneGap Team
+    <author email="spincles@dekwilde.com.br" href="http://spincles.dekwilde.com.br">
+        Daniel Emiliano Klan Wilde
     </author>
     <content src="index.html" />
     <preference name="permissions" value="none" />
@@ -40,7 +40,14 @@
     <gap:plugin name="org.apache.cordova.media" />
     <gap:plugin name="org.apache.cordova.network-information" />
     <gap:plugin name="org.apache.cordova.splashscreen" />
-    <gap:plugin name="org.apache.cordova.vibration" />
+    <gap:plugin name="org.apache.cordova.vibration" />  
+
+    <gap:plugin name="om.example.hello" />
+    <gap:plugin name="br.com.dekwilde.micVolume" />
+
+
+
+
     <icon src="icon.png" />
     <icon gap:platform="android" gap:qualifier="ldpi" src="www/res/icon/android/icon-36-ldpi.png" />
     <icon gap:platform="android" gap:qualifier="mdpi" src="www/res/icon/android/icon-48-mdpi.png" />
