@@ -229,7 +229,7 @@
 
   // Expose vibrate method
   Pp.vibrate = function(ms) {
-    ms = ms || 1000;
+    ms = ms || 1000; 
     navigator.notification.vibrate(ms);
   }
 

@@ -15,7 +15,11 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
+ */ 
+
+
+var micLevelPluginPhoneGap = 0;
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -33,32 +37,30 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
-        //app.receivedEvent('deviceready');
-		//loadPDE();
-		
-	    var success = function() {
+	
+		var micSuccess = function() {
 	        alert("Plugin Start");
 	    }
 
-	    var failure = function() {
+	    var micFailure = function() {
 	        alert("Error calling Plugin");
 	    }
 
-	    	               
-		window.micVolume.start(success, failure);
+                   
+		window.micVolume.start(micSuccess, micFailure);
 
-	    window.micVolume.read(function(reading){
-	        console.log(reading.volume);
-	    }, failure);
+	    setInterval(function(){
+			window.micVolume.read(function(reading){			
+				micLevelPluginPhoneGap = reading.volume;    
+		    }, micFailure);		
+		},100);
+
 
 	    //window.micVolume.stop(succesCallback, errorCallback);
 	
-	 
-	   	
-		console.log("deviceready");
-		
-		
-		
+	
+		   	   	
+		console.log("deviceready");  
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {   
