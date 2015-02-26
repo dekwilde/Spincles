@@ -347,7 +347,8 @@ class ButtonStart {
         }
         
         if (overButton == true) {
-          fill(255,204,0);       
+          fill(255,204,0);  
+          //vibrate();     
         }
         
         

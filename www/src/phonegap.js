@@ -36,17 +36,24 @@ var app = {
         //app.receivedEvent('deviceready');
 		//loadPDE();
 		
-	    var success = function(message) {
-	        alert(message);
+	    var success = function() {
+	        alert("Plugin Start");
 	    }
 
 	    var failure = function() {
-	        alert("Error calling Hello Plugin");
+	        alert("Error calling Plugin");
 	    }
 
-	    hello.greet("World", success, failure);
-	    
-	                
+	    	               
+		window.micVolume.start(success, failure);
+
+	    window.micVolume.read(function(reading){
+	        console.log(reading.volume);
+	    }, failure);
+
+	    //window.micVolume.stop(succesCallback, errorCallback);
+	
+	 
 	   	
 		console.log("deviceready");
 		

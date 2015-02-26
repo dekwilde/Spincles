@@ -42,7 +42,6 @@
     <gap:plugin name="org.apache.cordova.splashscreen" />
     <gap:plugin name="org.apache.cordova.vibration" />  
 
-    <gap:plugin name="om.example.hello" />
     <gap:plugin name="br.com.dekwilde.micVolume" />
 
 

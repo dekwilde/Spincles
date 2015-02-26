@@ -44,18 +44,18 @@
  }
  Device device;
 
- // Acceleration type, global variable, and callback
- class Acceleration {
+ //Giroscope type, global variable, and callback
+ class Giroscope {
    float x;
    float y;
    float z;
    Date timestamp;
  }
- Acceleration acceleration
+ Giroscope giroscope
 
- // Accelerometer Event callback
- void accelerometer() {
-    // acceleration is ready to be used
+ // giroscope Event callback
+ void giroscope() {
+    // giroscope is ready to be used
  }
 
  // Geolocation types, global variable, and callback
@@ -167,8 +167,8 @@
     // Whether or not the device is connected to the Internet
     online: false,
 
-    // If we don't have support for acceleration events, use -1 for these.
-    acceleration: {
+    // If we don't have support for giroscope events, use -1 for these.
+    giroscope: {
       x: -1,
       y: -1,
       z: -1,
@@ -196,6 +196,9 @@
       },
       timestamp: Date.now()
     },
+	plugin: {
+		miclevel: 0
+	}
   };
 
   // Cache Processing ctor, prototype since we'll wrap/alter them.
@@ -238,14 +241,14 @@
       gWatchID;
 
     // Do we have an accelerometer callback? If so, start a watch
-    if (p5.accelerometer) {
+    if (p5.giroscope) {
       aWatchID = navigator.accelerometer.watchAcceleration(
-        function(acceleration) {
-          phoneGap.acceleration = acceleration;
-          p5.accelerometer();
+        function(giroscope) {
+          phoneGap.giroscope = giroscope;
+          p5.giroscope();
         },
         function() {
-          log('Processing.js PhoneGap Error: Unable to get accelerometer data.');
+          log('Processing.js PhoneGap Error: Unable to get giroscope data.');
         }
       );
     }
@@ -386,7 +389,7 @@
   }
 
   // Attach the rest of the new global variables
-  ['acceleration', 'heading', 'position'].forEach(function(objName) {
+  ['giroscope', 'heading', 'position', 'plugin'].forEach(function(objName) {
     Pp.__defineGetter__(objName, function() {
       return phoneGap[objName];
     });
