@@ -1,7 +1,8 @@
 body {
 	margin:0;
 	padding:0;
-	background-color:transparent !important;
+	/* background-color:transparent !important; */ 
+	background-color:#FFCC00 !important; 
 	-webkit-user-select:none;
 	/*
 	background-image: url(../data/glitch.gif) !important; 
@@ -22,4 +23,11 @@ body {
 	margin:0;
 	padding:0; 
 	background:transparent !important;
+} 
+.ui-loader .ui-icon-loading {
+	background-color:transparent !important;
+} 
+.ui-loader-verbose .ui-icon-loading {
+	filter: Alpha(Opacity=100) !important;
+	opacity: 1.0  !important;
 }

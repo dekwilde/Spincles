@@ -41,7 +41,7 @@ var app = {
 		StatusBar.hide();
 	
 		var micSuccess = function() {
-	        alert("Plugin Start");
+	        //alert("Plugin Start");
 	    }
 
 	    var micFailure = function() {

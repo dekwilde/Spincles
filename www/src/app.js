@@ -117,7 +117,8 @@ function loadPDE() {
 function init() {
 	if(isMobile.any()) {
 		app.initialize();
-	}  
+	}
+	showPageLoadingMsg("c", "loading")  
 	deviceZigFu(); 
 	loadPDE(); 
 }

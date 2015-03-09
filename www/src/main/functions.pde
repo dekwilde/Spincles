@@ -205,6 +205,7 @@ void stateSetup() {
   //video = loadImage("cam.png");
   
   pebug("4 - Start sequence: main.pde setup()");
+  hidePageLoadingMsg();
     
   gameState = "Start";
   gameEnemy = "Null";
