@@ -109,8 +109,8 @@ void clearScore() {
 }
 
 void loadScore() {
-      recordScore = int(loadStrings("record"));
-      level = int(loadStrings("level"));
+      recordScore = int(loadStrings("record")) || 0;
+      level = int(loadStrings("level")) || 0;
 }
 
 void saveScore() {

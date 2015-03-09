@@ -14054,12 +14054,14 @@
     * @see createGraphics
     */
     p.save = function(file, img) {
-      // file is unused at the moment
+      /*
+	  // file is unused at the moment
       // may implement this differently in later release
       if (img !== undef) {
         return window.open(img.toDataURL(),"_blank");
       }
-      return window.open(p.externals.canvas.toDataURL(),"_blank");
+	  */
+      return p.externals.canvas.toDataURL();
     };
 
     var saveNumber = 0;

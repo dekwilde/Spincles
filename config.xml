@@ -46,6 +46,7 @@
 	<gap:plugin name="org.apache.cordova.statusbar" />  
 
     <gap:plugin name="br.com.dekwilde.micVolume" />
+	<gap:plugin name="nl.x-services.plugins.socialsharing" source="plugins.cordova.io" />
 
 
 

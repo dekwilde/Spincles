@@ -1,26 +1,6 @@
 var orientationMode, activePage;
 var textEmktHeader, textEmktFooter;  
-
-////////////////////////////////////// Facebook Config //////////////////////////////////////////////
-var FBauthToken;
-var FBuser_name, FBuser_gender, Fbuser_email, FBuser_hometown, FBuser_location;
-
-//var FBappID = "502589149844503";
-//var FBsecretID = "2dc7f4ef6d9e621e276068c7e79bc3b1"; 
-
-var FBappID = "125881397465373";
-var FBsecretID = "eabb70384052a7c475db747553dd4526";
-
-var FBpageID = "642045525916945";
-
-var FBhost = "https://renault.dekwilde.com.br/";
-var FBredirect_uri = window.location;
-var FBscope = "publish_actions, publish_stream, photo_upload, publish_checkins, email";
-var FBplace_id = "129793527037644";
-var FBlatitude = "-23.516016449899";
-var FBlongitude = "-46.636754669443";
-var FBmessage = "Mensagem padrão";    
-
+var phonegap = false;
 
 ///////////////////////////////////////// MOBILE OR DESKTOP ///////////////////////////////////////////////// 
 var isMobile = {
@@ -64,7 +44,17 @@ function goPage(page) {
 	                   
 }
 
-      
+function add2Home() {
+	var config_add2home = {
+		autostart:true,
+		startDelay: 2000,
+		mandatory:true,
+		lifespan:1000000,
+		maxDisplayCount:10,
+		message:"Bem Vindo. Instale este aplicativo em seu aparelho: aperte %icon e selecione <strong>'Adicionar à Tela Inicio'</strong>."
+	}
+	addToHomescreen(config_add2home);
+}      
 
 function resizeCanvas() {
     Processing.getInstanceById("pde").size(window.innerWidth, window.innerHeight);
@@ -122,7 +112,117 @@ function init() {
 	deviceZigFu(); 
 	loadPDE(); 
 }
- 
+
+
+////////////////////////////////////////////////////////////// SOUND HOWLER  ////////////////////////////////////////////////////       
+var soundMagnetic,
+	soundScore,
+	soundClick,
+	soundGlitch,
+	soundEnemy,
+	soundTouchTimer,
+	soundLoopBG,
+	soundStart;
+
+    var baseURL = "data/";
+
+	soundMagnetic 	= new Howl({urls: [baseURL+'energy.mp3', baseURL+'energy.ogg', baseURL+'energy.wav']});
+	soundScore 		= new Howl({urls: [baseURL+'score.mp3', baseURL+'score.ogg', baseURL+'score.wav']});
+	soundClick 		= new Howl({urls: [baseURL+'click.mp3', baseURL+'click.ogg', baseURL+'click.wav']});
+	soundGlitch 	= new Howl({urls: [baseURL+'glitch.mp3', baseURL+'glitch.ogg', baseURL+'glitch.wav']});
+	soundEnemy 		= new Howl({urls: [baseURL+'enemy.mp3', baseURL+'enemy.ogg', baseURL+'enemy.wav']});
+	soundTouchTimer = new Howl({
+		urls: [baseURL+'glitch.mp3', baseURL+'glitch.ogg', baseURL+'glitch.wav'],
+		loop: true,
+		volume: 0.0
+	});
+	soundLoopBG 	= new Howl({
+		urls: [baseURL+'loop1.mp3', baseURL+'loop1.ogg', baseURL+'loop1.wav'],
+	  	loop: true
+	});
+	soundStart 		= new Howl({
+		urls: [baseURL+'loopstart.mp3', baseURL+'loopstart.ogg', baseURL+'loopstart.wav'],
+		loop: true,
+	  	volume: 0.6
+	});
+        
+
+    
+
+////////////////////////////////////////////////////////////// PHONEGAP ////////////////////////////////////////////////////
+
+function socialShare(msg, sub, img, url) {
+	if(phonegap) {
+		window.plugins.socialsharing.share(msg, sub, img, url);	
+	} else {
+		alert("Use the native App to do this.");
+	}
+	
+}
+
+var micLevelPluginPhoneGap = 0;
+
+var app = {
+    // Application Constructor
+    initialize: function() {
+        this.bindEvents();
+    },
+    // Bind Event Listeners
+    //
+    // Bind any events that are required on startup. Common events are:
+    // 'load', 'deviceready', 'offline', and 'online'.
+    bindEvents: function() {
+        document.addEventListener('deviceready', this.onDeviceReady, false);
+    },
+    // deviceready Event Handler
+    //
+    // The scope of 'this' is the event. In order to call the 'receivedEvent'
+    // function, we must explicitly call 'app.receivedEvent(...);'
+    onDeviceReady: function() {
+	    
+		phonegap = true;
+	
+		StatusBar.hide();
+	
+		var micSuccess = function() {
+	        //alert("Plugin Start");
+	    }
+
+	    var micFailure = function() {
+	        alert("Error calling Plugin");
+	    }
+
+                   
+		window.micVolume.start(micSuccess, micFailure);
+
+	    setInterval(function(){
+			window.micVolume.read(function(reading){			
+				micLevelPluginPhoneGap = reading.volume;    
+		    }, micFailure);		
+		},100);
+
+
+	    //window.micVolume.stop(succesCallback, errorCallback);
+	
+	
+		   	   	
+		console.log("deviceready");  
+    },
+    // Update DOM on a Received Event
+    receivedEvent: function(id) {   
+
+        var parentElement = document.getElementById(id);
+        var listeningElement = parentElement.querySelector('.listening');
+        var receivedElement = parentElement.querySelector('.received');
+
+        listeningElement.setAttribute('style', 'display:none;');
+        receivedElement.setAttribute('style', 'display:block;');
+
+        console.log('Received Event: ' + id);
+    }
+};
+
+////////////////////////////////////////////////////////////// READY ////////////////////////////////////////////////////  
 $(document).ready(function(){    
 
 

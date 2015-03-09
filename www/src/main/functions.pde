@@ -5,7 +5,6 @@ void pebug(String m) {
 
 
 void hurt() {
-  //iphone.vibrate();
   energy = energy - hurtLife;
   soundEnemy.play();
   gameTransions = "Static";
@@ -120,9 +119,9 @@ void gameOver() {
 }
 
 void share() {
-  //iphone.screenShot();
-  pebug("screenshot");
-  //noLoop();
+  socialShare("My new record is " + recordScore  + ". Can you score it on the Spincles Game?", "Spincles - Glitch Game", save(), "http://spincles.dekwilde.com.br");
+  gameState = "InfoShow";
+  
 }
 
 void stateSetup() {
