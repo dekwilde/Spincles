@@ -1,5 +1,5 @@
 void pebug(String m) {
-  println(m);
+  //println(m);
 }
 
 
@@ -151,21 +151,10 @@ void stateSetup() {
   
   stateLoad();
 
-  if(scW>320 && scH>480) {
-    //ipad
-    wCount = 4;
-    hCount = 2; 
-    rad = 430;
-    iScale = 1.2;
-    videoscale = 24;
-  } else {
-    //iphone
-    wCount = 4; 
-    hCount = 2;
-    rad = 215;
-    iScale = 0.6;
-    videoscale = 10;
-  }
+  wCount = 4;
+  hCount = 2; 
+  iScale = 1.2;
+  rad = scW * 0.68
   
   pebug("wCount: " + wCount + ", hCount: " + hCount);
 
@@ -178,6 +167,7 @@ void stateSetup() {
   btHow = new ButtonHow();
   btClear = new ButtonClear();
   btShare = new ButtonShare();
+  btLeader = new ButtonLeaderBoard();
   btCamera = new ButtonCamera();
   btClose = new ButtonClose();
   slider = new MenuSlider();
@@ -204,13 +194,14 @@ void stateSetup() {
   //video = loadImage("cam.png");
   
   pebug("4 - Start sequence: main.pde setup()");
-  hidePageLoadingMsg();
-    
+  
   gameState = "Start";
   gameEnemy = "Null";
   gameTransions = "Static";
   gameSound = "Intro";
   gameDialog = "Setup";
+
+  hidePageLoadingMsg();
  
 }
 
@@ -305,9 +296,11 @@ void stateInfoShow() {
       pInfo = 0;
       slider.draw();
       btClose.draw(255);
-      btHow.draw();
-      btClear.draw();
       btShare.draw();
+      btLeader.draw();
+      btClear.draw();
+      btHow.draw();
+
   }
   pInfo = pInfo - pInfo/6;
   

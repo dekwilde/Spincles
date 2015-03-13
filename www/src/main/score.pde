@@ -117,6 +117,7 @@ void saveScore() {
   if(score>recordScore) {
     saveStrings("record",score);
     saveStrings("level",level);
+    sendScoreGameCenter(score);
   } else {
     saveStrings("record",recordScore);
     saveStrings("level",level);

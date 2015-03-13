@@ -267,7 +267,7 @@ class ButtonHow {
     
     void draw() {
         pX = width/2;
-        pY = height/2+180;
+        pY = height/2+210;
       
         checkButton();
         // Left buttom
@@ -313,7 +313,7 @@ class ButtonClear {
     void draw() {
       
         pX = width/2;
-        pY = height/2+120;
+        pY = height/2+160;
       
         checkButton();
         // Left buttom
@@ -341,6 +341,55 @@ class ButtonClear {
           }
     }
 }
+
+
+class ButtonLeaderBoard {
+    boolean overButton = false;
+    
+    int pX,pY;
+    int dw = 200;
+    int dh = 40;
+    int fSize = 20;
+    
+    ButtonLeaderBoard() {
+      //
+    }
+    
+    void draw() {
+      
+        pX = width/2;
+        pY = height/2+110;
+      
+        checkButton();
+        // Left buttom
+        strokeWeight(1);
+        stroke(255,204,0);
+        fill(0);
+        rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
+        fill(255,204,0);
+        textFont(fontText, fSize);
+        text("leaderboard", pX, pY);
+        
+        if (overButton == true) {
+            overButton = false;
+            touch1X = 0;
+            touch1Y = 0;
+            soundClick.play();
+            showGameCenter();
+        }
+    } 
+    
+    
+    void checkButton() {
+          if (touch1X > pX-dw && touch1X < pX+dw && touch1Y > pY-dh && touch1Y < pY+dh) {
+            overButton = true;   
+          } else {
+            overButton = false;
+          }
+    }
+}
+
+
 
 
 class ButtonShare {

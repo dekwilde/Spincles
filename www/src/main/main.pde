@@ -103,6 +103,7 @@ ButtonAgain btAgain;
 ButtonHow btHow;
 ButtonClear btClear;
 ButtonShare btShare;
+ButtonLeaderBoard btLeader;
 ButtonCamera btCamera;
 ButtonClose btClose;
 MenuSlider slider;

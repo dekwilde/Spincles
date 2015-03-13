@@ -1,7 +1,4 @@
 var orientationMode, activePage;
-var textEmktHeader, textEmktFooter;  
-var phonegap = false;
-
 ///////////////////////////////////////// MOBILE OR DESKTOP ///////////////////////////////////////////////// 
 var isMobile = {
     Android: function() {
@@ -151,16 +148,58 @@ var soundMagnetic,
 
 ////////////////////////////////////////////////////////////// PHONEGAP ////////////////////////////////////////////////////
 
+var phonegap = false;
 function socialShare(msg, sub, img, url) {
 	if(phonegap) {
 		window.plugins.socialsharing.share(msg, sub, img, url);	
 	} else {
-		alert("Use the native App to do this.");
+		alert("Use the native App to enable it.");
 	}
 	
 }
 
 var micLevelPluginPhoneGap = 0;
+var micSuccess = function() {
+    //alert("Plugin Start");
+}
+
+var micFailure = function() {
+    alert("Error calling Plugin");
+}
+
+
+var gameCenterLogin = false;
+var gamecenterSuccess = function() {
+	console.log("game center success");
+	gameCenterLogin = true;
+}
+var gamecenterFailure = function() {
+	console.log("game center failure");
+	gameCenterLogin = false;
+}
+
+function sendScoreGameCenter(n) {
+	if(gameCenterLogin) {
+		var data = {
+		    score: n,
+		    leaderboardId: "board1"
+		};
+		gamecenter.submitScore(gamecenterSuccess, gamecenterFailure, data);		
+	}
+}
+
+function showGameCenter() {
+	if(gameCenterLogin) {
+		var data = {
+		    period: "all",
+		    leaderboardId: "board1"
+		};
+		gamecenter.showLeaderboard(gamecenterSuccess, gamecenterFailure, data);	
+	} else {
+		alert("You must be logged in the Game Center");
+	}
+}
+
 
 var app = {
     // Application Constructor
@@ -181,18 +220,8 @@ var app = {
     onDeviceReady: function() {
 	    
 		phonegap = true;
-	
 		StatusBar.hide();
-	
-		var micSuccess = function() {
-	        //alert("Plugin Start");
-	    }
-
-	    var micFailure = function() {
-	        alert("Error calling Plugin");
-	    }
-
-                   
+		       
 		window.micVolume.start(micSuccess, micFailure);
 
 	    setInterval(function(){
@@ -200,11 +229,13 @@ var app = {
 				micLevelPluginPhoneGap = reading.volume;    
 		    }, micFailure);		
 		},100);
+		
+		//window.micVolume.stop(succesCallback, errorCallback);
+		
+		
+		//GAME CENTER
+		gamecenter.auth(gamecenterSuccess, gamecenterFailure);
 
-
-	    //window.micVolume.stop(succesCallback, errorCallback);
-	
-	
 		   	   	
 		console.log("deviceready");  
     },

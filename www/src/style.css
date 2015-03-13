@@ -27,7 +27,13 @@ body {
 .ui-loader .ui-icon-loading {
 	background-color:transparent !important;
 } 
+
+
+.ui-loader-verbose {
+	box-shadow:none !important;
+}
 .ui-loader-verbose .ui-icon-loading {
 	filter: Alpha(Opacity=100) !important;
 	opacity: 1.0  !important;
+	display:none !important;
 }
