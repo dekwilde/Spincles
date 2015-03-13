@@ -56,7 +56,7 @@
     <gap:plugin name="org.apache.cordova.vibration" />
 	<gap:plugin name="org.apache.cordova.statusbar" />  
 
-    <gap:plugin name="br.com.dekwilde.micVolume" />
+    <gap:plugin name="br.com.dekwilde.micvolume" />
 	<gap:plugin name="nl.x-services.plugins.socialsharing" source="plugins.cordova.io" />
 	<gap:plugin name="uk.co.ilee.gamecenter" />
     

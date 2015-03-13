@@ -104,8 +104,10 @@ function loadPDE() {
 function init() {
 	if(isMobile.any()) {
 		app.initialize();
+	} else {
+		$("#stores").show();
 	}
-	showPageLoadingMsg("c", "loading")  
+	showPageLoadingMsg("c", "loading"); 
 	deviceZigFu(); 
 	loadPDE(); 
 }
