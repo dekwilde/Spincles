@@ -303,7 +303,7 @@ void draw() {
     case "Find":
       dialog.draw("find the","", "trix");
     break;
-    
+        
   }
 
   

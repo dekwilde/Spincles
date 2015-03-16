@@ -528,72 +528,113 @@
   }
 
 
+  ////////////////////////////////////////////////////////// COMPASS  and ORIENTATION ////////////////////////////////////////////////////////
+ 	 function orientationhandler(e) {
+    
+		// For FF3.6+
+	    if (!e.gamma && !e.beta) {
+	      e.gamma = -(e.x * (180 / Math.PI));
+	      e.beta = -(e.y * (180 / Math.PI));
+	    }
+	
+		var dir = 0, ref = 0;
+		var direction, delta, heading;
+	
+		if (typeof e.webkitCompassHeading !== 'undefined') {
+	        direction = e.webkitCompassHeading;
+	        if (typeof window.orientation !== 'undefined') {
+	            direction += window.orientation;
+	        }
+	    } else {
+	        direction = 360 - e.alpha;
+	    }
 
-  /////////////////////////////////////////////////////// acceleration //////////////////////////////////////////////////////// 
+	    delta = Math.round(direction) - ref;
+	    ref = Math.round(direction);
+	    if (delta < -180)
+	        delta += 360;
+	    if (delta > 180)
+	        delta -= 360;
+	    dir += delta;
+
+	    heading = direction;
+	    while (heading >= 360) {
+	        heading -= 360;
+	    }
+	    while (heading < 0) {
+	        heading += 360;
+	    }
+
+	    var mOrientation = mobile.orientation;
+	    mOrientation.alpha = e.alpha;
+	    mOrientation.beta = e.beta;
+	    mOrientation.gamma = e.gamma;
+	    mOrientation.compassAccuracy = e.webkitCompassAccuracy ? e.webkitCompassAccuracy : -1;
+	    //mOrientation.compassHeading = e.webkitCompassHeading ? e.webkitCompassHeading + window.orientation : -1;
+		//mOrientation.compassHeading = e.webkitCompassHeading ? e.webkitCompassHeading + window.orientation : 360 - e.alpha;
+		mOrientation.compassHeading = heading;
+	  }
+
+	  window.addEventListener('deviceorientation',  orientationhandler, false);
+	  window.addEventListener('MozOrientation',     orientationhandler, false);
+
+
+	var orientationMode = "portrait", orientationX = 1, orientationY = 1;
+	function doOnOrientationChange() {
+		switch(window.orientation) {  
+			case -90:
+				orientationMode = "landleft";
+				orientationX = 1;
+				orientationY = -1;
+			break;
+			case 90:
+				orientationMode = "landright";
+				orientationX = -1;
+				orientationY = 1;
+			break; 
+			case 0:
+				orientationMode = "portrait";
+				orientationX = 1;
+				orientationY = 1;
+			break; 
+			case 180:
+				orientationMode = "inverse";
+				orientationX = -1;
+				orientationY = -1;
+			break;   
+		}     
+	}
+	window.addEventListener('orientationchange', doOnOrientationChange);
+
+	if (typeof window.orientation !== 'undefined') {
+        doOnOrientationChange();
+    }
+
+
+
+/////////////////////////////////////////////////////// acceleration //////////////////////////////////////////////////////// 
+
   window.addEventListener('devicemotion', function(event) {
-    var acceleration = event.accelerationIncludingGravity || event.acceleration,
+    var direction = 0;
+	var acceleration = event.accelerationIncludingGravity || event.acceleration,
     mAcceleration = mobile.acceleration;
 
-    // Values are in m/s^2
-    mAcceleration.x = acceleration.x;
-    mAcceleration.y = acceleration.y;
+   	if(orientationMode == "landleft" || orientationMode == "landright") {
+	    mAcceleration.x = orientationX*acceleration.y; // inverse
+	    mAcceleration.y = orientationY*acceleration.x; // inverse
+	} else {
+		mAcceleration.x = orientationX*acceleration.x;
+	    mAcceleration.y = orientationY*acceleration.y;	
+	}
+
     mAcceleration.z = acceleration.z;
   }, false);
-  
 
 
-  ////////////////////////////////////////////////////////// COMPASS ////////////////////////////////////////////////////////
-  function orientationhandler(e) {
-    
-	// For FF3.6+
-    if (!e.gamma && !e.beta) {
-      e.gamma = -(e.x * (180 / Math.PI));
-      e.beta = -(e.y * (180 / Math.PI));
-    }
-	
-	var dir = 0, ref = 0;
-	var direction, delta, heading;
-	
-	if (typeof e.webkitCompassHeading !== 'undefined') {
-        direction = e.webkitCompassHeading;
-        if (typeof window.orientation !== 'undefined') {
-            direction += window.orientation;
-        }
-    } else {
-        direction = 360 - e.alpha;
-    }
 
-    delta = Math.round(direction) - ref;
-    ref = Math.round(direction);
-    if (delta < -180)
-        delta += 360;
-    if (delta > 180)
-        delta -= 360;
-    dir += delta;
 
-    heading = direction;
-    while (heading >= 360) {
-        heading -= 360;
-    }
-    while (heading < 0) {
-        heading += 360;
-    }
 
-    var mOrientation = mobile.orientation;
-    mOrientation.alpha = e.alpha;
-    mOrientation.beta = e.beta;
-    mOrientation.gamma = e.gamma;
-    mOrientation.compassAccuracy = e.webkitCompassAccuracy ? e.webkitCompassAccuracy : -1;
-    //mOrientation.compassHeading = e.webkitCompassHeading ? e.webkitCompassHeading + window.orientation : -1;
-	//mOrientation.compassHeading = e.webkitCompassHeading ? e.webkitCompassHeading + window.orientation : 360 - e.alpha;
-	mOrientation.compassHeading = heading;
-  }
-
-  window.addEventListener('deviceorientation',  orientationhandler, false);
-  window.addEventListener('MozOrientation',     orientationhandler, false);
-  
-
-  ////////////////////////////////////////////////////// GESTURE //////////////////////////////////////////////////////////////////////// 
+////////////////////////////////////////////////////// GESTURE //////////////////////////////////////////////////////////////////////// 
 	var pgestureScale = 0;	
 	var pgestureRotation = 0;																													
 	var gestureScale = 0;	
@@ -662,6 +703,7 @@
 	window.AudioContext = window.AudioContext || window.webkitAudioContext;
 	navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 	var audioContext = new AudioContext();
+	
     if (navigator.getUserMedia) {
 		navigator.getUserMedia(
 			{audio:true, video:false}, 
@@ -701,8 +743,17 @@
 			mMedia.miclevel = micLevelPluginPhoneGap; 
 		},100);
 	}
-                  
+         
 
+
+
+/////////////////////////////////////////////// RESIZE ////////////////////////////////////////////////////////////
+	function resizeCanvas() {
+	    Processing.getInstanceById("pde").size(window.innerWidth, window.innerHeight);
+	    //Processing.getInstanceById("pde").scale(window.innerWidth, window.innerHeight);
+	}
+	window.addEventListener("resize", resizeCanvas);
+	
 
 /////////////////////////////////////////////////////////////// end /////////////////////////////////////////////////////////// 
   ['orientation', 'acceleration', 'coords', 'gesture', 'media','giroscope', 'heading', 'position', 'plugin'].forEach(function(objName) {

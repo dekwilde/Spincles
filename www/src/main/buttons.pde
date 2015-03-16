@@ -177,10 +177,18 @@ class MenuSlider {
       mic_perc = (st_x-init) / ((end-init)/100);
       //pebug(perc);
       
+      if(mic_perc<2) {
+        micStop();  
+      } else {
+        micStart();
+      }
+      
       if (touch1X > init-(st_s*1.5) && touch1X < end+(st_s*1.5) && 
         touch1Y > st_y-(st_s*1.5) && touch1Y < st_y+(st_s*1.5)) {
            st_x = touch1X;  
            soundClick.play();
+           touch1X = 0;
+           touch1Y = 0;
          } else {
            st_x = st_x;
       } 
@@ -265,9 +273,9 @@ class ButtonHow {
       //
     }
     
-    void draw() {
+    void draw(int t) {
         pX = width/2;
-        pY = height/2+210;
+        pY = height/2+t;
       
         checkButton();
         // Left buttom
@@ -376,6 +384,7 @@ class ButtonLeaderBoard {
             touch1Y = 0;
             soundClick.play();
             showGameCenter();
+            stateLoad("InfoShow");
         }
     } 
     
@@ -407,7 +416,7 @@ class ButtonShare {
     void draw() {
 
         pX = width/2;
-        pY = height/2+60;
+        pY = height/2+210;
       
         if (overButton == true) {
           fill(255,204,0);

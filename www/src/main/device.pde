@@ -58,7 +58,7 @@ void gestureStarted() {
 
 void gestureChanged() {
   iAngle = startAngle + gesture.rotation;
-  iScale = startEscala * gesture.scale;
+  //iScale = startEscala * gesture.scale;
   if (iAngle > 360) {
           iAngle = iAngle - 360;
   }
@@ -85,11 +85,13 @@ void touchStart(t) {
       touches[id] = color(random(255), random(255), random(255), 128);
     }
 
+    /*
     //pebug("touch "+ touch1X + " " + touch1Y);
     //disply pebug
     noStroke();
     fill(touches[id]);
     ellipse(t.touches[i].offsetX, t.touches[i].offsetY, 30, 30); 
+    */
   }
   
   touch1X = t.touches[0].offsetX;
@@ -126,10 +128,12 @@ void touchStart(t) {
 void touchMove(t) {
   for (int i = 0; i < t.touches.length; i++) {
     var id = t.touches[i].identifier;
+    /*
     //disply pebug
     noStroke();
     fill(touches[id]);
     ellipse(t.touches[i].offsetX, t.touches[i].offsetY, 30, 30);
+    */
   }
   
   touch1X = t.touches[0].offsetX;
@@ -150,7 +154,7 @@ void touchMove(t) {
       pinchAngle = degrees(atan2(touch2Y - touch1Y, touch2X - touch1X));  
       
       iAngle = startAngle + pinchAngle;
-      iScale = startEscala * (newDistance/pinchDistance);
+      //iScale = startEscala * (newDistance/pinchDistance);
       if (iAngle > 360) {
               iAngle = iAngle - 360;
       }
@@ -206,7 +210,7 @@ void mouseDragged() {
   float newDistance = dist(mouseX, mouseY, bx, by);
   
   iAngle = startAngle + pinchAngle;
-  iScale = startEscala * (newDistance/pinchDistance);
+  //iScale = startEscala * (newDistance/pinchDistance);
   if (iAngle > 360) {
           iAngle = iAngle - 360;
   }

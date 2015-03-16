@@ -1,4 +1,4 @@
-var orientationMode, activePage;
+var activePage;
 ///////////////////////////////////////// MOBILE OR DESKTOP ///////////////////////////////////////////////// 
 var isMobile = {
     Android: function() {
@@ -53,10 +53,7 @@ function add2Home() {
 	addToHomescreen(config_add2home);
 }      
 
-function resizeCanvas() {
-    Processing.getInstanceById("pde").size(window.innerWidth, window.innerHeight);
-    //Processing.getInstanceById("pde").scale(window.innerWidth, window.innerHeight);
-}
+
 
 
 function canvas2ImageCrop(x1,y1,w,h) {
@@ -95,6 +92,7 @@ function loadPDE() {
 		"src/main/device.pde", 
 		"src/main/elements.pde", 
 		"src/main/functions.pde", 
+		"src/main/state.pde", 
 		"src/main/score.pde"
 	]);
 }
@@ -105,10 +103,10 @@ function init() {
 	if(isMobile.any()) {
 		app.initialize();
 	} else {
+		deviceZigFu();
 		$("#stores").show();
 	}
 	showPageLoadingMsg("c", "loading"); 
-	deviceZigFu(); 
 	loadPDE(); 
 }
 
@@ -151,6 +149,10 @@ var soundMagnetic,
 ////////////////////////////////////////////////////////////// PHONEGAP ////////////////////////////////////////////////////
 
 var phonegap = false;
+
+
+
+// SOCIAL SHARE
 function socialShare(msg, sub, img, url) {
 	if(phonegap) {
 		window.plugins.socialsharing.share(msg, sub, img, url);	
@@ -160,23 +162,13 @@ function socialShare(msg, sub, img, url) {
 	
 }
 
-var micLevelPluginPhoneGap = 0;
-var micSuccess = function() {
-    //alert("Plugin Start");
-}
 
-var micFailure = function() {
-    alert("Error calling Plugin");
-}
-
-
+// GAME CENTER
 var gameCenterLogin = false;
 var gamecenterSuccess = function() {
-	console.log("game center success");
 	gameCenterLogin = true;
 }
 var gamecenterFailure = function() {
-	console.log("game center failure");
 	gameCenterLogin = false;
 }
 
@@ -187,6 +179,8 @@ function sendScoreGameCenter(n) {
 		    leaderboardId: "board1"
 		};
 		gamecenter.submitScore(gamecenterSuccess, gamecenterFailure, data);		
+	} else {
+		loginGameCenter();
 	}
 }
 
@@ -198,60 +192,67 @@ function showGameCenter() {
 		};
 		gamecenter.showLeaderboard(gamecenterSuccess, gamecenterFailure, data);	
 	} else {
-		alert("You must be logged in the Game Center");
+		loginGameCenter();
+	}
+}
+function loginGameCenter() {
+	if(phonegap) {
+		gamecenter.auth(gamecenterSuccess, gamecenterFailure);
+	} else {
+		alert("Use the native App to enable it.");
 	}
 }
 
 
-var app = {
-    // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-	    
-		phonegap = true;
-		StatusBar.hide();
-		       
+
+
+// MIC
+var micLevelPluginPhoneGap = 0;
+var micTimer;
+var micEnable = false;
+var micSuccess = function() {
+    //alert("Plugin Start");
+}
+var micFailure = function() {
+    alert("Error calling Mic Plugin");
+}
+
+
+function micStart() {
+	if(!micEnable) {
+		micEnable = true;
 		window.micVolume.start(micSuccess, micFailure);
 
-	    setInterval(function(){
+	    micTimer = setInterval(function(){
 			window.micVolume.read(function(reading){			
 				micLevelPluginPhoneGap = reading.volume;    
 		    }, micFailure);		
-		},100);
-		
-		//window.micVolume.stop(succesCallback, errorCallback);
-		
-		
-		//GAME CENTER
-		gamecenter.auth(gamecenterSuccess, gamecenterFailure);
+		},100);	
+	}
+}
 
-		   	   	
-		console.log("deviceready");  
+function micStop() {
+	if(micEnable) {	
+		micEnable = false;
+		window.micVolume.stop(micSuccess, micFailure);
+		clearInterval(micTimer);
+	}
+		
+}
+
+
+var app = {
+
+    initialize: function() {
+        document.addEventListener('deviceready', this.onDeviceReady, false);
     },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {   
 
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
+    onDeviceReady: function() {
+		phonegap = true;
+		StatusBar.hide();	       
+		micStart();
+		loginGameCenter();  	
+		console.log("deviceready");  
     }
 };
 
@@ -260,31 +261,7 @@ $(document).ready(function(){
 
 
 	setTimeout(init, 2000); // if not playvideo   
-	
-
-	//////////////////////////////////////////// GLOBAL - orientation /////////////////////////////////////////////
-	function doOnOrientationChange() {
-		switch(window.orientation) {  
-			case -90:
-				orientationMode = "landscape";
-			break;
-			case 90:
-				orientationMode = "landscape";
-			break; 
-			case 0:
-				orientationMode = "portrait";
-			break; 
-			case 180:
-				orientationMode = "inverse";
-			break;   
-		}     
 		
-		
-		console.log(window.orientation);
-	}
-	window.addEventListener('orientationchange', doOnOrientationChange);
-	window.addEventListener("resize", resizeCanvas);
-	
 	
 	///////////////////////////////////////////////////// GLOBAL - pageShow /////////////////////////////////////////////
 	$( "div" ).on( 'pageshow',function(event, ui){ 
