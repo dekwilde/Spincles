@@ -24,11 +24,17 @@ void stateSetup() {
   fontText = loadFont("data/MicroN55.ttf");
   
   stateLoad();
-
-  wCount = 4;
-  hCount = 2; 
+  
+  if(scW>1024) {
+    scW = 1024;
+    wCount = 6;
+    hCount = 2; 
+  } else {
+    wCount = 4;
+    hCount = 2;     
+  }
   iScale = (scW*0.2)/100;
-  rad = scW * 0.68
+  rad = scW * 0.6;
   
   pebug("wCount: " + wCount + ", hCount: " + hCount);
 

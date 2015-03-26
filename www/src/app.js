@@ -54,8 +54,6 @@ function add2Home() {
 }      
 
 
-
-
 function canvas2ImageCrop(x1,y1,w,h) {
 	var canvas = document.getElementById("eraser");
 		
@@ -76,6 +74,11 @@ function canvas2ImageCrop(x1,y1,w,h) {
 		console.log(canvasimage);
     };
 		
+}
+
+function resizeCanvas() {
+    Processing.getInstanceById("pde").size(window.innerWidth, window.innerHeight);
+    //Processing.getInstanceById("pde").scale(window.innerWidth, window.innerHeight);
 }
 
 /////////////////////////////////////////////// Init /////////////////////////////////////////////
@@ -108,6 +111,7 @@ function init() {
 	}
 	showPageLoadingMsg("c", "loading"); 
 	loadPDE(); 
+	window.addEventListener("resize", resizeCanvas);
 }
 
 
@@ -180,7 +184,7 @@ function sendScoreGameCenter(n) {
 		};
 		gamecenter.submitScore(gamecenterSuccess, gamecenterFailure, data);		
 	} else {
-		loginGameCenter();
+		//loginGameCenter();
 	}
 }
 

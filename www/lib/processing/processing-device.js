@@ -745,16 +745,6 @@
 	}
          
 
-
-
-/////////////////////////////////////////////// RESIZE ////////////////////////////////////////////////////////////
-	function resizeCanvas() {
-	    Processing.getInstanceById("pde").size(window.innerWidth, window.innerHeight);
-	    //Processing.getInstanceById("pde").scale(window.innerWidth, window.innerHeight);
-	}
-	window.addEventListener("resize", resizeCanvas);
-	
-
 /////////////////////////////////////////////////////////////// end /////////////////////////////////////////////////////////// 
   ['orientation', 'acceleration', 'coords', 'gesture', 'media','giroscope', 'heading', 'position', 'plugin'].forEach(function(objName) {
     Pp.__defineGetter__(objName, function() {
