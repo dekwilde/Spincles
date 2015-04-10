@@ -30,6 +30,7 @@ float startEscala;
 
 float microfone = 0;
 float mic_perc = 50; // 0 a 100
+String micText;
 
 //float dim = 40;
 var ctx;

@@ -144,8 +144,6 @@ void stateOver() {
 
 void stateInfoShow() {
   int Talign = height/2-260+pInfo;
-  String micText;
-  
   if(micEnable) {
     micText = "MIC VOLUME ON";
   } else {
@@ -173,12 +171,13 @@ void stateInfoShow() {
   
   if (pInfo<1) {
       pInfo = 0;
-      slider.draw();
+      
       btClose.draw(255);
       btHow.draw(60);
       btLeader.draw();
       btClear.draw();
       btShare.draw(); // tem que deixar este botao por ultimo por causa da ordem de renderizacao
+      slider.draw();
 
   }
   pInfo = pInfo - pInfo/6;
