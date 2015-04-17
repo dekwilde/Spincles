@@ -1,93 +1,40 @@
 class ButtonStart {
-  
-    Trix trix1, trx2;
-    
-    
-    
+ 
     boolean overButton = false;
-    boolean target = false;
     
-    float pX, pY;
-    float fX, fY;
-    
-    int dw = 120;
+    int pX, pY;
+    int dw = 160;
     int dh = 40;
     int fSize = 20;
     
-    ButtonStart() { 
-      trix1 = new Trix(150); 
-      trix2 = new Trix(180);  
+    ButtonStart() {
+        //
     }
     
     void draw() {
         pX = width/2;
-        pY = height/2;
-        fX = control.x;
-        fY = control.y;
-        
+        pY = height/2+150;
+      
         checkButton();
+        // Left buttom
         strokeWeight(1);
-        stroke(0);
-                
-        line(pX,pY,fX,fY);
-        if (dist(fX,fY,pX,pY)<15 && (angleCompass<65 && angleCompass>55 || angleCompass<185 && angleCompass>175 || angleCompass<305 && angleCompass>295)) {
-          target = true;
-          
-          fill(0); 
-          stroke(255);  
-          strokeWeight(2);
-          if (overButton == true) {
-             strokeWeight(1);
-             fill(255,204,0);
-             stroke(0); 
-             pInfo = 3;
-             gameState = "LoadGame"; 
-             overButton = false;
-             soundClick.play();
-          }
-        } else {
-          target = false; 
-          fill(0); 
-        }
-        
         if (overButton == true) {
-          fill(255,204,0);  
-          vibrate();     
-        }
-        
-        
-        pushMatrix();
-        translate(fX, fY);
-        rotate(radians(angleCompass));
-        triangle(trix1.x1, trix1.y1, trix1.x2, trix1.y2, trix1.x3, trix1.y3);
-        popMatrix();
-        
-        if(target) {
-          noFill();
-        } else {
-          fill(255,204,0,80);
-        }
-        pushMatrix();
-        translate(pX, pY);
-        rotate(radians(180));
-        triangle(trix2.x1, trix2.y1, trix2.x2, trix2.y2, trix2.x3, trix2.y3);
-        popMatrix();
-        
-        textFont(fontText, fSize);
-        
-        if(target) {
-          fill(255);
-          text("  L  Y", pX, pY);
-          fill(255);
-          text("P  A  ", fX, fY);  
-        } else {
-          fill(255,204,0);
-          text("  L  Y", pX, pY);
+          stroke(255);
           fill(0);
-          text("P  A  ", fX, fY);
+          rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
+          fill(255);
+          pInfo = 3;
+          gameState = "LoadGame"; 
+          overButton = false;
+          soundClick.play();   
+        } else {
+          stroke(0);
+          fill(255,204,0);
+          rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
+          fill(0);
         }
-        
-       
+        textFont(fontText, fSize);
+        text("START", pX, pY);
     } 
     
     
@@ -98,6 +45,7 @@ class ButtonStart {
             overButton = false;
           }
     }
+  
 }
 
 

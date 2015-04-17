@@ -86,14 +86,13 @@ void drawBG() {
 
 
 void activeGame() {
-  trixelmatrix.reset();
+  trixelmatrix.reset(); 
 }
 
 
 void startGame() {
     isGame = true;
     gameTransions = "Flash";
-    //setTimeout(function() { gameDialog = "Find"; }, 20000);
     loadScore();
     resetGame();
 }

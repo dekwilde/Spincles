@@ -25,15 +25,16 @@ void stateSetup() {
   
   stateLoad();
   
-  if(scW>1024) {
-    scW = 1024;
+  if(scW>800) {
+    scW = 800;
     wCount = 6;
     hCount = 2; 
   } else {
     wCount = 4;
     hCount = 2;     
   }
-  iScale = (scW*0.2)/100;
+  endEscala = (scW*0.2)/100;
+  iScale = 0;
   rad = scW * 0.6;
   
   pebug("wCount: " + wCount + ", hCount: " + hCount);
@@ -76,6 +77,7 @@ void stateSetup() {
   pebug("4 - Start sequence: main.pde setup()");
   
   gameState = "Start";
+  gameLevel = null;
   gameEnemy = "Null";
   gameTransions = "Static";
   gameSound = "Intro";
@@ -235,7 +237,7 @@ void stateLoad(String state) {
 
 
 
-void stateGame() {
+void stateGameStart() {
   acce();
   mic();
   compass();
@@ -244,14 +246,51 @@ void stateGame() {
   drawBG();
   //cam();
   //Three();        
-  control.draw();  
-  trixelmatrix.draw();
+  control.draw();
+ 
+  if(iScale<endEscala) {
+    iScale = iScale + 0.01;
+  } else {
+    iScale = endEscala;
+    
+    if(trixScale>1) {
+      //trixScale = trixScale - trixScale/100;
+      trixScale = trixScale - 0.01;
+      pushMatrix();
+      scale(trixScale);
+      trixelmatrix.draw();
+      popMatrix();
+    } else {
+      gameDialog = "Find";
+      gameLevel = "Start";
+      trixelmatrix.draw();
+    }  
+    
+  }
   spinclesDraw();
-  btInfo.draw();
+  //btInfo.draw();
   //btCamera.draw();
-  scoreInfo.draw();
+  //scoreInfo.draw();
   
 }
+
+void stateGameLevel0() {
+  acce();
+  mic();
+  compass();
+  zig();
+
+  drawBG();        
+  control.draw();
+ 
+  trixelmatrix.draw();
+ 
+  spinclesDraw();
+  btInfo.draw();
+  scoreInfo.draw();  
+ 
+}
+
 
 void stateNoTouch() {
   int Talign = -10;

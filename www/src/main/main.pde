@@ -27,6 +27,8 @@ float iAngle;
 float startAngle;
 float iScale;
 float startEscala;
+float endEscala;
+float trixScale = 8.0;
 
 float microfone = 0;
 float mic_perc = 50; // 0 a 100
@@ -72,6 +74,7 @@ float rotationT = 0.0;
 
 boolean cameraShow = false;
 boolean isGame = false;
+boolean dialogLoop = true;
 
 PImage howImg, logoImg;
 
@@ -121,7 +124,7 @@ float pInfo = height;
 
 // Transitions
 
-String gameState, gameEnemy, gameTransions, gameSound, gameDialog;
+String gameState, gameLevel, gameEnemy, gameTransions, gameSound, gameDialog;
 
 void setup() {  
   stateSetup();   
@@ -156,7 +159,26 @@ void draw() {
     break;    
         
     case "Game":
-      stateGame();  
+    
+      switch( gameLevel ) {
+         case null:
+           stateGameStart();  
+         break;
+         
+         case "Start":
+           stateGameStart();
+         break;
+         
+         case 0:
+           stateGameLevel0();
+         break;
+         
+         case 1:
+           
+         break;
+      }
+    
+        
     break; 
     
     case "Share":
@@ -286,23 +308,29 @@ void draw() {
     break;
     
     case "Level":
-      dialog.draw("level",level, "");
+      dialogLoop = true;
+      dialog.draw("level",level, "", false);
     break;
     
     case "Score":
-      dialog.draw("score","+1", "");
+      dialogLoop = true;
+      dialog.draw("score","+1", "", false);
     break;
     
     case "Setup":
-      dialog.draw("complete","OK", "");
+      dialogLoop = true;
+      dialog.draw("complete","OK", "", false);
     break;
     
     case "Start":
-      dialog.draw("start","GO", "");
+      dialogLoop = true;
+      dialog.draw("","start", "", false);
     break;
     
     case "Find":
-      dialog.draw("find the","", "trix");
+      if(dialogLoop) {
+        dialog.draw("FIND","energy", "", true);
+      }
     break;
         
   }

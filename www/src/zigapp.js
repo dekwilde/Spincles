@@ -405,7 +405,7 @@ var zigDevice = false;
 		if(zig.pluginInstalled) {
 			setTimeout(function () {
 				$("img[alt='Powered by Zigfu']").css("width", "1px"); 
-			},10000)
+			},3000)
 			
 		}
 		if(!zig.sensorConnected) {

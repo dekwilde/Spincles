@@ -82,6 +82,7 @@ class Trixel {
   int changeTime = 10000;
   int changeActive = 30;
   String trixelState;
+  float initAlpha = 0.0;
   
   float collisionX, collisionY;
   
@@ -94,7 +95,7 @@ class Trixel {
       
       id = num;
       if(id == 2) {
-        trixelState = "Active";
+        trixelState = "Start";
         type = 1;
       } else {
         trixelState = "Null";
@@ -164,15 +165,18 @@ class Trixel {
     collisionY = my - y;
 
 
-    noFill();
-
     pushMatrix();
     translate(x, y); 
     if(v == 1 || v == 3) {
       rotate(radians(180));
     }  
-     
-    stroke(255);
+    if (initAlpha<255) {
+      //initAlpha = initAlpha + random(100)/10000; 
+      initAlpha = initAlpha + random(3);  
+    } else {
+      initAlpha = 255;
+    }
+    stroke(255, initAlpha);
     strokeWeight(1);
     noFill();
     triangle(x1,y1,x2,y2,x3,y3); 
@@ -181,6 +185,12 @@ class Trixel {
     switch( trixelState ) {
       case "Null":
         //
+      break;
+      
+      case "Start":
+        if(gameLevel == "Start"){
+          trixelState = "Active";    
+        }
       break;
       
       case "Active":
@@ -302,6 +312,8 @@ class Trixel {
             spinclesState();
             if(id == 2) {
               id = 0;
+              gameLevel = level;
+              gameDialog = "Level";  
               activeGame();
             }
           }

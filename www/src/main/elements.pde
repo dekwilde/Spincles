@@ -4,7 +4,7 @@ class Dialog {
   Dialog() {
     trix = new Trix(150);
   }
-  void draw(String t1, String t2, String t3) {
+  void draw(String t1, String t2, String t3, boolean loop) {
     
     pushMatrix();
     rotate(0);
@@ -39,6 +39,11 @@ class Dialog {
     popMatrix();
     
     if(dialogTimer>100) {
+      if(loop) {
+        dialogLoop = false;
+      } else {
+        dialogLoop = true;
+      }
       dialogTimer = 0;
       gameDialog = "Null";
     }
