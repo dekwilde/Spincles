@@ -53,15 +53,18 @@ styles
 	z-index:1000;
 }
 #drawCan {
-	width: 160px;
-	height: 120px;
 	float: left;
-	background-color: rgba(142,188,201,0.5);
+	
 } 
 #drawCan canvas {
 	width: 160px;
 	height: 120px;
-}
+	background-color: rgba(142,188,201,0.5);
+}  
+
+#zigdepth, #zigimage {
+	display:none;
+}  
 /*------------------------------
 USER RADAR
 ------------------------------*/

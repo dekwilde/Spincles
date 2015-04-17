@@ -44,14 +44,23 @@ function ZigPluginLoaded() {
 
     var pluginObj = document.getElementById("ZigPlugin");
     i = 0;
-    var handleFrameNoLabel = function(u) { i++; drawDM(pluginObj);drawIM(pluginObj); };
-    var handleFrame = function(u) { i++; drawDM(pluginObj); drawIM(pluginObj); drawLM(pluginObj); };
+    var handleFrameNoLabel = function(u) { 
+		i++; 
+		drawDM(pluginObj);
+		drawIM(pluginObj); 
+	};
+    var handleFrame = function(u) { 
+		i++; 
+		//drawDM(pluginObj); 
+		//drawIM(pluginObj); 
+		drawLM(pluginObj); 
+	};
     var hasLabelmap = false;
     try{
-      pluginObj.requestStreams(true, true, true);
+      pluginObj.requestStreams(false, false, true);
     } catch(e) {
-      console.log('new style plugin');
-      pluginObj.requestStreams({updateDepth: true, updateImage: true, updateLabelMap : true});
+      console.log('draw zigfu');
+      pluginObj.requestStreams({updateDepth: false, updateImage: false, updateLabelMap : true});
       hasLabelmap = true;
     }
     if (!hasLabelmap) {
@@ -65,7 +74,7 @@ function ZigPluginLoaded() {
 function drawDM(plugin) {
     var dm = plugin.depthMap;
     if (dm.length == 0) return;
-    var canv = document.getElementById('depth');
+    var canv = document.getElementById('zigdepth');
     var ctx = canv.getContext('2d');
     var pix = ctx.createImageData(160,120);
     var data = pix.data;
@@ -80,7 +89,7 @@ function drawDM(plugin) {
 function drawIM(plugin) {
     var im = plugin.imageMap;
     if (im.length == 0) return;
-    var canv = document.getElementById('image');
+    var canv = document.getElementById('zigimage');
     var ctx = canv.getContext('2d');
     var pix = ctx.createImageData(160,120);
     var data = pix.data;
@@ -98,7 +107,7 @@ function drawIM(plugin) {
 function drawLM(plugin) {
         var lm = plugin.labelMap;
         if (lm.length == 0) return;
-        var canv = document.getElementById('labelMap');
+        var canv = document.getElementById('zigmap');
         var ctx = canv.getContext('2d');
         var pix = ctx.createImageData(160,120);
         var data = pix.data;
@@ -108,7 +117,7 @@ function drawLM(plugin) {
         for(var i = 0; i < 160*120; i++) {
             pixel = srcData[i*2] | (srcData[i*2 + 1] << 3);
             if (pixel != 0) {
-                data[i*4] = 255;
+                data[i*4] = 255,0,0;
                 col = pixel % 16;
                 data[i*4 + 1] = col*16;
                 data[i*4 + 2] = ((col+8) % 16)*16;

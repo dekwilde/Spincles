@@ -106,7 +106,7 @@ function init() {
 	if(isMobile.any()) {
 		app.initialize();
 	} else {
-		deviceZigFu();
+		deviceZigFu()
 		$("#stores").show();
 	}
 	showPageLoadingMsg("c", "loading"); 

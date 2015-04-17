@@ -19,7 +19,7 @@ var zigDevice = false;
 	
 	var delayRate = 10;
 	var HandsSteadyActive = -150 
-	var pushActive = 400;
+	var pushActive = 500;
 	var handsSteady = false;
 	var degreesHandsStart = 0, degreesHandsEnd = 0, distanceHandsStart = 0, distanceHandsEnd = 0;
 	
@@ -96,30 +96,48 @@ var zigDevice = false;
 	function zigEngage() {  
 		
 		engager = zig.EngageUsersWithSkeleton(1);
+	   	//engager = EngageFirstUserInSession();
 
 		engager.addEventListener('userengaged', function(user) {
-
 			console.log('Engaged: ' + user.id);
 			userEngage();  
-
 			user.addEventListener('userupdate', function(user) { 			
-				//radarUpdate(user);
-				if(zig.sensorConnected) {
-					skeletonUpdate(user); // or this
-					onLoop();
-				}
+				//radarUpdate(user);			
+				skeletonUpdate(user); // or this
+				onLoop();
 		  	}); 
-
 		    //zigClick(); //quando tiver drag eu faço isso 
-
 		});
 
 		engager.addEventListener('userdisengaged', function(user) {
-			console.log('Disengaged: ' + user.id);		
-			userDisengage();		
+			engager.onuserlost(user); 
+			engager.engagedUsers = [];    	
+			userDisengage();  
+            console.log('Disengaged: ' + user.id);
 		});
 		
-		zig.addListener(engager);	
+		zig.addListener(engager);   
+		
+		/*
+		zig.addEventListener('userfound', function(user) {
+			console.log('User Found: ' + user.id);
+			user.addEventListener('userupdate', function(user) { 			
+				//radarUpdate(user);			
+				skeletonUpdate(user); // or this
+				onLoop();
+		  	});
+		});
+		zig.addEventListener('userleft', function(user) {
+			console.log('User left: ' + user.id);
+		});
+		
+		zig.addEventListener('dataupdate', function() { 
+			console.log('dataupdate'); 
+		});  
+		*/
+		
+		
+		  
 	}
 	
 	
@@ -150,7 +168,9 @@ var zigDevice = false;
 		ldX += (lX - ldX) / delayRate;
 	   	ldY += (lY - ldY) / delayRate;
 		ldZ += (lZ - ldZ) / delayRate;
-		lAngle = Math.round(ldX/8);
+		lAngle = Math.round(ldX/8);  
+		
+		//console.log("skeleton:"+user.skeletonTracked+" hdX:"+hdX+" hdZ:"+hdZ+" rX:"+rX+" rY:"+rY+" rZ:"+rZ+" lX:"+lX+" lY:"+lY+" lZ:"+lZ)
 
 
        	handR.style.left = 	(rdX + window.innerWidth/2 	- (handR.offsetWidth / 2)) + "px";
@@ -379,9 +399,14 @@ var zigDevice = false;
 
 	
 	
-	function deviceZigFu() {
+	function deviceZigFu() { 
+		
+		console.log("deviceZigFu");
 		if(zig.pluginInstalled) {
-			$("img[alt='Powered by Zigfu']").css("width", "1px");
+			setTimeout(function () {
+				$("img[alt='Powered by Zigfu']").css("width", "1px"); 
+			},10000)
+			
 		}
 		if(!zig.sensorConnected) {
 			$("#zig").hide();  
@@ -426,7 +451,9 @@ var zigDevice = false;
 			console.log("Sensor connected: " + zig.sensorConnected); 
 			console.log("Zig.js version: " + zig.version);
 			$("*").css("cursor", "none");
-			$("#circle").show(); 
+			$("#circle").show();
+			$("#radar").hide();
+			 
 			// CURSORS
 			cd = document.getElementById('delaycursor');
 			cc = document.getElementById('circle');
@@ -434,9 +461,14 @@ var zigDevice = false;
 			handL = document.getElementById('handL');
 			radar = new usersRadar(document.getElementById('radar'));   
 			zigDevice = true;    
-			zigEngage();
-			enableRadar();
 			ZigPluginLoaded();
+			zigEngage();   
+			setInterval(function() {  
+				zig.init(document.getElementById("ZigPlugin"));
+			}, 5000)
+			
+			//enableRadar();
+			
 		}
 		
 	} 
