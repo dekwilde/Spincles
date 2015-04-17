@@ -249,7 +249,7 @@ void stateGameStart() {
   control.draw();
  
   if(iScale<endEscala) {
-    iScale = iScale + 0.01;
+    iScale = iScale + 0.001;
   } else {
     iScale = endEscala;
     

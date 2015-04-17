@@ -426,6 +426,8 @@ class Particle{
   float x;
   float y;
   float r;
+  int dg;
+  float sr;
   float xspeed,yspeed;
   float diameter = rad*.15;
   float distance = rad/2;
@@ -443,6 +445,9 @@ class Particle{
     tp = type;
     x= posX;
     y= posY;
+    r = random(360);
+    dg = random(-1, 1);
+    sr = random(10);
     if(tp == "magnetic") {
       xspeed= random(1.0, 4.0);
       yspeed= random(1.0, 4.0); 
@@ -454,7 +459,6 @@ class Particle{
   }
     
   void draw(){  
-    r = random(2);
     switch( tp ) { 
       case "explode":
         x = x+xspeed;
@@ -479,6 +483,7 @@ class Particle{
     fill(0);
     pushMatrix();
     translate(x,y);
+    r = r + dg*(sr/100);
     rotate(r);
     triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);
     popMatrix();
