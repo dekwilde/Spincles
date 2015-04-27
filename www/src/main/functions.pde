@@ -2,7 +2,13 @@ void pebug(String m) {
   //println(m);
 }
 
-
+void tw33n(int start, int end, int time) {
+    int m = millis();
+    int t1me = m % time;
+    float d = (end-start)/time;
+    int a = round(d*t1me); 
+    return a;
+}
 
 void hurt() {
   energy = energy - hurtLife;

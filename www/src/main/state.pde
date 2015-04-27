@@ -89,17 +89,20 @@ void stateSetup() {
 
 
 void stateStart() {
-  //background(255,204,0);
+  //acce();
+  mic();
+  //compass();
+  zig();
   
+ 
+  //background(255,204,0);
+   
   ctx.rect(0,0,width,height);
-  fill(255,204,0,100);
+  fill(255,204,0,40);
   noStroke();        
   rect(0,0,width,height);
+  tEff.draw0(); 
   
-  acce();
-  mic();
-  compass();
-  zig();
   
   int Talign = -150;
   fill(0);
@@ -249,13 +252,12 @@ void stateGameStart() {
   control.draw();
  
   if(iScale<endEscala) {
-    iScale = iScale + 0.001;
+    iScale = iScale + 0.001*speedEscala;
   } else {
     iScale = endEscala;
     
     if(trixScale>1) {
-      //trixScale = trixScale - trixScale/100;
-      trixScale = trixScale - 0.01;
+      trixScale = trixScale - 0.01*speedEscala;
       pushMatrix();
       scale(trixScale);
       trixelmatrix.draw();
@@ -274,7 +276,7 @@ void stateGameStart() {
   
 }
 
-void stateGameLevel0() {
+void stateGameLevel() {
   acce();
   mic();
   compass();

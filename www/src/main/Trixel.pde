@@ -83,6 +83,7 @@ class Trixel {
   int changeActive = 30;
   String trixelState;
   float initAlpha = 0.0;
+  float tweenAlpha = 255;
   
   float collisionX, collisionY;
   
@@ -96,7 +97,7 @@ class Trixel {
       id = num;
       if(id == 2) {
         trixelState = "Start";
-        type = 1;
+        type = 0;
       } else {
         trixelState = "Null";
         type = rangeTrixType;
@@ -194,10 +195,19 @@ class Trixel {
       break;
       
       case "Active":
-        if(type == 4) { //enemyMagnetic          
+
+        if(type == 3) { //enemyMagnetic          
           if(enemyActive) {
             gameEnemy = "Magnetic";
-            noFill();
+            if(tweenAlpha>0) {
+              tweenAlpha = tweenAlpha - 5;
+              noStroke();
+              fill(0,tweenAlpha);
+              triangle(x1,y1,x2,y2,x3,y3);
+            } else {
+              tweenAlpha = 0;
+              noFill();
+            }
           } else {      
             rotate(radians(180));
             scale(0.25);
@@ -205,15 +215,22 @@ class Trixel {
             fill(0);
             triangle(x1,y1,x2,y2,x3,y3);     
           }
-          
-    
         }
         
         
-        if(type == 3) { //enemyExplode          
+        if(type == 2) { //enemyExplode          
           if(enemyActive) {
             particleExplode.draw(collisionX,collisionY);
-            noFill();
+            if(tweenAlpha>0) {
+              tweenAlpha = tweenAlpha - 5;
+              noStroke();
+              fill(0,tweenAlpha);
+              triangle(x1,y1,x2,y2,x3,y3);
+            } else {
+              tweenAlpha = 0;
+              noFill();
+            }
+
           } else {
             rotate(radians(180));
             scale(0.25);
@@ -221,15 +238,13 @@ class Trixel {
             fill(0);
             triangle(x1,y1,x2,y2,x3,y3);
           }
-    
-          
         }    
         
-        if(type == 0) { //enemyArea
+        if(type == 1) { //enemyArea
           fill(0);
         }
         
-        if(type == 1) { //energy          
+        if(type == 0) { //energy          
           scale(0.25);
           rotate(radians(180));
     //      fill(255,int(random(255)));
@@ -246,58 +261,38 @@ class Trixel {
         if(dist(0,0,collisionX,collisionY)<radiusinternal) {
         //if(checkCollision(collisionX,collisionY)){
                 
-          if(type == 0) { //enemy 
-            hurt();
-            collisionTrix();
-          }
-          
-          if(type == 4 && !enemyDraw) { //enemyMagnetic
+          if(type == 3 && !enemyDraw) { //enemyMagnetic
             gameTransions = "Blackout"; 
-            float radrandX = random(-rad+50,rad+50);
-            float radrandY = random(-rad+50,rad+50);
-            if(radrandX>-rad/4) {
-              radrandX = -rad/4;
-            }
-            if(radrandX<rad/4) {
-              radrandX = rad/4;
-            }
-            if(radrandY>-rad/4) {
-              radrandY = -rad/4;
-            }
-            if(radrandY<rad/4) {
-              radrandY = rad/4;
-            }
-            
+            int radscale = 10;
+            float radrandX = random(-rad-radscale,rad+radscale);
+            float radrandY = random(-rad-radscale,rad+radscale);
+                        
             particleMagnetic.init(1, spinX+radrandX,spinY+radrandY);
             enemyActive = true;
             enemyDraw = true;    
           }
           
           
-          if(type == 3 && !enemyDraw) { //enemy
+          if(type == 2 && !enemyDraw) { //enemyExplode
             gameTransions = "Blackout";
             
-            float radrandX = random(-rad/2,rad/2);
-            float radrandY = random(-rad/2,rad/2);
-            if(radrandX>-rad/20) {
-              radrandX = -rad/20;
-            }
-            if(radrandX<rad/20) {
-              radrandX = rad/20;
-            }
-            if(radrandY>-rad/20) {
-              radrandY = -rad/20;
-            }
-            if(radrandY<rad/20) {
-              radrandY = rad/20;
-            }
-            
+            int radscale = rad;
+            //float radrandX = random(-rad/radscale,rad/radscale);
+            //float radrandY = random(-rad/radscale,rad/radscale);
+            float radrandX = 0;
+            float radrandY = 0;            
             particleExplode.init(2, collisionX+radrandX, collisionY+radrandY);
             enemyActive = true;
             enemyDraw = true;     
-          }  
+          } 
+         
+         
+          if(type == 1) { //enemyArea 
+            hurt();
+            collisionTrix();
+          }          
           
-          if(type == 1) { //energy
+          if(type == 0) { //energy
            
             energy = energy + 2;
             score = score + 1;
@@ -305,18 +300,20 @@ class Trixel {
             pebug("energy " + energy);
             soundMagnetic.play();
             soundScore.play();
-            gameTransions = "Blackout";
+            gameTransions = "Yellowout";
             gameDialog = "Score";
             collisionTrix();
             //trixGOOD.num = 0;
             spinclesState();
             if(id == 2) {
               id = 0;
-              gameLevel = level;
+              gameLevel = "Level";
               gameDialog = "Level";  
               activeGame();
             }
           }
+          
+          
         } else {
           hurtRange -= hurtRange*0.01;
         } // end collision
@@ -345,11 +342,12 @@ class Trixel {
         triangle(x1, y1, x2, y2, x3, y3);
         
         
-        if(type == 0) { //enemy
+        if(type == 1) { //enemyArea 
           //trifract(0, 0, radius,int(random(4)), false);
           //trifract(0, 0, radius/2,int(random(3)), true);
           //trifract(0, 0, radius/4,int(random(1,4)), false);
         }
+
       break;
          
     } //end switch
@@ -387,7 +385,7 @@ class Trixel {
   
 
   
-  void trifract(float x, float y, float l, int level, boolean inv){
+  void trifract(float x, float y, float l, int lvl, boolean inv){
     pushMatrix();
     rotate(radians(180));
     if(inv) {
@@ -407,12 +405,12 @@ class Trixel {
     */
     popMatrix();
     
-    if (level>1){
+    if (lvl>1){
         l*=.5;
-        level= level-1;
-        trifract(x, y+l, l, level, inv);
-        trifract(x+l*sqrt(3)/2, y-l/2, l, level, inv);
-        trifract(x-l*sqrt(3)/2, y-l/2, l, level, inv);
+        lvl= lvl-1;
+        trifract(x, y+l, l, lvl, inv);
+        trifract(x+l*sqrt(3)/2, y-l/2, l, lvl, inv);
+        trifract(x-l*sqrt(3)/2, y-l/2, l, lvl, inv);
     }    
   }
 
@@ -421,12 +419,32 @@ class Trixel {
     gameEnemy = "Null";
     enemyActive = false;
     enemyDraw = false;
+    tweenAlpha = 255;
     type = int(random(rangeTrixType));
     
-    if(type>4) {
+    if(type>3) {
       trixelState = "Null";  
     } else {
       trixelState = "Active";
+    }
+    
+    if(type != rangeTrixType) {
+      if(type>0 && level == 0) {
+        type = rangeTrixType;  
+      }
+      
+      if(type>1 && level == 1) {
+        type = rangeTrixType;  
+      }
+      
+      if(type>2 && level == 2) {
+        type = rangeTrixType;  
+      }
+      
+      if(type>3 && level == 3) {
+        type = rangeTrixType;  
+      }
+      
     }
     
     changeTime = 10 + int(random(50-microfone, 100-microfone*2))*int(random(10-microfone/100));
@@ -456,11 +474,11 @@ class Trixel {
         fl = int(random(255));
         type = rangeTrixType;
       }
-      if(type > 1) {
+      if(type > 0) {
         fill(0,fl);
         scale(st);
       }
-      if(type == 0) { //enemy Area
+      if(type == 1) { //enemy Area
         fill(255,fl);
         scale(1);
       }

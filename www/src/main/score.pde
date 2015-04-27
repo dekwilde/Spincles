@@ -97,6 +97,7 @@ void levelUp() {
   level += 1;
   saveScore();
   gameTransions = "Level";
+  gameDialog = "Level";
 }
 
 void clearScore() {

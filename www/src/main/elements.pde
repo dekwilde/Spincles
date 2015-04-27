@@ -276,7 +276,7 @@ class Logo {
 
 class pL {
   float iX, iY, x,y;
-  float rand = random(8);
+  float rand = random(10);
   int n;
   float timer = random(10, 100);
   
@@ -305,12 +305,44 @@ class pL {
 
 
 class TrixelEffect {
-  float w = 80, h = 0.5 * sqrt(3) * w;  
+  float w = scW * 0.2, h = 0.5 * sqrt(3) * w;  
   float tx = 0;
   float ty = 0; 
+  float rd = 0;
   TrixelEffect() {
     
   }
+  void draw0() {
+    noFill();
+    stroke(255);
+    strokeWeight(microfone/20+2);
+    for(int i=0; i<((width/w)+1)*2;i++) {
+      for(int j=0; j<((height/h)+1)*2;j++) {    
+          rd = microfone*4;
+          for (float x = 0; x < width+w; x += w)
+            for (float y = 0; y < height+h; y += 2*h)
+              if (i*w/2 >= x && i*w/2 <= x+w)
+                if (j*h/2 >= 2*abs(i*w/2-x-w/2)+y && j*h/2 <= y+h)
+                  //triangle(x+random(-rd, rd),y+h+random(-rd, rd),x+w/2+random(-rd, rd),y+random(-rd, rd),x+w+random(-rd, rd),y+h+random(-rd, rd));
+                  
+                  point(x+random(-rd, rd),y+h+random(-rd, rd));
+                  //point(x+w/2+random(-rd, rd),y+random(-rd, rd));
+                  //point(x+w+random(-rd, rd),y+h+random(-rd, rd));
+                            
+          for (float x = -w/2; x < width+w; x += w)
+            for (float y = 0; y < height+h; y += 2*h)
+              if (i*w/2 >= x && i*w/2 <= x+w)
+                if (j*h/2 <= -2*abs(i*w/2-x-w/2)+y+h && j*h/2 >= y)
+                  //triangle(x+random(-rd, rd),y+random(-rd, rd),x+w/2+random(-rd, rd),y+h+random(-rd, rd),x+w+random(-rd, rd),y+random(-rd, rd));
+                  
+                  point(x+random(-rd, rd),y+random(-rd, rd));                  
+                  //point(x+w/2+random(-rd, rd),y+h+random(-rd, rd));
+                  //point(x+w+random(-rd, rd),y+random(-rd, rd));        
+                  
+      }              
+    }
+  }
+  
   void draw1() {
     noStroke();
     for(int i=0; i<((width/w)+1)*2;i++) {
@@ -425,12 +457,14 @@ class TrixParticle {
 class Particle{
   float x;
   float y;
+  float initX, initY, initAlpha;
   float r;
   int dg;
   float sr;
   float xspeed,yspeed;
   float diameter = rad*.15;
   float distance = rad/2;
+  float speedActive;
   float delay = random(0.001, 0.01);
   float elastic = 0.8;
   int life =0, lifeTime = 50+int(random(150));
@@ -445,20 +479,25 @@ class Particle{
     tp = type;
     x= posX;
     y= posY;
+    initX = posX;
+    initY = posY;
+    initAlpha = 0;
+    speedActive = 2 + random(5);
     r = random(360);
     dg = random(-1, 1);
-    sr = random(10);
+    sr = 1+random(10);
     if(tp == "magnetic") {
-      xspeed= random(1.0, 4.0);
-      yspeed= random(1.0, 4.0); 
+      xspeed= random(10/10, 40/10);
+      yspeed= random(10/10, 40/10); 
     }
     if(tp == "explode") {
-      xspeed= random(-4.0, 4.0);
-      yspeed= random(-4.0, 4.0); 
+      xspeed= random(-40/10, 40/10);
+      yspeed= random(-40/10, 40/10); 
     }
   }
     
-  void draw(){  
+  void draw(){
+      
     switch( tp ) { 
       case "explode":
         x = x+xspeed;
@@ -478,13 +517,18 @@ class Particle{
   }
     
   void display(){
+    if(initAlpha<255) {
+      initAlpha = initAlpha + speedActive;
+    } else {
+      initAlpha = 255;  
+    }
     strokeWeight(1);
-    noStroke();
-    fill(0);
+    noStroke();    
+    fill(0,initAlpha);
     pushMatrix();
     translate(x,y);
-    r = r + dg*(sr/100);
-    rotate(r);
+    r = r + dg*(sr);
+    rotate(radians(r));
     triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);
     popMatrix();
     //ellipse(x, y, 2, 2);
@@ -495,7 +539,8 @@ class Particle{
   }
   
   void collision(float cx, float cy) {
-    if(dist(x,y,cx,cy)<diameter) {
+    pebug(dist(x,y,initX,initY));
+    if(initAlpha>250 && dist(x,y,cx,cy)<diameter) {
       pebug("collisioon");
       death = true;
       hurt();

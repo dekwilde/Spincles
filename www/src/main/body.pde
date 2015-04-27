@@ -41,11 +41,11 @@ class Arm {
       translate(x, y);
       rotate(a);
       strokeWeight(Weight/SegWeightPor);
+      stroke(0, 90);
+      line(0, 0, LengthSeg, 0);
       fill(255,255);
       noStroke();
       ellipse(0,0,2,2);
-      stroke(0, 90);
-      line(0, 0, LengthSeg, 0);
   } 
 }
 
@@ -61,6 +61,9 @@ void spinclesState() {
 }
 
 void spinclesDraw() {
+  
+  
+  
   ///////////////////////////////////////////////// Spincles draw /////////////////////////////////////////////////////////
   
   for(int i=0; i<numOfArms; i++) {

@@ -18,6 +18,10 @@ class ButtonStart {
         checkButton();
         // Left buttom
         strokeWeight(1);
+        stroke(0);
+        fill(255,204,0);
+        rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
+        fill(0);  
         if (overButton == true) {
           stroke(255);
           fill(0);
@@ -27,11 +31,6 @@ class ButtonStart {
           gameState = "LoadGame"; 
           overButton = false;
           soundClick.play();   
-        } else {
-          stroke(0);
-          fill(255,204,0);
-          rect(pX-dw/2, pY-dh/2-fSize/4, dw, dh);
-          fill(0);
         }
         textFont(fontText, fSize);
         text("START", pX, pY);

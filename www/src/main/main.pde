@@ -28,6 +28,7 @@ float startAngle;
 float iScale;
 float startEscala;
 float endEscala;
+float speedEscala = 1;
 float trixScale = 8.0;
 
 float microfone = 0;
@@ -169,12 +170,8 @@ void draw() {
            stateGameStart();
          break;
          
-         case 0:
-           stateGameLevel0();
-         break;
-         
-         case 1:
-           
+         case "Level":
+           stateGameLevel();
          break;
       }
     
@@ -266,6 +263,21 @@ void draw() {
       translate(0,0);
       scale(1.0);
       noStroke();
+      fill(0, 255-tween); 
+      rect(0,0,width,height);   
+      popMatrix();
+    break;
+    
+    case "Yellowout":
+      tween = tween +(initColor-tween)/10;
+      if(tween>(initColor-1)) {
+        gameTransions = "Null";
+      }
+      pushMatrix();
+      rotate(0);
+      translate(0,0);
+      scale(1.0);
+      noStroke();
       fill(255,204,0, 255-tween); 
       rect(0,0,width,height);   
       popMatrix();
@@ -283,7 +295,7 @@ void draw() {
       
       soundStart.play();
       soundStart.loop(true);
-      soundStart.volume(0.8);
+      soundStart.volume(0.1);
       gameSound = "Null";
     break;
     
