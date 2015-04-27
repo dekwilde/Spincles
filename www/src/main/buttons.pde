@@ -190,7 +190,7 @@ class ButtonAgain {
         if (overButton == true) {
             overButton = false;
             soundClick.play();
-            resetGame();
+            againGame();
             //activeGame();
             
         }

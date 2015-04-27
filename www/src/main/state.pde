@@ -59,11 +59,13 @@ void stateSetup() {
 
   trixelmatrix = new TrixelMatrix();
   
+  body = new Tbody();
+  
   
   particleMagnetic = new TrixParticle("magnetic");
     
 
-  spinclesState();
+  body.reset();
 
 
   bx = width/2;
@@ -77,7 +79,6 @@ void stateSetup() {
   pebug("4 - Start sequence: main.pde setup()");
   
   gameState = "Start";
-  gameLevel = null;
   gameEnemy = "Null";
   gameTransions = "Static";
   gameSound = "Intro";
@@ -264,12 +265,12 @@ void stateGameStart() {
       popMatrix();
     } else {
       gameDialog = "Find";
-      gameLevel = "Start";
+      gameState = "GameStart";
       trixelmatrix.draw();
     }  
     
   }
-  spinclesDraw();
+  body.draw();
   //btInfo.draw();
   //btCamera.draw();
   //scoreInfo.draw();
@@ -287,7 +288,7 @@ void stateGameLevel() {
  
   trixelmatrix.draw();
  
-  spinclesDraw();
+  body.draw();
   btInfo.draw();
   scoreInfo.draw();  
  

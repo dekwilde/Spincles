@@ -49,17 +49,22 @@ TrixelMatrix trixelmatrix;
 int scW = screen.width;
 int scH = screen.height;
 int wCount, hCount;
-
-int numSegment = 4;
-int numOfArms = 10;
-float SegWeightPor = 1.9f;
-float radius = 0.00;
-
 float x = width/2; 
 float y = height/2;
 float targetX, targetY;
 float spinX, spinY;
-float pi = 0;
+
+
+
+
+float angleSpeedTouch = 0.0f;
+float angleRadiusTouch = 0.0f;
+float WeightSegmentTouch = 0.0f;
+int numSegment = 4;
+int numOfArms = 10;
+float SegWeightPor = 1.9f;
+float rotationT = 0.0;
+float radius = 0.00;
 
 float [] rotation = new float[numOfArms];
 float [] angleRadius = new float[numOfArms];
@@ -68,10 +73,8 @@ float [] angleSpeed = new float[numOfArms];
 float [] angle = new float[numOfArms];
 float [] WeightSegment = new float[numOfArms];
 float [] segLength = new float[numOfArms];
-float angleSpeedTouch = 0.0f;
-float angleRadiusTouch = 0.0f;
-float WeightSegmentTouch = 0.0f;
-float rotationT = 0.0;
+
+
 
 boolean cameraShow = false;
 boolean isGame = false;
@@ -125,7 +128,7 @@ float pInfo = height;
 
 // Transitions
 
-String gameState, gameLevel, gameEnemy, gameTransions, gameSound, gameDialog;
+String gameState, gameEnemy, gameTransions, gameSound, gameDialog;
 
 void setup() {  
   stateSetup();   
@@ -158,25 +161,15 @@ void draw() {
     case "LoadGame":
       stateLoadGame();
     break;    
-        
-    case "Game":
-    
-      switch( gameLevel ) {
-         case null:
-           stateGameStart();  
-         break;
+      
+    case "GameStart":
+      stateGameStart();
+    break;
          
-         case "Start":
-           stateGameStart();
-         break;
-         
-         case "Level":
-           stateGameLevel();
-         break;
-      }
-    
+    case "GameLevel":
+      stateGameLevel();
+    break;    
         
-    break; 
     
     case "Share":
      stateShare();  
@@ -328,12 +321,7 @@ void draw() {
       dialogLoop = true;
       dialog.draw("score","+1", "", false);
     break;
-    
-    case "Setup":
-      dialogLoop = true;
-      dialog.draw("complete","OK", "", false);
-    break;
-    
+        
     case "Start":
       dialogLoop = true;
       dialog.draw("","start", "", false);

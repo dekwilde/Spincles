@@ -15,7 +15,7 @@ void hurt() {
   soundEnemy.play();
   gameTransions = "Static";
   hurtRange += hurtValue;
-  spinclesState();
+  body.reset();
   pebug("energy " + energy);
 }
 
@@ -101,16 +101,23 @@ void startGame() {
     gameTransions = "Flash";
     loadScore();
     resetGame();
+    gameState = "GameStart";
+    //gameTransions = "Flash";
+    gameSound = "Game";
+    gameDialog = "Start";
 }
 void resetGame() {
   energy = 30;
   score = 0;
   hurtRange = 0;
   hurtTimer = 0;
-  gameState = "Game";
-  //gameTransions = "Flash";
-  gameSound = "Game";
-  gameDialog = "Start";
+}
+void againGame() {
+    resetGame();
+    gameState = "GameLevel";
+    //gameTransions = "Flash";
+    gameSound = "Game";
+    gameDialog = "Start";
 }
 
 

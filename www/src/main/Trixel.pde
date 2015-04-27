@@ -189,7 +189,7 @@ class Trixel {
       break;
       
       case "Start":
-        if(gameLevel == "Start"){
+        if(gameState == "GameStart"){
           trixelState = "Active";    
         }
       break;
@@ -304,10 +304,10 @@ class Trixel {
             gameDialog = "Score";
             collisionTrix();
             //trixGOOD.num = 0;
-            spinclesState();
+            body.reset();
             if(id == 2) {
               id = 0;
-              gameLevel = "Level";
+              gameState = "GameLevel";
               gameDialog = "Level";  
               activeGame();
             }

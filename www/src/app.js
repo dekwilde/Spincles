@@ -86,8 +86,7 @@ function loadPDE() {
 	//Processing.reload(); 
 	
 	Processing.loadSketchFromSources('pde', [
-		"src/main/main.pde", 
-		"src/main/Three.pde", 
+		"src/main/main.pde",
 		"src/main/Trixel.pde", 
 		"src/main/body.pde", 
 		"src/main/buttons.pde", 

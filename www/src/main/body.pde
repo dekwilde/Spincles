@@ -1,37 +1,85 @@
 class Tbody {
+ 
+  int pi = 0;
   float x, y;  
   Arm arms;  
    
-  Tbody(float posX, float posY, float rotator, float escala) {
+  Tbody() {
+    reset();  
+  }
+  
+  void reset() {
+    for(int i=0; i<numOfArms; i++) {
+      rotation[i] = random(0, 360);
+      angleRadius[i] = random(0.3, 1.9);
+      angleSpeed[i] = random(0.009, 0.16);
+      angleSegment[i] = random(0.09, 1.4);
+      WeightSegment[i] = random(1.4, 6.1);
+      segLength[i] = random(25, 65);
+    }
+  }
+
+  
+  
+  
+  void draw() {
+        
+    for(int i=0; i<numOfArms; i++) {
+      angle[i] = angle[i] + angleSpeed[i] + microfone/100 + angleSpeedTouch;
+    }
+    
+    //targetX = mouseX;
+    targetX = control.x;
+    float dx = targetX - x;
+    float nX = noise(pi/10)*cos(noise(pi/10)*((width/2 - noise(pi/50)*(width))/10));
+    x += dx * easing + nX*(microfone + random(0,5));
+    spinX = x;
+    
+    //targetY = mouseY;
+    targetY = control.y;
+    float dy = targetY - y;
+    float nY = noise(pi/10)*sin(noise(pi/10)*((height/2 - noise(pi/50)*(height))/10));
+    y += dy * easing + nY*(microfone + random(0,5));
+    spinY = y;
+            
+    PVector  v1 = new PVector(targetX, targetY);
+    PVector  v2 = new PVector(x, y); 
+    float d = v1.dist(v2);
+    
+    rotationT = rotationT + noise(pi/500)*((d*easing)/50) - microfone/200;
+    
     pushMatrix();
-    x = posX;
-    y = posY;
-    translate(posX, posY);
-    rotate(rotator);
-    scale(escala);
-    //
+    translate(x, y);
+    rotate(rotationT);
+    scale(iScale);
+    //display pebug
+    //fill(255,0,0);
+    //rect(0,0,50,50);
+    
     for(int i=0; i<numOfArms; i++) {
       radius = angleRadius[i] * sin(angle[i]);
       arms = new Arm(radius, WeightSegment[i]+WeightSegmentTouch, segLength[i]);
-      rotate(rotation[i]);
-      
-      //rotate(PI/(numOfArms/2));
-      //rotate(random(PI));
+      rotate(radians(rotation[i]));
     }
+    
     popMatrix();
+    
+    
+    pi++;
   }
+
 }
 
 
 class Arm {
-
+  
   Arm(float angleSeg, float WeightSeg, float LengthSeg) {   
       pushMatrix();
       for(int i=0; i<numSegment; i++) {
         if(i>0) {
           draw(LengthSeg, 0, angleSeg*angleSegment[i]-(microfone/50)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg);
         } else {
-          draw(0, 0, angleSeg, (numSegment+1)*WeightSeg, LengthSeg); 
+          draw(0, 0,         angleSeg*angleSegment[i]-(microfone/50)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg); 
         }
       }
       popMatrix();
@@ -43,55 +91,11 @@ class Arm {
       strokeWeight(Weight/SegWeightPor);
       stroke(0, 90);
       line(0, 0, LengthSeg, 0);
-      fill(255,255);
+      fill(255);
       noStroke();
       ellipse(0,0,2,2);
   } 
 }
 
-void spinclesState() {
-  for(int i=0; i<numOfArms; i++) {
-    rotation[i] = random(0, 360);
-    angleRadius[i] = random(0.3, 1.9);
-    angleSpeed[i] = random(0.009, 0.16);
-    angleSegment[i] = random(0.09, 1.4);
-    WeightSegment[i] = random(1.4, 6.1);
-    segLength[i] = random(25, 65);
-  }
-}
 
-void spinclesDraw() {
-  
-  
-  
-  ///////////////////////////////////////////////// Spincles draw /////////////////////////////////////////////////////////
-  
-  for(int i=0; i<numOfArms; i++) {
-    angle[i] = angle[i] + angleSpeed[i] + microfone/100 + angleSpeedTouch;
-  }
-  
-  //targetX = mouseX;
-  targetX = control.x;
-  float dx = targetX - x;
-  float nX = noise(pi/10)*cos(noise(pi/10)*((width/2 - noise(pi/50)*(width))/10));
-  x += dx * easing + nX*(microfone + random(0,5));
-  spinX = x;
-  
-  //targetY = mouseY;
-  targetY = control.y;
-  float dy = targetY - y;
-  float nY = noise(pi/10)*sin(noise(pi/10)*((height/2 - noise(pi/50)*(height))/10));
-  y += dy * easing + nY*(microfone + random(0,5));
-  spinY = y;
-          
-  PVector  v1 = new PVector(targetX, targetY);
-  PVector  v2 = new PVector(x, y); 
-  float d = v1.dist(v2);
-  
-  rotationT = rotationT + noise(pi/500)*((d*easing)/50) - microfone/200;
-  
-  body = new Tbody(x, y, rotationT, iScale);
-  //+ noise(pi/10)*2)
-  
-  pi++;
-}
+
