@@ -49,7 +49,6 @@ void stateSetup() {
   btClear = new ButtonClear();
   btShare = new ButtonShare();
   btLeader = new ButtonLeaderBoard();
-  btCamera = new ButtonCamera();
   btClose = new ButtonClose();
   slider = new MenuSlider();
   scoreInfo = new ScoreInfo();
@@ -114,6 +113,7 @@ void stateStart() {
   logo.draw(Talign);
   control.draw();
   btStart.draw();
+  
   
 }
 
@@ -251,14 +251,19 @@ void stateGameStart() {
   //cam();
   //Three();        
   control.draw();
- 
+  
+  
+  
+   
   if(iScale<endEscala) {
-    iScale = iScale + 0.001*speedEscala;
+    //iScale = iScale + 0.001*speedEscala;
+    iScale = tw33n(0, endEscala+0.1, 15000);
   } else {
     iScale = endEscala;
     
     if(trixScale>1) {
-      trixScale = trixScale - 0.01*speedEscala;
+      //trixScale = trixScale - 0.01*speedEscala;
+      trixScale = 8.0 - tw33n(0.0, 8.0, 30000);
       pushMatrix();
       scale(trixScale);
       trixelmatrix.draw();

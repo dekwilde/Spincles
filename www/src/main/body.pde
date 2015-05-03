@@ -30,16 +30,14 @@ class Tbody {
     
     //targetX = mouseX;
     targetX = control.x;
-    float dx = targetX - x;
     float nX = noise(pi/10)*cos(noise(pi/10)*((width/2 - noise(pi/50)*(width))/10));
-    x += dx * easing + nX*(microfone + random(0,5));
+    x += (targetX - x) * easing + nX*(microfone + random(0,5));
     spinX = x;
     
     //targetY = mouseY;
     targetY = control.y;
-    float dy = targetY - y;
     float nY = noise(pi/10)*sin(noise(pi/10)*((height/2 - noise(pi/50)*(height))/10));
-    y += dy * easing + nY*(microfone + random(0,5));
+    y += (targetY - y) * easing + nY*(microfone + random(0,5));
     spinY = y;
             
     PVector  v1 = new PVector(targetX, targetY);

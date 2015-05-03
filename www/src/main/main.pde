@@ -28,7 +28,7 @@ float startAngle;
 float iScale;
 float startEscala;
 float endEscala;
-float speedEscala = 1;
+float speedEscala = 10;
 float trixScale = 8.0;
 
 float microfone = 0;
@@ -100,7 +100,6 @@ int hurtLife = 20;
 float gx,gy;
 float mx, my; //mouse or object position middle;
 float trixelX, trixelY;
-float nX, nY;
 float angleCompass;
 float atan;
 
@@ -112,7 +111,6 @@ ButtonHow btHow;
 ButtonClear btClear;
 ButtonShare btShare;
 ButtonLeaderBoard btLeader;
-ButtonCamera btCamera;
 ButtonClose btClose;
 MenuSlider slider;
 ScoreInfo scoreInfo;

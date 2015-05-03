@@ -1,14 +1,18 @@
 void pebug(String m) {
-  //println(m);
+  println(m);
 }
 
-void tw33n(int start, int end, int time) {
-    int m = millis();
-    int t1me = m % time;
-    float d = (end-start)/time;
-    int a = round(d*t1me); 
-    return a;
+
+
+void tw33n(float start, float end, int time) {
+  int m = millis();
+  int t = m % time;
+  float d = (end-start)/time;
+  float a = d*t; 
+  return a;
 }
+
+
 
 void hurt() {
   energy = energy - hurtLife;
@@ -97,7 +101,6 @@ void activeGame() {
 
 
 void startGame() {
-    isGame = true;
     gameTransions = "Flash";
     loadScore();
     resetGame();

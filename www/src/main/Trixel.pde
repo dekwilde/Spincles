@@ -35,8 +35,8 @@ class TrixelMatrix {
     rotate(r);
     translate(-width/2,-height/2); //new line before implementation
     
-    nX = mx*(microfone/50 + 1) - width/2;
-    nY = my*(microfone/50 + 1) - height/2;
+    float nX = mx*(microfone/50 + 1) - width/2;
+    float nY = my*(microfone/50 + 1) - height/2;
     
     for (int i = 0; i < count; i++) {
       trixel[i].draw(nX,nY);
@@ -83,6 +83,7 @@ class Trixel {
   int changeActive = 30;
   String trixelState;
   float initAlpha = 0.0;
+  float initStroke = rad;
   float tweenAlpha = 255;
   
   float collisionX, collisionY;
@@ -108,7 +109,7 @@ class Trixel {
       radius = trix.r;
       radiusinternal = trix.ri;
       angle = trix.a;
-      
+
       x1 = trix.x1;
       y1 = trix.y1;
         
@@ -170,17 +171,28 @@ class Trixel {
     translate(x, y); 
     if(v == 1 || v == 3) {
       rotate(radians(180));
-    }  
-    if (initAlpha<255) {
-      //initAlpha = initAlpha + random(100)/10000; 
-      initAlpha = initAlpha + random(3);  
-    } else {
-      initAlpha = 255;
     }
+    
+    if (initAlpha<100) {      
+      //initAlpha = initAlpha + 0.4*speedEscala; 
+      initAlpha = round(tw33n(0, 100, 30000));  
+    } else {
+      initAlpha = 100;
+    }
+
+
+    if (initStroke>1) {
+      initStroke = rad - round(tw33n(0, rad, 20000));  
+    } else {
+      initStroke = 1;
+    }
+    
+    
     stroke(255, initAlpha);
-    strokeWeight(1);
+    strokeWeight(initStroke);
     noFill();
     triangle(x1,y1,x2,y2,x3,y3); 
+    strokeWeight(0.1);
      
         
     switch( trixelState ) {
@@ -189,7 +201,7 @@ class Trixel {
       break;
       
       case "Start":
-        if(gameState == "GameStart"){
+        if(gameState == "GameStart" && initAlpha == 255 && initStroke == 1){
           trixelState = "Active";    
         }
       break;
@@ -247,12 +259,12 @@ class Trixel {
         if(type == 0) { //energy          
           scale(0.25);
           rotate(radians(180));
-    //      fill(255,int(random(255)));
-    //      triangle(0,0,x1,y1,x2,y2);
-    //      fill(255,int(random(255)));
-    //      triangle(0,0,x2,y2,x3,y3);
-    //      fill(255,int(random(255)));
-    //      triangle(0,0,x3,y3,x1,y1);
+  //      fill(255,int(random(255)));
+  //      triangle(0,0,x1,y1,x2,y2);
+  //      fill(255,int(random(255)));
+  //      triangle(0,0,x2,y2,x3,y3);
+  //      fill(255,int(random(255)));
+  //      triangle(0,0,x3,y3,x1,y1);
           fill(255,int(random(255)));
           triangle(x1,y1,x2,y2,x3,y3);
           noFill();
@@ -307,6 +319,7 @@ class Trixel {
             body.reset();
             if(id == 2) {
               id = 0;
+              isGame = true;
               gameState = "GameLevel";
               gameDialog = "Level";  
               activeGame();
@@ -352,10 +365,12 @@ class Trixel {
          
     } //end switch
 
-    
     trixTimerChange();
-    
+
     popMatrix();
+    
+    
+    
 
   } //end draw
 
@@ -447,10 +462,7 @@ class Trixel {
       
     }
     
-    changeTime = 10 + int(random(50-microfone, 100-microfone*2))*int(random(10-microfone/100));
-    if(changeTime<0) {
-      changeTime = 10;
-    }
+    changeTime = 50 + int(random(100-microfone, 200-microfone*2))*int(random(10-microfone/100));
     changeTrix = 0;
     //pebug("changeTime: " + changeTime);
   }
