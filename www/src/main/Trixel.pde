@@ -201,7 +201,7 @@ class Trixel {
       break;
       
       case "Start":
-        if(gameState == "GameStart" && initAlpha == 255 && initStroke == 1){
+        if(gameState == "GameStart" && initAlpha == 100 && initStroke == 1){
           trixelState = "Active";    
         }
       break;

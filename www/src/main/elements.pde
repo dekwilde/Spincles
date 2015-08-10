@@ -312,6 +312,7 @@ class TrixelEffect {
   TrixelEffect() {
     
   }
+  //init
   void draw0() {
     noFill();
     stroke(255);
