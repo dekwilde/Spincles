@@ -179,17 +179,21 @@ class Trixel {
     } else {
       initAlpha = 100;
     }
+    
+    
 
-
+    /*
     if (initStroke>1) {
       initStroke = rad - round(tw33n(0, rad, 20000));  
     } else {
       initStroke = 1;
     }
+    */
     
     
     stroke(255, initAlpha);
-    strokeWeight(initStroke);
+    //strokeWeight(initStroke);
+    strokeWeight(1);
     noFill();
     triangle(x1,y1,x2,y2,x3,y3); 
     strokeWeight(0.1);
@@ -201,7 +205,8 @@ class Trixel {
       break;
       
       case "Start":
-        if(gameState == "GameStart" && initAlpha == 100 && initStroke == 1){
+        if(gameState == "GameStart" && initAlpha == 100){
+          type = 0;
           trixelState = "Active";    
         }
       break;
@@ -306,7 +311,12 @@ class Trixel {
           
           if(type == 0) { //energy
            
-            energy = energy + 2;
+            if(level == 0) {
+              energy = energy + 2;  
+            } else {
+              energy = energy + 4;  
+            }
+            
             score = score + 1;
             saveScore();
             pebug("energy " + energy);
@@ -441,26 +451,23 @@ class Trixel {
       trixelState = "Null";  
     } else {
       trixelState = "Active";
+           
+      if(type != rangeTrixType) {
+        if(type>0 && level == 0) {
+          type = rangeTrixType;  
+        }
+        
+        if(type>1 && level == 1) {
+          type = rangeTrixType;  
+        }
+        
+        if(type>2 && level == 2) {
+          type = rangeTrixType;  
+        }
+        
+      }
     }
-    
-    if(type != rangeTrixType) {
-      if(type>0 && level == 0) {
-        type = rangeTrixType;  
-      }
-      
-      if(type>1 && level == 1) {
-        type = rangeTrixType;  
-      }
-      
-      if(type>2 && level == 2) {
-        type = rangeTrixType;  
-      }
-      
-      if(type>3 && level == 3) {
-        type = rangeTrixType;  
-      }
-      
-    }
+
     
     changeTime = 50 + int(random(100-microfone, 200-microfone*2))*int(random(10-microfone/100));
     changeTrix = 0;

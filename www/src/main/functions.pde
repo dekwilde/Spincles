@@ -35,7 +35,7 @@ void clawTouchStart() {
     
   
   //pebug("hurt " + hurtTimer);
-  if(hurtTimer>100) {
+  if(hurtTimer>10*hurtTimer && hurtTimer<11*hurtTimer) {
     bover = false;
     locked = true;
     energy = energy - 2;
@@ -44,13 +44,13 @@ void clawTouchStart() {
     //hurt();
     //trixBAD.num = 0;
   }
-  if(hurtTimer>120) {
+  if(hurtTimer>200) {
     gameState = "NoTouch";
   }
 }
 
 void clawTouchStop() {
-  
+  hurtRange = 0;
   hurtTimer -= 1;
   soundTouchTimer.volume(hurtTimer/100);
   if(hurtTimer<0) {

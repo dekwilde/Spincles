@@ -70,7 +70,8 @@ class Spring2D {
           clawTouchStart();
         } 
      } else {      
-        bover = false;
+       locked = false; 
+       bover = false;
         clawTouchStop();
      }
   }

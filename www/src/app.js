@@ -1,26 +1,4 @@
 var activePage;
-///////////////////////////////////////// MOBILE OR DESKTOP ///////////////////////////////////////////////// 
-var isMobile = {
-    Android: function() {
-        return navigator.userAgent.match(/Android/i);
-    },
-    BlackBerry: function() {
-        return navigator.userAgent.match(/BlackBerry/i);
-    },
-    iOS: function() {
-        return navigator.userAgent.match(/iPhone|iPad|iPod/i);
-    },
-    Opera: function() {
-        return navigator.userAgent.match(/Opera Mini/i);
-    },
-    Windows: function() {
-        return navigator.userAgent.match(/IEMobile/i);
-    },
-    any: function() {
-        return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
-    }
-};
-
 	
 ///////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////   
 function showPageLoadingMsg(th, txt) {
@@ -138,12 +116,29 @@ var soundMagnetic,
 	});
 	soundLoopBG 	= new Howl({
 		urls: [baseURL+'loop1.mp3', baseURL+'loop1.ogg', baseURL+'loop1.wav'],
-	  	loop: true
+	  	loop: true,
+		onend: function() {
+			if(soundLoopBG.volume() != 0) {
+				console.log('soundLoopBG loop');
+				soundLoopBG.play();	
+			} else {
+				console.log('soundLoopBG stop');
+			}
+		}
 	});
 	soundStart 		= new Howl({
 		urls: [baseURL+'loopstart.mp3', baseURL+'loopstart.ogg', baseURL+'loopstart.wav'],
 		loop: true,
-	  	volume: 0.6
+		volume: 0.5,
+		onend: function() {   
+			if(soundStart.volume() != 0) {
+				console.log('soundStart loop');
+				soundStart.play();	
+			} else {
+				console.log('soundStart stop');
+			}
+			
+		}
 	});
         
 

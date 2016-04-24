@@ -8,7 +8,6 @@ void stateSetup() {
   pebug("build 3");
   pebug("width: " + scW + " " + "height: " + scH);
   size(scW, scH, P2D);
-
   
   //rectMode(CENTER_RADIUS);
   rectMode(CORNER);
@@ -77,13 +76,17 @@ void stateSetup() {
   
   pebug("4 - Start sequence: main.pde setup()");
   
+  startMic();
+  
   gameState = "Start";
   gameEnemy = "Null";
   gameTransions = "Static";
   gameSound = "Intro";
   gameDialog = "Setup";
 
+  
   hidePageLoadingMsg();
+  requestFullScreen();
  
 }
 
@@ -113,7 +116,10 @@ void stateStart() {
 
   logo.draw(Talign);
   control.draw();
-  btStart.draw();
+  
+  if(microfone>0) {
+    btStart.draw();
+  }
   
   
 }
