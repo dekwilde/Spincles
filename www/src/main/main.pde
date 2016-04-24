@@ -126,7 +126,7 @@ float pInfo = height;
 
 // Transitions
 
-String gameState, gameEnemy, gameTransions, gameSound, gameDialog;
+String gameState, gameEnemy, gameTransions, gameDialog;
 
 void setup() {  
   stateSetup();   
@@ -277,33 +277,6 @@ void draw() {
     
   } //end switch
   
-  
-  switch( gameSound ) {      
-    case "Null":
-      //
-    break;
-    case "Intro":
-
-      soundStart.stop();
-      soundStart.play();
-      //soundStart.loop(true);
-      gameSound = "Null";
-    break;
-    
-    case "Start":
-      //soundStartUP.play();
-      gameSound = "Null";
-    break;
-
-    case "Game": 
-      soundStart.volume(0);
-      soundLoopBG.stop();
-      soundLoopBG.play();
-      soundLoopBG.loop(true);
-      gameSound = "Null";
-    break;
-    
-  }
   
   switch( gameDialog ) {      
     case "Null":

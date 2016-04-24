@@ -1,5 +1,5 @@
 void pebug(String m) {
-  //println(m);
+  println(m);
 }
 
 
@@ -104,9 +104,13 @@ void startGame() {
     gameTransions = "Flash";
     loadScore();
     resetGame();
+    
+    soundStart.volume(0);
+    soundLoopBG.play();
+    soundLoopBG.loop(true);
+    
     gameState = "GameStart";
     //gameTransions = "Flash";
-    gameSound = "Game";
     gameDialog = "Start";
 }
 void resetGame() {
@@ -117,9 +121,9 @@ void resetGame() {
 }
 void againGame() {
     resetGame();
+    //startMic();
     gameState = "GameLevel";
     //gameTransions = "Flash";
-    gameSound = "Game";
     gameDialog = "Start";
 }
 

@@ -81,8 +81,10 @@ void stateSetup() {
   gameState = "Start";
   gameEnemy = "Null";
   gameTransions = "Static";
-  gameSound = "Intro";
   gameDialog = "Setup";
+  
+  soundStart.stop();
+  soundStart.play();
 
   
   hidePageLoadingMsg();
@@ -92,6 +94,7 @@ void stateSetup() {
 
 
 void stateStart() {
+  
   //acce();
   mic();
   //compass();
@@ -125,6 +128,7 @@ void stateStart() {
 }
 
 void stateOver() {
+    
   int Talign = -240;
   fill(0, 3);
   noStroke();

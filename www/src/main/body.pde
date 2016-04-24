@@ -44,7 +44,7 @@ class Tbody {
     PVector  v2 = new PVector(x, y); 
     float d = v1.dist(v2);
     
-    rotationT = rotationT + noise(pi/500)*((d*easing)/50) - microfone/200;
+    rotationT = rotationT + cos(pi/(100-microfone))*0.1 - sin((d*easing)/100);
     
     pushMatrix();
     translate(x, y);
