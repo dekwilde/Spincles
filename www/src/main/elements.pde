@@ -439,15 +439,20 @@ class TrixParticle {
     }
     for(int i=0; i < particles.size(); i++){
       Particle p = (Particle) particles.get(i);
+
       p.draw();
       //p.gravity();
       p.display();
       //p.conect();
       p.collision(cx,cy);
-      p.dead();
       if(p.death){
+        if(p.collision){
+          infect();
+        }
         particles.remove(i);
+        
       }
+      p.dead();
     }
   }
   
@@ -470,6 +475,7 @@ class Particle{
   float elastic = 0.8;
   int life =0, lifeTime = 50+int(random(150));
   boolean death = false;
+  boolean collision = false;
   String tp;
   
   Trix trix;
@@ -484,7 +490,7 @@ class Particle{
     initY = posY;
     initAlpha = 0;
     speedActive = 2 + random(5);
-    r = random(360);
+    r = 10 + random(350);
     dg = random(-1, 1);
     sr = 1+random(10);
     if(tp == "magnetic") {
@@ -528,7 +534,7 @@ class Particle{
     fill(0,initAlpha);
     pushMatrix();
     translate(x,y);
-    r = r + dg*(sr);
+    r = r + dg*sr;
     rotate(radians(r));
     triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);
     popMatrix();
@@ -540,11 +546,11 @@ class Particle{
   }
   
   void collision(float cx, float cy) {
-    pebug(dist(x,y,initX,initY));
-    if(initAlpha>250 && dist(x,y,cx,cy)<diameter) {
-      pebug("collisioon");
+    //pebug(dist(x,y,initX,initY));
+    if(initAlpha>250 && dist(x,y,cx,cy)<diameter && !death) {
+      pebug("collision Particle");
       death = true;
-      hurt();
+      collision = true;    
     }
   }
   

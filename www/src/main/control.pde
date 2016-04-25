@@ -2,18 +2,19 @@ class Control {
 
   float gravity = sqrt(width*width+height*height)/10;
   float mass = 2.0;
-  int numSprings = 1;
-  Spring2D springs[] = new Spring2D[numSprings];
+  int numSprings = 0;
+  Spring2D springs[] = new Spring2D[maxSprings];
   float x, y;
   String mode = "chain";
   
-  Control() {
+  Control(int num) {
+    numSprings = num;
     gx = 0;
     gy = 0;
     x = width/2;
     y = height/2;
     for (int i=0; i<numSprings; i++) {
-      springs[i] = new Spring2D(0.0, width/2, mass, gravity);
+      springs[i] = new Spring2D(width/2, height/2, mass, gravity);
     }
   }
   
@@ -33,7 +34,7 @@ class Control {
       springs[i].move(x, y);
       springs[i].touch();
       //pebug display
-      //springs[i].display(x, y);
+      springs[i].display(x, y);
       x = springs[i].x;
       y = springs[i].y;
     }

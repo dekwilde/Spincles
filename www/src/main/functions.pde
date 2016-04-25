@@ -12,15 +12,67 @@ void tw33n(float start, float end, int time) {
   return a;
 }
 
+void contains([] a, int obj) {
+    var i = a.length;
+    while (i--) {
+       if (a[i] === obj) {
+           return i;
+       }
+    }
+    return false;
+}
 
 
 void hurt() {
   energy = energy - hurtLife;
+  
+  infectSegment = new float[0];
+  infectArm     = new float[0];
+  control = new Control(1);
+  
+  
   soundEnemy.play();
   gameTransions = "Static";
   hurtRange += hurtValue;
   body.reset();
+
   pebug("energy " + energy);
+}
+
+
+void infect() {
+  int rdArm = 1 + int(random(numOfArms)-1);
+  int rdSeg = 2 + int(random(numSegment-2));
+
+  if(infectArm.length < maxSprings) {
+    append(infectArm, rdArm);
+    append(infectSegment, rdSeg);
+    control = new Control(infectArm.length);  
+  }
+  pebug("infectArm " + infectArm);
+  pebug("infectSegment " + infectSegment); 
+}
+
+void gotch() {
+  if(level == 0) {
+    energy = energy + 2;  
+  } else {
+    energy = energy + 4;  
+  }
+  score = score + 1;
+  saveScore();
+  pebug("energy " + energy);
+  soundMagnetic.play();
+  soundScore.play();
+  gameTransions = "Yellowout";
+  gameDialog = "Score";
+  //trixGOOD.num = 0;
+  body.reset();
+  
+  infectSegment = new float[0];
+  infectArm     = new float[0];
+  control = new Control(1);
+  
 }
 
 void clawTouchStart() {
@@ -84,8 +136,8 @@ void drawBG() {
     rect(0,0,width,height);
   } else {
     effect = false;
-    background(colorR, colorG, colorB, alphaBG*2);
-    fill(colorR, colorG, colorB, 204);
+    background(colorR, colorG, colorB, 255);
+    fill(colorR, colorG, colorB, 255);
     noStroke();        
     rect(0,0,width,height);  
   }
@@ -121,7 +173,7 @@ void resetGame() {
 }
 void againGame() {
     resetGame();
-    //startMic();
+    startUserMediaMic();
     gameState = "GameLevel";
     //gameTransions = "Flash";
     gameDialog = "Start";

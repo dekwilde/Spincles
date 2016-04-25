@@ -40,7 +40,7 @@ void stateSetup() {
 
   pebug("Start sensor");
 
-  control = new Control();
+  control = new Control(1);
   btInfo = new ButtonInfo();
   btStart = new ButtonStart();
   btAgain = new ButtonAgain();
@@ -76,7 +76,7 @@ void stateSetup() {
   
   pebug("4 - Start sequence: main.pde setup()");
   
-  startMic();
+  startUserMediaMic();
   
   gameState = "Start";
   gameEnemy = "Null";

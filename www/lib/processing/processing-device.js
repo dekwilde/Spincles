@@ -335,7 +335,7 @@
 	window.AudioContext = window.AudioContext || window.webkitAudioContext;
 	navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 	var audioContext = new AudioContext();  
-   Pp.startMic = function() {
+	Pp.startUserMediaMic = function() {
 		if (navigator.getUserMedia) {
 			navigator.getUserMedia(
 				{audio:true, video:false}, 
@@ -347,7 +347,7 @@
 					mic.connect(javascriptNode);
 					javascriptNode.connect(audioContext.destination); 
 
-					console.log("micStart");
+					console.log("startUserMediaMic");
 					javascriptNode.onaudioprocess = function(event){
 
 						var inpt_L = event.inputBuffer.getChannelData(0);
@@ -373,7 +373,7 @@
 				mMedia.miclevel = micLevelPluginPhoneGap; 
 			},100);
 		}
-  }
+	}
 
 
 

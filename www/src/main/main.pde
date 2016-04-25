@@ -31,7 +31,7 @@ float endEscala;
 float speedEscala = 10;
 float trixScale = 8.0;
 
-float microfone = 0;
+float microfone = 0.0f;
 float mic_perc = 50; // 0 a 100
 String micText;
 
@@ -42,6 +42,7 @@ PGraphics pimg;
 int dim = 1300;
 
 Control control;
+int maxSprings = 6;
 
 Tbody body;
 TrixelMatrix trixelmatrix;
@@ -73,6 +74,9 @@ float [] angleSpeed = new float[numOfArms];
 float [] angle = new float[numOfArms];
 float [] WeightSegment = new float[numOfArms];
 float [] segLength = new float[numOfArms];
+
+float [] infectSegment = new float[0];
+float [] infectArm     = new float[0];
 
 
 

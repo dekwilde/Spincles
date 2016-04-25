@@ -219,7 +219,7 @@ class Trixel {
             if(tweenAlpha>0) {
               tweenAlpha = tweenAlpha - 5;
               noStroke();
-              fill(0,tweenAlpha);
+              fill(255,tweenAlpha);
               triangle(x1,y1,x2,y2,x3,y3);
             } else {
               tweenAlpha = 0;
@@ -241,7 +241,7 @@ class Trixel {
             if(tweenAlpha>0) {
               tweenAlpha = tweenAlpha - 5;
               noStroke();
-              fill(0,tweenAlpha);
+              fill(255,tweenAlpha);
               triangle(x1,y1,x2,y2,x3,y3);
             } else {
               tweenAlpha = 0;
@@ -310,32 +310,16 @@ class Trixel {
           }          
           
           if(type == 0) { //energy
-           
-            if(level == 0) {
-              energy = energy + 2;  
-            } else {
-              energy = energy + 4;  
-            }
-            
-            score = score + 1;
-            saveScore();
-            pebug("energy " + energy);
-            soundMagnetic.play();
-            soundScore.play();
-            gameTransions = "Yellowout";
-            gameDialog = "Score";
+            gotch();
             collisionTrix();
-            //trixGOOD.num = 0;
-            body.reset();
             if(id == 2) {
               id = 0;
               isGame = true;
               gameState = "GameLevel";
               gameDialog = "Level";  
               activeGame();
-            }
+            } 
           }
-          
           
         } else {
           hurtRange -= hurtRange*0.01;

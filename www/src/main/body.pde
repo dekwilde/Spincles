@@ -1,9 +1,8 @@
 class Tbody {
  
   int pi = 0;
-  float x, y;  
-  Arm arms;  
-   
+  float x, y;
+  Arm arms;
   Tbody() {
     reset();  
   }
@@ -54,9 +53,9 @@ class Tbody {
     //fill(255,0,0);
     //rect(0,0,50,50);
     
-    for(int i=0; i<numOfArms; i++) {
+    for(int i=0; i<numOfArms; i++) {   
       radius = angleRadius[i] * sin(angle[i]);
-      arms = new Arm(radius, WeightSegment[i]+WeightSegmentTouch, segLength[i]);
+      arms = new Arm(radius, WeightSegment[i]+WeightSegmentTouch, segLength[i], i);
       rotate(radians(rotation[i]));
     }
     
@@ -70,28 +69,36 @@ class Tbody {
 
 
 class Arm {
-  
-  Arm(float angleSeg, float WeightSeg, float LengthSeg) {   
+  Trix trix = new Trix(50);
+  Arm(float angleSeg, float WeightSeg, float LengthSeg, int ArmNum) {   
       pushMatrix();
+            
       for(int i=0; i<numSegment; i++) {
-        if(i>0) {
-          draw(LengthSeg, 0, angleSeg*angleSegment[i]-(microfone/50)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg);
+        if(i>0) {          
+          draw(LengthSeg, 0, angleSeg*angleSegment[i]-(microfone/50)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg, i, ArmNum);
         } else {
-          draw(0, 0,         angleSeg*angleSegment[i]-(microfone/50)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg); 
+          draw(0, 0,         angleSeg*angleSegment[i]-(microfone/50)+angleRadiusTouch, ((numSegment+1)*WeightSeg)-i*WeightSeg, LengthSeg, i, ArmNum); 
         }
       }
       popMatrix();
   }
   
-  void draw(float x, float y, float a, float Weight, float LengthSeg) {
+  void draw(float x, float y, float a, float Weight, float LengthSeg, int SegNum, int ArmNum) {
       translate(x, y);
       rotate(a);
       strokeWeight(Weight/SegWeightPor);
       stroke(0, 90);
       line(0, 0, LengthSeg, 0);
-      fill(255);
+      
       noStroke();
+      //pebug("contains " + contains(infectArm, ArmNum));
+      if(contains(infectArm, ArmNum) && SegNum == infectSegment[contains(infectArm, ArmNum)]) {
+        fill(0);
+        triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);  
+      }
+      fill(255);
       ellipse(0,0,2,2);
+      
   } 
 }
 

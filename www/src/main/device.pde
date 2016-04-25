@@ -304,9 +304,17 @@ void acce() {
   }
 
 }
+float micCheck = 0.0f;
 void mic() {
-  microfone = media.miclevel*mic_perc; // 0 a 100
-  pebug("Mic: " + microfone);
+  microfone = media.miclevel*mic_perc; // 0 a 100 
+  /* 
+  if(microfone != null && micCheck == microfone && microfone != 0 && microfone != Float.NaN ) {
+    //startUserMediaMic();
+    pebug("micCheck startUserMediaMic");
+  }
+  */
+  micCheck = microfone;
+  //pebug("Mic: " + microfone);
 }
 
 
