@@ -35,8 +35,14 @@ class TrixelMatrix {
     rotate(r);
     translate(-width/2,-height/2); //new line before implementation
     
-    float nX = mx*(microfone/50 + 1) - width/2;
-    float nY = my*(microfone/50 + 1) - height/2;
+    if(infectArm.length>2) {
+      float nX = 0;
+      float nY = 0;   
+    } else {
+      float nX = mx*(microfone/50 + 1) - width/2;
+      float nY = my*(microfone/50 + 1) - height/2;      
+    }
+
     
     for (int i = 0; i < count; i++) {
       trixel[i].draw(nX,nY);

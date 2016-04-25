@@ -16,7 +16,7 @@ void contains([] a, int obj) {
     var i = a.length;
     while (i--) {
        if (a[i] === obj) {
-           return i;
+           return obj;
        }
     }
     return false;
@@ -41,6 +41,9 @@ void hurt() {
 
 
 void infect() {
+  collisionParticleX = spinX;
+  collisionParticleY = spinY;
+  
   int rdArm = 1 + int(random(numOfArms)-1);
   int rdSeg = 2 + int(random(numSegment-2));
 

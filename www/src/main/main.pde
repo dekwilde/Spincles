@@ -43,6 +43,8 @@ int dim = 1300;
 
 Control control;
 int maxSprings = 6;
+float collisionParticleX = 0;
+float collisionParticleY = 0;
 
 Tbody body;
 TrixelMatrix trixelmatrix;

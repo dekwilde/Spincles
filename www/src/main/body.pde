@@ -92,8 +92,8 @@ class Arm {
       
       noStroke();
       //pebug("contains " + contains(infectArm, ArmNum));
-      if(contains(infectArm, ArmNum) && SegNum == infectSegment[contains(infectArm, ArmNum)]) {
-        fill(0);
+      if(contains(infectArm, ArmNum) && contains(infectSegment, SegNum)) {
+        fill(0, int(random(2))*100);
         triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);  
       }
       fill(255);

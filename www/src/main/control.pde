@@ -3,29 +3,51 @@ class Control {
   float gravity = sqrt(width*width+height*height)/10;
   float mass = 2.0;
   int numSprings = 0;
+  boolean displayEnable = false;
   Spring2D springs[] = new Spring2D[maxSprings];
-  float x, y;
+  float x =0 , y = 0;
   String mode = "chain";
+  Trix trix = new Trix(rad/5);
   
   Control(int num) {
     numSprings = num;
     gx = 0;
     gy = 0;
-    x = width/2;
-    y = height/2;
     for (int i=0; i<numSprings; i++) {
-      springs[i] = new Spring2D(width/2, height/2, mass, gravity);
+      if(infectArm.length>2){
+        springs[i] = new Spring2D(collisionParticleX, collisionParticleY, mass, gravity);
+      } else {
+        springs[i] = new Spring2D(width/2, height/2, mass, gravity);
+      }
     }
   }
   
-  void draw() 
-  {
+  void draw() {
+    if(infectArm.length>2) {
+      displayEnable = true;
+      
+      pushMatrix();
+      translate(collisionParticleX, collisionParticleY);
+      rotate(radians(random(360)));
+      fill(0);
+      triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);
+      popMatrix();
+        
+    } else {
+      displayEnable = false;
+    }
+    
     gx = gravityX;
     gy = gravityY;
     for (int i=0; i<numSprings; i++) {
       if (i==0) {
-        x = width/2;
-        y = height/2;
+        if(infectArm.length>2){
+          x = collisionParticleX;
+          y = collisionParticleY;
+        } else {
+          x = width/2;
+          y = height/2;
+        }
       } else {
         x = springs[i-1].x;
         y = springs[i-1].y;
@@ -34,7 +56,10 @@ class Control {
       springs[i].move(x, y);
       springs[i].touch();
       //pebug display
-      springs[i].display(x, y);
+      if(displayEnable) {
+        springs[i].display(x, y);        
+      }
+
       x = springs[i].x;
       y = springs[i].y;
     }
@@ -126,10 +151,11 @@ class Spring2D {
     
   }
   
-  void display(float nx, float ny) {
-    stroke(255,0,0);
-    strokeWeight(1);
-    ellipse(x, y, radius*2, radius*2);
+  void display(float nx, float ny) {    
+    stroke(0);
+    strokeWeight(2);
+    fill(0);
+    ellipse(x, y, radius, radius);
     line(x, y, nx, ny);
   }
 }
