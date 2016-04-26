@@ -367,11 +367,16 @@
 				},
 				function(e){ console.log(e); }
 			);
-		} 
-		else {   
-	       setInterval(function() {
-				mMedia.miclevel = micLevelPluginPhoneGap; 
-			},100);
+		} else {   
+			setInterval(function() {
+				if(isMobile.iOS()) {
+					mMedia.miclevel = 0.1*Math.random(); 
+				} else {
+					mMedia.miclevel = micLevelPluginPhoneGap;
+					 
+				}
+				
+			},200);
 		}
 	}
 
