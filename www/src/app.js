@@ -153,7 +153,7 @@ var phonegap = false;
 // SOCIAL SHARE
 function socialShare(msg, sub, img, url) {
 	if(phonegap) {
-		window.plugins.socialsharing.share(msg, sub, img, url);	
+		//window.plugins.socialsharing.share(msg, sub, img, url);	
 	} else {
 		alert("Use the native App to enable it.");
 	}

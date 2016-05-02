@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="br.com.dekwilde.Spincles" version="2.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="br.com.dekwilde.Spincles" version="2.4.9" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Spincles</name>
     <description>
        	Glitch Game
     </description>
-    <author email="spincles@dekwilde.com.br" href="http://spincles.dekwilde.com.br">
+    <author email="dekwilde@gmail.com" href="https://www.dekwilde.com.br/spincles">
         Daniel Emiliano Klan Wilde
     </author>
     
@@ -12,7 +12,7 @@
     <access origin="*" />
 
     <gap:config-file platform="ios" parent="CFBundleShortVersionString">
-    <string>210</string>
+    <string>249</string>
     </gap:config-file>
 
     
@@ -33,7 +33,7 @@
     <preference name="exit-on-suspend" value="false" />
     <preference name="show-splash-screen-spinner" value="true" />
     <preference name="disable-cursor" value="true" />
-    <preference name="android-minSdkVersion" value="7" />
+    <preference name="android-minSdkVersion" value="14" />
     <preference name="android-installLocation" value="auto" />
 
 
@@ -58,7 +58,6 @@
 	<gap:plugin name="org.apache.cordova.statusbar" />  
 
     <gap:plugin name="br.com.dekwilde.micvolume" />
-	<gap:plugin name="nl.x-services.plugins.socialsharing" source="plugins.cordova.io" />
 	<gap:plugin name="uk.co.ilee.gamecenter" /> 
 	
 	
