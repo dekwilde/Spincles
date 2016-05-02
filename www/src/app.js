@@ -122,6 +122,7 @@ var soundMagnetic,
 				console.log('soundLoopBG loop');
 				soundLoopBG.play();	
 			} else {
+				soundLoopBG.stop();
 				console.log('soundLoopBG stop');
 			}
 		}
@@ -135,6 +136,7 @@ var soundMagnetic,
 				console.log('soundStart loop');
 				soundStart.play();	
 			} else {
+				soundStart.stop();
 				console.log('soundStart stop');
 			}
 			
@@ -194,10 +196,10 @@ function showGameCenter() {
 	}
 }
 function loginGameCenter() {
-	if(phonegap) {
+	if(phonegap && !isMobile.Android()) {
 		gamecenter.auth(gamecenterSuccess, gamecenterFailure);
 	} else {
-		alert("Use the native App to enable it.");
+		//
 	}
 }
 

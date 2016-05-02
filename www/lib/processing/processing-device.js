@@ -333,21 +333,21 @@
 	var old_level_L = 0;
 	var mMedia = mobile.media; 
 	window.AudioContext = window.AudioContext || window.webkitAudioContext;
-	navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 	var audioContext = new AudioContext();  
 	Pp.startUserMediaMic = function() {
 		if (navigator.getUserMedia) {
 			navigator.getUserMedia(
 				{audio:true, video:false}, 
 				function(stream){    
-
+					console.log("startUserMediaMic");
 
 					var mic = audioContext.createMediaStreamSource(stream);
 					var javascriptNode = audioContext.createScriptProcessor(256, 1, 1);
 					mic.connect(javascriptNode);
 					javascriptNode.connect(audioContext.destination); 
 
-					console.log("startUserMediaMic");
+					
 					javascriptNode.onaudioprocess = function(event){
 
 						var inpt_L = event.inputBuffer.getChannelData(0);
@@ -369,13 +369,12 @@
 			);
 		} else {   
 			setInterval(function() {
-				if(isMobile.iOS()) {
+				if(!phonegap && isMobile.iOS()) {
 					mMedia.miclevel = 0.1*Math.random(); 
 				} else {
 					mMedia.miclevel = micLevelPluginPhoneGap;
 					 
 				}
-				
 			},200);
 		}
 	}

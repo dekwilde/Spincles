@@ -1,5 +1,5 @@
 void pebug(String m) {
-  println(m);
+  //println(m);
 }
 
 
@@ -160,7 +160,8 @@ void startGame() {
     loadScore();
     resetGame();
     
-    soundStart.volume(0);
+    soundStart.stop();
+	soundStart.volume(0);
     soundLoopBG.play();
     soundLoopBG.loop(true);
     
