@@ -50,6 +50,7 @@ void infect() {
   if(infectArm.length < maxSprings) {
     append(infectArm, rdArm);
     append(infectSegment, rdSeg);
+    
     control = new Control(infectArm.length);  
   }
   pebug("infectArm " + infectArm);
@@ -58,9 +59,9 @@ void infect() {
 
 void gotch() {
   if(level == 0) {
-    energy = energy + 2;  
-  } else {
     energy = energy + 4;  
+  } else {
+    energy = energy + 2;  
   }
   score = score + 1;
   saveScore();
@@ -74,18 +75,15 @@ void gotch() {
   
   infectSegment = new float[0];
   infectArm     = new float[0];
-  control = new Control(1);
+  if(control.numSprings != 1) {
+    control = new Control(1);
+  }
   
 }
 
 void clawTouchStart() {
-  soundTouchTimer.volume(hurtTimer/100);
-  
-  if(hurtTimer<1) {
-    soundTouchTimer.play();
-    soundTouchTimer.loop(true);
-  }
-  
+  soundTouchTimer.volume((hurtTimer/100) + 0.01);
+    
   hurtTimer += 4;
     
   
@@ -94,7 +92,6 @@ void clawTouchStart() {
     bover = false;
     locked = true;
     energy = energy - 2;
-    soundGlitch.play();
     hurtRange += hurtValue;
     //hurt();
     //trixBAD.num = 0;
@@ -107,10 +104,9 @@ void clawTouchStart() {
 void clawTouchStop() {
   hurtRange = 0;
   hurtTimer -= 1;
-  soundTouchTimer.volume(hurtTimer/100);
+  soundTouchTimer.volume(hurtTimer/100 + 0.01);
   if(hurtTimer<0) {
     hurtTimer = 0;
-    soundTouchTimer.stop();
   }
   //pebug("hurt " + hurtTimer);
 }
@@ -164,6 +160,11 @@ void startGame() {
 	soundStart.volume(0);
     soundLoopBG.play();
     soundLoopBG.loop(true);
+
+	soundTouchTimer.play();
+    soundTouchTimer.loop(true);
+	soundTouchTimer.volume(0.01);
+
     
     gameState = "GameStart";
     //gameTransions = "Flash";
@@ -177,7 +178,6 @@ void resetGame() {
 }
 void againGame() {
     resetGame();
-    startUserMediaMic();
     gameState = "GameLevel";
     //gameTransions = "Flash";
     gameDialog = "Start";

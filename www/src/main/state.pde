@@ -75,9 +75,7 @@ void stateSetup() {
   //video = loadImage("cam.png");
   
   pebug("4 - Start sequence: main.pde setup()");
-  
-  startUserMediaMic();
-  
+   
   gameState = "Start";
   gameEnemy = "Null";
   gameTransions = "Static";
@@ -88,7 +86,9 @@ void stateSetup() {
 
   
   hidePageLoadingMsg();
-  requestFullScreen();
+  requestFullScreen();  
+
+  startUserMediaMic();  
  
 }
 
@@ -217,7 +217,7 @@ void stateHow() {
       btClose.draw(255);
   }
   pInfo = pInfo - pInfo/6;
-  soundTouchTimer.volume(0.0);
+  soundTouchTimer.volume(0.01);
 }
 
 
@@ -306,7 +306,62 @@ void stateGameLevel() {
  
   body.draw();
   btInfo.draw();
-  scoreInfo.draw();  
+  scoreInfo.draw(); 
+   
+  if(energy > 100) {
+      levelUp();
+  }
+   
+  if(energy < 0) {
+      gameOver();
+  }
+  
+  
+  if(energy>=30) {
+    numSegment = 4;
+    numOfArms = 10;  
+    WeightSegmentTouch = random(hurtTimer/10);
+    angleSpeedTouch =   - random(hurtTimer/100);
+    angleRadiusTouch =  - random(hurtTimer/100);
+    speed = 20;
+  }         
+  else if(energy>20 && energy<29) {
+    numSegment = 3;
+    numOfArms = 8;
+    WeightSegmentTouch = random(1.0, 3.0 + hurtTimer/50);
+    angleSpeedTouch =  - random(hurtTimer/100);
+    angleRadiusTouch = - random(hurtTimer/100);
+    speed = 40;
+  
+  } 
+  else if(energy>10 && energy<19) {
+    numSegment = 2;
+    numOfArms = 5;
+    WeightSegmentTouch = random(3.0, 6.0 + hurtTimer/20);
+    angleSpeedTouch =  - random(hurtTimer/100);
+    angleRadiusTouch = - random(hurtTimer/100);
+    speed = 80;
+  }
+  else if(energy>1 && energy<9) {
+    numSegment = 1;
+    numOfArms = 3;  
+    WeightSegmentTouch = random(12.0, 16.0 + hurtTimer/10);
+    angleSpeedTouch =  - random(0.05, 0.1);
+    angleRadiusTouch =  - random(-3.0, 3.0);
+    speed = 120;
+  }
+  
+  if(WeightSegmentTouch>20) {
+    WeightSegmentTouch = 20;
+  }
+  if(angleSpeedTouch>5) {
+    angleSpeedTouch = 5;
+  }
+  if(angleRadiusTouch>3) {
+    angleRadiusTouch = 3;
+  }
+
+
  
 }
 

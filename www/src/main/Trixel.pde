@@ -66,7 +66,7 @@ class TrixelMatrix {
   void reset() {
     for (int i = 0; i < count; i++) {
       trixel[i].type = rangeTrixType;
-      trixel[i].changeTrix = 0;
+      trixel[i].loopTrixInit = millis();
       trixel[i].changeTime = 0;
     } 
   }
@@ -84,9 +84,10 @@ class Trixel {
   int id;
 
   int type;
-  int changeTrix = 0;
+  float loopTrix = 0.0f; 
+  float loopTrixInit = millis();
   int changeTime = 10000;
-  int changeActive = 30;
+  int changeActive = loopTrixSpeed/30;
   String trixelState;
   float initAlpha = 0.0;
   float initStroke = rad;
@@ -150,8 +151,8 @@ class Trixel {
     
   void draw(float spX, float spY) {
     
-    x -= spX/20;
-    y -= spY/20;
+    x -= spX/100;
+    y -= spY/100;
     
     if(x>width+s) {
       x = x - s*wCount;
@@ -436,6 +437,8 @@ class Trixel {
     enemyDraw = false;
     tweenAlpha = 255;
     type = int(random(rangeTrixType));
+    changeTime = 10 + int(random(100-microfone, 200-microfone*2))*int(random(5-microfone/200));
+    loopTrixInit = millis();
     
     if(type>3) {
       trixelState = "Null";  
@@ -458,26 +461,23 @@ class Trixel {
       }
     }
 
-    
-    changeTime = 50 + int(random(100-microfone, 200-microfone*2))*int(random(10-microfone/100));
-    changeTrix = 0;
     //pebug("changeTime: " + changeTime);
   }
-  
+ 
   void collisionTrix() {
     trixelState = "Null";
     type = rangeTrixType; 
     changeTime = 0;
-    changeTrix = 0;
+    loopTrixInit = millis();
   }
   
   void trixTimerChange() {
     //change Trix
-    changeTrix = changeTrix + 1;
-    if(changeTrix>changeTime) { //warnning
+    loopTrix = (millis() - loopTrixInit)/loopTrixSpeed;
+    if(loopTrix>changeTime) { //warnning
       
-      int fl = floor((changeTrix-changeTime)*(128/changeActive));
-      float st = ((changeTrix-changeTime)*(150/changeActive))/100;
+      int fl = floor((loopTrix-changeTime)*(128/changeActive));
+      float st = ((loopTrix-changeTime)*(150/changeActive))/100;
       if(st>1.0) {
         st = 1.0;
         fl = int(random(255));
@@ -492,7 +492,7 @@ class Trixel {
         scale(1);
       }
       
-      if(changeTrix>changeTime+changeActive) { //actived
+      if(loopTrix>changeTime+changeActive) { //actived
         resetTrix();
       }
             

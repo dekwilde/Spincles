@@ -30,6 +30,8 @@ float startEscala;
 float endEscala;
 float speedEscala = 10;
 float trixScale = 8.0;
+float speed = 20;
+int loopTrixSpeed = 300;
 
 float microfone = 0.0f;
 float mic_perc = 50; // 0 a 100
@@ -48,6 +50,7 @@ float collisionParticleY = 0;
 
 Tbody body;
 TrixelMatrix trixelmatrix;
+
 
 int scW = screen.width;
 int scH = screen.height;
