@@ -33,7 +33,7 @@ void stateSetup() {
     hCount = 2;     
   }
   endEscala = (scW*0.2)/100;
-  iScale = 0;
+  iScale = 0.0;
   rad = scW * 0.6;
   
   pebug("wCount: " + wCount + ", hCount: " + hCount);
@@ -119,11 +119,8 @@ void stateStart() {
 
   logo.draw(Talign);
   control.draw();
-  
-  if(microfone>0) {
-    btStart.draw();
-  }
-  
+
+  btStart.draw();
   
 }
 
