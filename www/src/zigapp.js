@@ -1,7 +1,7 @@
 var zigCursorX = 0, zigCursorY = 0;
 var zigScale = 0, zigDegrees = 0;
 var zigPush = false, zigDrag = false;
-var zigDevice = false;
+var zigDevice = true;
 // zig.js main closure 
 //(function(){     
 
@@ -410,9 +410,9 @@ var zigDevice = false;
 		}
 		if(!zig.sensorConnected) {
 			$("#zig").hide();  
-			/*
-			var loopMouseDEBUG = setInterval(loopMouseDEBUG, 10); 
-		    function loopMouseDEBUG() {
+			
+			var loopMouseDEBUG = setInterval(onLoopMouseDEBUG, 10); 
+		    function onLoopMouseDEBUG() {
 				zigCursorX += (zigX - zigCursorX) / delayRate;
 			   	zigCursorY += (zigY - zigCursorY) / delayRate;
 				cd.style.left = zigCursorX + "px"; 
@@ -443,7 +443,7 @@ var zigDevice = false;
 			});
 			enableLoop();
 			userEngage();  
-			*/  		
+					
 		} else {
 			$("#zig").show(); 
 			console.log("Browser plugin installed: " + zig.pluginInstalled);
