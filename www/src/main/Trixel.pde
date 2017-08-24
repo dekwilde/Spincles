@@ -169,7 +169,6 @@ class Trixel {
     collisionX = mx - x;
     collisionY = my - y;
 
-
     pushMatrix();
     translate(x, y); 
     if(v == 1 || v == 3) {
@@ -183,13 +182,6 @@ class Trixel {
       initAlpha = 100;
     }
     
-    /*
-    if (initStroke>1) {
-      initStroke = rad - round(tw33n(0, rad, 20000));  
-    } else {
-      initStroke = 1;
-    }
-    */
     
     stroke(255, initAlpha);
     //strokeWeight(initStroke);
