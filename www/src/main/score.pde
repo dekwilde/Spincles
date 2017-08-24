@@ -1,15 +1,13 @@
 int score = 0;
 int energy = 0;
-int level = 0;
+int level = 2;
 String scoreResult = "RECORD";
 int recordScore = 0;
 class ScoreInfo {
     int dw = 100;
     int dh = 10;
     float px,py;  
-    
-
-  
+   
     ScoreInfo() {
       //Setuo do botão 
     }
@@ -28,9 +26,7 @@ class ScoreInfo {
       textFont(fontText, 14);
       textAlign(RIGHT);
       text(score, px-5, py+10); 
-
     }
-
 }
 
 void levelUp() {
@@ -51,8 +47,8 @@ void clearScore() {
 }
 
 void loadScore() {
-      recordScore = int(loadStrings("record")) || 0;
-      level = int(loadStrings("level")) || 0;
+  recordScore = int(loadStrings("record")) || 0;
+  level = int(loadStrings("level")) || level;
 }
 
 void saveScore() {
@@ -65,7 +61,6 @@ void saveScore() {
     saveStrings("level",level);
   }
 }
-
 
 void setScore() {
     //First time score

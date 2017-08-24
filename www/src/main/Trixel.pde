@@ -43,12 +43,10 @@ class TrixelMatrix {
       float nY = my*(microfone/50 + 1) - height/2;      
     }
 
-    
     for (int i = 0; i < count; i++) {
       trixel[i].draw(nX,nY);
     }
-    
-    
+        
     //pebug display
     /*
     stroke(0,0,255);
@@ -71,8 +69,6 @@ class TrixelMatrix {
     } 
   }
 }
-
-
 
 class Trixel {
   Trix trix;
@@ -187,8 +183,6 @@ class Trixel {
       initAlpha = 100;
     }
     
-    
-
     /*
     if (initStroke>1) {
       initStroke = rad - round(tw33n(0, rad, 20000));  
@@ -197,14 +191,12 @@ class Trixel {
     }
     */
     
-    
     stroke(255, initAlpha);
     //strokeWeight(initStroke);
     strokeWeight(1);
     noFill();
     triangle(x1,y1,x2,y2,x3,y3); 
     strokeWeight(0.1);
-     
         
     switch( trixelState ) {
       case "Null":
@@ -241,7 +233,6 @@ class Trixel {
           }
         }
         
-        
         if(type == 2) { //enemyExplode          
           if(enemyActive) {
             particleExplode.draw(collisionX,collisionY);
@@ -254,7 +245,6 @@ class Trixel {
               tweenAlpha = 0;
               noFill();
             }
-
           } else {
             rotate(radians(180));
             scale(0.25);
@@ -309,8 +299,7 @@ class Trixel {
             enemyActive = true;
             enemyDraw = true;     
           } 
-         
-         
+          
           if(type == 1) { //enemyArea 
             hurt();
             collisionTrix();
@@ -355,29 +344,19 @@ class Trixel {
         stroke(255,255-alphaBG);
         triangle(x1, y1, x2, y2, x3, y3);
         
-        
         if(type == 1) { //enemyArea 
           //trifract(0, 0, radius,int(random(4)), false);
           //trifract(0, 0, radius/2,int(random(3)), true);
           //trifract(0, 0, radius/4,int(random(1,4)), false);
         }
 
-      break;
-         
+      break;         
     } //end switch
 
     trixTimerChange();
-
     popMatrix();
-    
-    
-    
-
+ 
   } //end draw
-
-
-
-  
 
   boolean checkCollision(float cx, float cy) {
     float tArea,t1Area,t2Area,t3Area,totalArea;
@@ -397,9 +376,6 @@ class Trixel {
     d = p4 - p6;
     return (0.5* abs((a*d)-(b*c)));
   }
-  
-  
-
   
   void trifract(float x, float y, float l, int lvl, boolean inv){
     pushMatrix();
@@ -430,7 +406,6 @@ class Trixel {
     }    
   }
 
-  
   void resetTrix() {
     gameEnemy = "Null";
     enemyActive = false;
@@ -501,9 +476,4 @@ class Trixel {
       triangle(x1, y1, x2, y2, x3, y3);
     } 
   }
-  
-  
-
-  
-  
 }

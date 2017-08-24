@@ -2,8 +2,6 @@ void pebug(String m) {
   //println(m);
 }
 
-
-
 void tw33n(float start, float end, int time) {
   int m = millis();
   int t = m % time;
@@ -30,7 +28,6 @@ void hurt() {
   infectArm     = new float[0];
   control = new Control(1);
   
-  
   soundEnemy.play();
   gameTransions = "Static";
   hurtRange += hurtValue;
@@ -38,7 +35,6 @@ void hurt() {
 
   pebug("energy " + energy);
 }
-
 
 void infect() {
   collisionParticleX = spinX;
@@ -84,8 +80,7 @@ void gotch() {
 void clawTouchStart() {
   soundTouchTimer.volume((hurtTimer/100) + 0.01);
     
-  hurtTimer += 4;
-    
+  hurtTimer += 2;
   
   //pebug("hurt " + hurtTimer);
   if(hurtTimer>10*hurtTimer && hurtTimer<11*hurtTimer) {
@@ -123,8 +118,6 @@ void drawBG() {
   } else {
     alphaBG = round(tweenBG); 
   }
- 
-  //pebug("alphaBG: " + alphaBG);  
 
   if (alphaBG>128) {
     effect = true;
@@ -140,36 +133,31 @@ void drawBG() {
     noStroke();        
     rect(0,0,width,height);  
   }
-
-  
 }
-
-
 
 void activeGame() {
   trixelmatrix.reset(); 
 }
 
-
 void startGame() {
-    gameTransions = "Flash";
-    loadScore();
-    resetGame();
-    
-    soundStart.stop();
-	soundStart.volume(0);
-    soundLoopBG.play();
-    soundLoopBG.loop(true);
-
-	soundTouchTimer.play();
-    soundTouchTimer.loop(true);
-	soundTouchTimer.volume(0.01);
-
-    
-    gameState = "GameStart";
-    //gameTransions = "Flash";
-    gameDialog = "Start";
+  gameTransions = "Flash";
+  loadScore();
+  resetGame();
+  
+  soundStart.stop();
+  soundStart.volume(0);
+  soundLoopBG.play();
+  soundLoopBG.loop(true);
+  
+  soundTouchTimer.play();
+  soundTouchTimer.loop(true);
+  soundTouchTimer.volume(0.01);
+  
+  gameState = "GameStart";
+  //gameTransions = "Flash";
+  gameDialog = "Start";
 }
+
 void resetGame() {
   energy = 30;
   score = 0;
@@ -182,8 +170,6 @@ void againGame() {
     //gameTransions = "Flash";
     gameDialog = "Start";
 }
-
-
 void gameOver() {
   setScore();
   activeGame();
@@ -192,11 +178,9 @@ void gameOver() {
   gameEnemy = "Null";
  
 }
-
 void share() {
-  socialShare("My new record is " + recordScore  + ". Can you score it on the Spincles Game?", "Spincles - Glitch Game", save(), "http://spincles.dekwilde.com.br");
-  gameState = "InfoShow";
-  
+  socialShare("My new record is " + recordScore  + ". Can you score it on the Spincles Game?", "Spincles", save(), "http://spincles.dekwilde.com.br");
+  gameState = "InfoShow"; 
 }
 
 

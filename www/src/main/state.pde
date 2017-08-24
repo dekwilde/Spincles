@@ -1,22 +1,16 @@
 void stateSetup() {
-  //scW = screen.width;
-  //scH = screen.height;
-  
   scW = window.innerWidth;
   scH = window.innerHeight;
  
-  pebug("build 5");
+  pebug("build 6");
   pebug("width: " + scW + " " + "height: " + scH);
   size(scW, scH, P2D);
   
-  //rectMode(CENTER_RADIUS);
   rectMode(CORNER);
   imageMode(CENTER);
   textAlign(CENTER);
   ctx = externals.context;   
   frameRate(30);
-  //smooth();
-
 
   howImg = loadImage("data/how.png");
   fontTitle = loadFont("data/hexagonica.ttf");        
@@ -37,7 +31,6 @@ void stateSetup() {
   rad = scW * 0.6;
   
   pebug("wCount: " + wCount + ", hCount: " + hCount);
-
   pebug("Start sensor");
 
   control = new Control(1);
@@ -55,16 +48,10 @@ void stateSetup() {
   tEff = new TrixelEffect();
   dialog = new Dialog();
 
-  trixelmatrix = new TrixelMatrix();
-  
+  trixelmatrix = new TrixelMatrix(); 
   body = new Tbody();
-  
-  
   particleMagnetic = new TrixParticle("magnetic");
-    
-
   body.reset();
-
 
   bx = width/2;
   by = height/2;
@@ -83,7 +70,6 @@ void stateSetup() {
   
   soundStart.stop();
   soundStart.play();
-
   
   hidePageLoadingMsg();
   requestFullScreen();  
@@ -95,14 +81,11 @@ void stateSetup() {
 
 void stateStart() {
   
-  //acce();
+  acce();
   mic();
-  //compass();
+  compass();
   zig();
-  
- 
-  //background(255,204,0);
-   
+     
   ctx.rect(0,0,width,height);
   fill(255,204,0,40);
   noStroke();        
@@ -110,16 +93,13 @@ void stateStart() {
   tEff.draw2(microfone+10, 0);
   tEff.draw0(); 
   
-  
   int Talign = -150;
   fill(0);
   textFont(fontTitle, 10);
   text("Welcome to", width/2, height/2-40+Talign); 
 
-
   logo.draw(Talign);
   control.draw();
-
   btStart.draw();
   
 }
@@ -184,15 +164,13 @@ void stateInfoShow() {
   
   
   if (pInfo<1) {
-      pInfo = 0;
-      
+      pInfo = 0;   
       btClose.draw(255);
       btHow.draw(60);
       btLeader.draw();
       btClear.draw();
       btShare.draw(); // tem que deixar este botao por ultimo por causa da ordem de renderizacao
       slider.draw();
-
   }
   pInfo = pInfo - pInfo/6;
   
@@ -217,7 +195,6 @@ void stateHow() {
   soundTouchTimer.volume(0.01);
 }
 
-
 void stateLoadGame() {
   fill(255,204,0);
   noStroke();
@@ -233,7 +210,6 @@ void stateLoadGame() {
   pInfo += - 1;
 }
 
-
 void stateLoad(String state) {
   fill(255,204,0);
   noStroke();
@@ -247,8 +223,6 @@ void stateLoad(String state) {
   }
 }
 
-
-
 void stateGameStart() {
   acce();
   mic();
@@ -259,10 +233,7 @@ void stateGameStart() {
   //cam();
   //Three();        
   control.draw();
-  
-  
-  
-   
+ 
   if(iScale<endEscala) {
     //iScale = iScale + 0.001*speedEscala;
     iScale = tw33n(0, endEscala+0.1, 15000);
@@ -281,13 +252,11 @@ void stateGameStart() {
       gameState = "GameStart";
       trixelmatrix.draw();
     }  
-    
   }
   body.draw();
   //btInfo.draw();
   //btCamera.draw();
-  //scoreInfo.draw();
-  
+  //scoreInfo.draw(); 
 }
 
 void stateGameLevel() {
@@ -298,9 +267,7 @@ void stateGameLevel() {
 
   drawBG();        
   control.draw();
- 
   trixelmatrix.draw();
- 
   body.draw();
   btInfo.draw();
   scoreInfo.draw(); 
@@ -312,7 +279,6 @@ void stateGameLevel() {
   if(energy < 0) {
       gameOver();
   }
-  
   
   if(energy>=30) {
     numSegment = 4;
@@ -347,7 +313,6 @@ void stateGameLevel() {
     angleRadiusTouch =  - random(-3.0, 3.0);
     speed = 120;
   }
-  
   if(WeightSegmentTouch>20) {
     WeightSegmentTouch = 20;
   }
@@ -357,11 +322,7 @@ void stateGameLevel() {
   if(angleRadiusTouch>3) {
     angleRadiusTouch = 3;
   }
-
-
- 
 }
-
 
 void stateNoTouch() {
   int Talign = -10;
@@ -390,7 +351,7 @@ void stateNoTouch() {
 void stateShare() {
   int Talign = height/2-180+pInfo;
   background(255, 204, 0);
-  
+ 
   pushMatrix();
   rotate(0);
   translate(0,0);
@@ -414,7 +375,6 @@ void stateShare() {
   textSize(52);
   text(level, width/2, 350+Talign); //280
   
-  
   if (pInfo<10) {
     load += 1;
   }
@@ -424,6 +384,5 @@ void stateShare() {
   }
   
   pInfo = pInfo - pInfo/6;
-  
-  
+
 }

@@ -51,7 +51,6 @@ float collisionParticleY = 0;
 Tbody body;
 TrixelMatrix trixelmatrix;
 
-
 int scW = screen.width;
 int scH = screen.height;
 int wCount, hCount;
@@ -59,9 +58,6 @@ float x = width/2;
 float y = height/2;
 float targetX, targetY;
 float spinX, spinY;
-
-
-
 
 float angleSpeedTouch = 0.0f;
 float angleRadiusTouch = 0.0f;
@@ -82,8 +78,6 @@ float [] segLength = new float[numOfArms];
 
 float [] infectSegment = new float[0];
 float [] infectArm     = new float[0];
-
-
 
 boolean cameraShow = false;
 boolean isGame = false;
@@ -131,7 +125,6 @@ TrixParticle particleMagnetic;
 ArrayList particles;
 
 float pInfo = height;
-
 
 // Transitions
 
@@ -234,8 +227,7 @@ void draw() {
       //rect(0,0,width,height);   
       popMatrix();
     break;
-    
-        
+          
    case "Static":
       tween = tween +(initColor-tween)/5;      
       if(tween>(initColor-1)) {

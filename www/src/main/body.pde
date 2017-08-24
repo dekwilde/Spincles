@@ -17,9 +17,6 @@ class Tbody {
       segLength[i] = random(25, 65);
     }
   }
-
-  
-  
   
   void draw() {
         
@@ -60,8 +57,7 @@ class Tbody {
     }
     
     popMatrix();
-    
-    
+     
     pi++;
   }
 
@@ -84,21 +80,20 @@ class Arm {
   }
   
   void draw(float x, float y, float a, float Weight, float LengthSeg, int SegNum, int ArmNum) {
-      translate(x, y);
-      rotate(a);
-      strokeWeight(Weight/SegWeightPor);
-      stroke(0, 90);
-      line(0, 0, LengthSeg, 0);
-      
-      noStroke();
-      //pebug("contains " + contains(infectArm, ArmNum));
-      if(contains(infectArm, ArmNum) && contains(infectSegment, SegNum)) {
-        fill(0, int(random(2))*100);
-        triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);  
-      }
-      fill(255);
-      ellipse(0,0,2,2);
-      
+    translate(x, y);
+    rotate(a);
+    strokeWeight(Weight/SegWeightPor);
+    stroke(0, 90);
+    line(0, 0, LengthSeg, 0);
+    
+    noStroke();
+    //pebug("contains " + contains(infectArm, ArmNum));
+    if(contains(infectArm, ArmNum) && contains(infectSegment, SegNum)) {
+      fill(0, int(random(2))*100);
+      triangle(trix.x1, trix.y1, trix.x2, trix.y2, trix.x3, trix.y3);  
+    }
+    fill(255);
+    ellipse(0,0,2,2);  
   } 
 }
 

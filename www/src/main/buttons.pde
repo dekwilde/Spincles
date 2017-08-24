@@ -86,7 +86,6 @@ class ButtonClose {
         }
     } 
     
-    
     void checkButton() {
           if (touch1X > pX-dm*4 && touch1X < pX+dm*4 && touch1Y > pY-dm*4 && touch1Y < pY+dm*4) {
             overButton = true;   
@@ -96,7 +95,6 @@ class ButtonClose {
     }
 }
 
-
 class MenuSlider {
     float st_x = width/2;
     float st_y = height/2 -120;
@@ -104,8 +102,7 @@ class MenuSlider {
     float st_difx = 0.0; 
     float st_dify = 0.0; 
     float init, end;
-    
-    
+        
     MenuSlider() {  
     }
     
@@ -146,16 +143,8 @@ class MenuSlider {
       line(init, st_y, end, st_y);
       ellipse(st_x, st_y, st_s, st_s);
       
-      
-      
     }
-    
- 
-    
 } // end class
-
-
-
 
 class ButtonAgain {
     boolean overButton = false;
@@ -191,11 +180,9 @@ class ButtonAgain {
             overButton = false;
             soundClick.play();
             againGame();
-            //activeGame();
-            
+            //activeGame();   
         }
     } 
-    
     
     void checkButton() {
           if (touch1X > pX-dw && touch1X < pX+dw && touch1Y > pY-dh && touch1Y < pY+dh) {
@@ -205,8 +192,6 @@ class ButtonAgain {
           }
     }
 }
-
-
 
 class ButtonHow {
     boolean overButton = false;
@@ -287,16 +272,14 @@ class ButtonClear {
         }
     } 
     
-    
     void checkButton() {
-          if (touch1X > pX-dw && touch1X < pX+dw && touch1Y > pY-dh && touch1Y < pY+dh) {
-            overButton = true;   
-          } else {
-            overButton = false;
-          }
+      if (touch1X > pX-dw && touch1X < pX+dw && touch1Y > pY-dh && touch1Y < pY+dh) {
+        overButton = true;   
+      } else {
+        overButton = false;
+      }
     }
 }
-
 
 class ButtonLeaderBoard {
     boolean overButton = false;
@@ -335,18 +318,14 @@ class ButtonLeaderBoard {
         }
     } 
     
-    
     void checkButton() {
-          if (touch1X > pX-dw && touch1X < pX+dw && touch1Y > pY-dh && touch1Y < pY+dh) {
-            overButton = true;   
-          } else {
-            overButton = false;
-          }
+      if (touch1X > pX-dw && touch1X < pX+dw && touch1Y > pY-dh && touch1Y < pY+dh) {
+        overButton = true;   
+      } else {
+        overButton = false;
+      }
     }
 }
-
-
-
 
 class ButtonShare {
     boolean overButton = false;
@@ -377,7 +356,6 @@ class ButtonShare {
         textFont(fontText, fSize);
         text("share", pX, pY);
 
-
         if (overButton == true) {
           overButton = false;
           pInfo = 480;
@@ -391,13 +369,12 @@ class ButtonShare {
         checkButton();
     } 
     
-    
     void checkButton() {
-          if (touch1X > pX-dw && touch1X < pX+dw && touch1Y > pY-dh && touch1Y < pY+dh) {
-            overButton = true;  
-          } else {
-            overButton = false;
-          }
+      if (touch1X > pX-dw && touch1X < pX+dw && touch1Y > pY-dh && touch1Y < pY+dh) {
+        overButton = true;  
+      } else {
+        overButton = false;
+      }
     }
 }
 

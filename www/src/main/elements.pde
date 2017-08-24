@@ -144,7 +144,6 @@ class Logo {
     translate(width/2-(500*logoscale), height/2-(200*logoscale)+20+t); // a logo tem o tamanho original com 1000x400
     scale(logoscale);
    
-    
     fill(255);
     //S
     stroke(0);
@@ -201,7 +200,6 @@ class Logo {
     ellipse(pArr[14].x,pArr[14].y,8,8);
     stroke(0);
     
-    
     //c
     strokeWeight(8);
     line(pArr[20].x,pArr[20].y,pArr[21].x,pArr[21].y);
@@ -218,8 +216,6 @@ class Logo {
     ellipse(pArr[24].x,pArr[24].y,8,8);
     stroke(0);
     
-    
-    
     //l
     strokeWeight(18);
     line(pArr[26].x,pArr[26].y,pArr[27].x,pArr[27].y);
@@ -227,7 +223,6 @@ class Logo {
     ellipse(pArr[26].x,pArr[26].y,8,8);
     ellipse(pArr[27].x,pArr[27].y,8,8);
     stroke(0);
-    
     
     //e
     strokeWeight(8);
@@ -246,7 +241,6 @@ class Logo {
     ellipse(pArr[31].x,pArr[31].y,8,8);
     ellipse(pArr[32].x,pArr[32].y,8,8);
     stroke(0);
-    
     
     //s
     strokeWeight(8);
@@ -298,11 +292,7 @@ class pL {
   void change() {
     rand = random(10);
   }
-  
 }
-
-
-
 
 class TrixelEffect {
   float w = scW * 0.2, h = 0.5 * sqrt(3) * w;  
@@ -407,8 +397,6 @@ class TrixelEffect {
                   triangle(x,y,x+w/2,y+h,x+w,y);
       }              
   }
-  
-  
 }
 
 class TrixParticle {
@@ -430,8 +418,7 @@ class TrixParticle {
     particleX = posX;
     particleY = posY;
   }
-  
-  
+    
   void draw(float cx, float cy){
     num += 1;
     if(num<=amount) {
@@ -459,7 +446,6 @@ class TrixParticle {
   
 }
 
-
 class Particle{
   float x;
   float y;
@@ -480,7 +466,6 @@ class Particle{
   
   Trix trix;
 
-  
   Particle(String type, float posX, float posY){
     trix = new Trix(rad*.25);
     tp = type;
@@ -503,8 +488,7 @@ class Particle{
     }
   }
     
-  void draw(){
-      
+  void draw(){      
     switch( tp ) { 
       case "explode":
         x = x+xspeed;
@@ -520,7 +504,6 @@ class Particle{
         y = y+yspeed;
       break; 
     }
-    
   }
     
   void display(){
@@ -566,12 +549,9 @@ class Particle{
   void conect() { 
     diameter = rad/25;
     for (int i = 0; i <particles.size() ; i++) {
-      
       Particle other = (Particle) particles.get(i);
- 
       if (this != other) {
         if (dist(x, y, other.x, other.y)<distance) {
-          
           if(tp == "magnetic") {
             diameter = diameter*2;
           }
@@ -583,6 +563,5 @@ class Particle{
         }
       }
     } //end for
-  }
-     
+  }    
 }
