@@ -106,7 +106,7 @@ var zigDevice = true;
 				skeletonUpdate(user); // or this
 				onLoop();
 		  	}); 
-		    //zigClick(); //quando tiver drag eu faço isso 
+		    zigClick(); //quando tiver drag eu faço isso 
 		});
 
 		engager.addEventListener('userdisengaged', function(user) {
@@ -366,7 +366,7 @@ var zigDevice = true;
 			console.log(el + 'pushDetector: release');
 		});
 		
-		//zig.singleUserSession.addListener(pushDetector);
+		zig.singleUserSession.addListener(pushDetector);
 	}
 
    	
