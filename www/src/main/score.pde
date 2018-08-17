@@ -1,6 +1,6 @@
 int score = 0;
 int energy = 0;
-int level = 2;
+int level = 0;
 String scoreResult = "RECORD";
 int recordScore = 0;
 class ScoreInfo {
