@@ -26,9 +26,9 @@ void stateSetup() {
     wCount = 4;
     hCount = 2;     
   }
-  endEscala = (scW*0.2)/100;
+  endEscala = (scW*0.2)/100; //body scale
   iScale = 0.0;
-  rad = scW * 0.6;
+  rad = scW * 0.8; //trixel scale
   
   pebug("wCount: " + wCount + ", hCount: " + hCount);
   pebug("Start sensor");

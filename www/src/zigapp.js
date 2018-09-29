@@ -1,7 +1,7 @@
 var zigCursorX = 0, zigCursorY = 0;
 var zigScale = 0, zigDegrees = 0;
 var zigPush = false, zigDrag = false;
-var zigDevice = true;
+var zigDevice = false;
 // zig.js main closure 
 //(function(){     
 

@@ -6,7 +6,7 @@ class Control {
   boolean displayEnable = false;
   Spring2D springs[] = new Spring2D[maxSprings];
   float x =0 , y = 0;
-  String mode = "chain";
+  String mode = "ball";
   Trix trix = new Trix(rad/5);
   
   Control(int num) {
@@ -93,12 +93,12 @@ class Spring2D {
         by = y;
         bover = true;
         if(locked) {
-          clawTouchStart();
+          //clawTouchStart();
         } 
      } else {      
        locked = false; 
        bover = false;
-        clawTouchStop();
+        //clawTouchStop();
      }
   }
   

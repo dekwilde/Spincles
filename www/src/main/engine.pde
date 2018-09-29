@@ -183,9 +183,9 @@ class Trixel {
     }
     
     
-    stroke(255, initAlpha);
+    stroke(0, initAlpha);
     //strokeWeight(initStroke);
-    strokeWeight(1);
+    strokeWeight(2);
     noFill();
     triangle(x1,y1,x2,y2,x3,y3); 
     strokeWeight(0.1);
@@ -315,25 +315,9 @@ class Trixel {
              
             
         // draw triangle      
-    
-        /*
-        if(effect) {
-          stroke(255,204,0);
-          triangle(x1, y1, x2, y2, x3, y3);
-          strokeWeight(1);
-          stroke(0);
-          point(x1, y1);
-          point(x2, y2);
-          point(x3, y3);
-        } else {
-          strokeWeight(1);
-          stroke(255,255-alphaBG);
-          triangle(x1, y1, x2, y2, x3, y3);
-        }
-        */
-        
-        strokeWeight(1);
-        stroke(255,255-alphaBG);
+  
+        //strokeWeight(1);
+        noStroke();
         triangle(x1, y1, x2, y2, x3, y3);
         
         if(type == 1) { //enemyArea 
@@ -376,7 +360,7 @@ class Trixel {
       rotate(radians(180));
     } 
     
-    stroke(255);  
+    stroke(0);  
     if(int(random(2)) == 0){line(x, y+l,x+l*sqrt(3)/2, y-l/2);}
     if(int(random(2)) == 0){line(x+l*sqrt(3)/2, y-l/2,x-l*sqrt(3)/2, y-l/2);}
     if(int(random(2)) == 0){line(x, y+l,x-l*sqrt(3)/2, y-l/2);}

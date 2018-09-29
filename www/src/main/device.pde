@@ -172,7 +172,7 @@ void mousePressed() {
 void mouseDragged() {
   Locked();
   //display pebug
-  stroke(255);
+  stroke(0);
   noFill();
   line(bx,by,mouseX, mouseY);
   ellipse(bx,by,bs,bs);
@@ -263,7 +263,7 @@ void acce() {
   if(!mouse) {
     gravityX = acceleration.x/10;
     gravityY = -acceleration.y/10;    
-    //pebug("x: " + gravityX + " " + "y: " + gravityY);     
+    pebug("gravityx: " + gravityX + " " + "gravityy: " + gravityY);     
   }
 }
 float micCheck = 0.0f;
