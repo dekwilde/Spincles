@@ -369,11 +369,10 @@
 			);
 		} else {   
 			setInterval(function() {
-				if(!phonegap && isMobile.iOS()) {
+				if(!phonegap) {
 					mMedia.miclevel = 0.1*Math.random(); 
 				} else {
 					mMedia.miclevel = micLevelPluginPhoneGap;
-					 
 				}
 			},200);
 		}

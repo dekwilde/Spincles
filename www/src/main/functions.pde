@@ -1,5 +1,5 @@
 void pebug(String m) {
-  //println(m);
+  println(m);
 }
 
 void tw33n(float start, float end, int time) {
@@ -29,7 +29,7 @@ void hurt() {
   control = new Control(1);
   
   soundEnemy.play();
-  gameTransions = "Static";
+  //gameTransions = "Static";
   hurtRange += hurtValue;
   body.reset();
 

@@ -1,5 +1,5 @@
 int rad; //triangle radius 215 is default
-int rangeTrixType = 10;
+int rangeTrixType = 5;
 class TrixelMatrix {  
   Trixel[] trixel;
   int n = 0;

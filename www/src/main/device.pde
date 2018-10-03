@@ -51,7 +51,7 @@ void gestureStarted() {
 
 void gestureChanged() {
   iAngle = startAngle + gesture.rotation;
-  //iScale = startEscala * gesture.scale;
+  iScale = startEscala * gesture.scale;
   if (iAngle > 360) {
           iAngle = iAngle - 360;
   }
@@ -133,7 +133,7 @@ void touchMove(t) {
       float newDistance = dist(touch2X, touch2Y, touch1X, touch1Y);
       pinchAngle = degrees(atan2(touch2Y - touch1Y, touch2X - touch1X));      
       iAngle = startAngle + pinchAngle;
-      //iScale = startEscala * (newDistance/pinchDistance);
+      iScale = startEscala * (newDistance/pinchDistance);
       if (iAngle > 360) {
               iAngle = iAngle - 360;
       }
@@ -180,7 +180,7 @@ void mouseDragged() {
   float newDistance = dist(mouseX, mouseY, bx, by);
   
   iAngle = startAngle + pinchAngle;
-  //iScale = startEscala * (newDistance/pinchDistance);
+  iScale = startEscala * (newDistance/pinchDistance);
   if (iAngle > 360) {
           iAngle = iAngle - 360;
   }
@@ -263,20 +263,17 @@ void acce() {
   if(!mouse) {
     gravityX = acceleration.x/10;
     gravityY = -acceleration.y/10;    
-    pebug("gravityx: " + gravityX + " " + "gravityy: " + gravityY);     
+    //pebug("gravityx: " + gravityX + " " + "gravityy: " + gravityY);     
   }
 }
-float micCheck = 0.0f;
+
 void mic() {
-  microfone = media.miclevel*mic_perc; // 0 a 100 
-  /* 
-  if(microfone != null && micCheck == microfone && microfone != 0 && microfone != Float.NaN ) {
-    //startUserMediaMic();
-    pebug("micCheck startUserMediaMic");
+  if(phonegap) {
+    microfone = (micLevelPluginPhoneGap/100)*mic_perc;
+  } else {
+    microfone = media.miclevel*mic_perc; // 0 a 100  
   }
-  */
-  micCheck = microfone;
-  //pebug("Mic: " + microfone);
+  pebug("Mic: " + microfone);
 }
 
 void compass() {  

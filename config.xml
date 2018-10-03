@@ -1,120 +1,142 @@
-<?xml version='1.0' encoding='utf-8'?>
-<widget id="br.com.dekwilde.Spincles" version="2.4.9" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>Spincles</name>
-    <description>
-       	Glitch Game
-    </description>
-    <author email="dekwilde@gmail.com" href="https://www.dekwilde.com.br/spincles">
-        Daniel Emiliano Klan Wilde
-    </author>
+<?xml version="1.0" encoding="UTF-8" ?>
+<widget xmlns   = "http://www.w3.org/ns/widgets"
+    xmlns:gap   = "http://phonegap.com/ns/1.0"
+    id          = "br.com.dekwilde.spincles"
+    versionCode = "10"
+    version     = "1.0.0" >
+
+  <name>Spincles</name>
+  <description>
+      Sensitive Game
+  </description>
+  <author email="dekwilde@gmail.com" href="https://www.dekwilde.com.br/spincles">
+        Dek Wilde
+  </author>
+  <content src="index.html" />
+
+
+  <plugin name="cordova-plugin-dbmeter" source="npm" />
+
+
+
+  <!-- all platforms -->
+  <preference name="phonegap-version" value="cli-6.5.0" />
+  <preference name="orientation" value="portrait" />
+  <preference name="fullscreen" value="true" />
+  <preference name="DisallowOverscroll" value="true"/>
+  <preference name="BackgroundColor" value="0xffFFCC00"/>
+  <preference name="HideKeyboardFormAccessoryBar" value="true"/>
+  <preference name="UseLegacySwiftLanguageVersion" value="true" />
+
+  <!-- iOS only -->
+  <preference name="target-device" value="universal" />
+  <preference name="prerendered-icon" value="true" />
+  <preference name="detect-data-types" value="true" />
+  <preference name="exit-on-suspend" value="true" />
+  <preference name="deployment-target" value="7.0" />
+  <preference name="fullscreen" value="true" />
+  <preference name="webviewbounce" value="true" />
+  <preference name="prerendered-icon" value="true" />
+  <preference name="stay-in-webview" value="true" />
+  <preference name="ios-statusbarstyle" value="black-translucent" />
+  <preference name="StatusBarOverlaysWebView" value="true" />
+  <preference name="AutoHideSplashScreen" value="true" />
+  <preference name="SplashScreenDelay" value="10000" />
+  <preference name="SplashScreen" value="screen" />
+  <preference name="detect-data-types" value="true" />
+  <preference name="exit-on-suspend" value="false" />
+  <preference name="show-splash-screen-spinner" value="true" />
+  <preference name="disable-cursor" value="true" />
+  <preference name="EnableViewportScale" value="true"/>
+  <preference name="MediaPlaybackAllowsAirPlay" value="false"/>
+  <preference name="MediaPlaybackRequiresUserAction" value="true"/>
+  <preference name="AllowInlineMediaPlayback" value="true"/>
+  <preference name="BackupWebStorage" value="local"/>
+  <preference name="TopActivityIndicator" value="white"/>
+  <preference name="SuppressesIncrementalRendering" value="true"/>
+  <preference name="GapBetweenPages" value="0"/>
+  <preference name="PageLength" value="0"/>
+  <preference name="PaginationBreakingMode" value="page"/>
+  <preference name="PaginationMode" value="unpaginated"/>
+  <preference name="UIWebViewDecelerationSpeed" value="fast" />
+  <preference name="ErrorUrl" value="myErrorPage.html"/>
+  <preference name="OverrideUserAgent" value="Mozilla/5.0 My Browser" />
+  <preference name="AppendUserAgent" value="My Browser" />
+  <preference name="target-device" value="universal" />
+  <preference name="deployment-target" value="7.0" />
+  <preference name="CordovaWebViewEngine" value="CDVUIWebViewEngine" />
+  <preference name="CordovaDefaultWebViewEngine" value="CDVUIWebViewEngine" />
+  <preference name="SuppressesLongPressGesture" value="true" />
+  <preference name="Suppresses3DTouchGesture" value="true" />
+
+
+  <gap:config-file platform="ios" parent="UISupportedInterfaceOrientations" overwrite="true">
+          <array>
+              <string>UIInterfaceOrientationPortrait</string>
+          </array>
+  </gap:config-file>
+  <gap:config-file platform="ios" parent="UISupportedInterfaceOrientations~ipad" overwrite="true">
+          <array>
+              <string>UIInterfaceOrientationPortrait</string>
+          </array>
+  </gap:config-file>
+
+  <!-- Android only -->
+  <preference name="android-build-tool" value="ant" />
+  <preference name="android-minSdkVersion" value="14" />
+  <preference name="android-maxSdkVersion" value="15" />
+  <preference name="android-targetSdkVersion" value="15" />
+  <preference name="android-installLocation" value="auto" />
+  <preference name="android-windowSoftInputMode" value="stateVisible" />
+  <preference name="KeepRunning" value="false"/>
+  <preference name="LoadUrlTimeoutValue" value="10000"/>
+  <preference name="InAppBrowserStorageEnabled" value="true"/>
+  <preference name="LoadingDialog" value="Spincles"/>
+  <preference name="ShowTitle" value="false"/>
+  <preference name="LogLevel" value="VERBOSE"/>
+  <preference name="AndroidLaunchMode" value="singleTop"/>
+  <preference name="DefaultVolumeStream" value="call" />
+  
     
-	<content src="index.html" />
-    <access origin="*" />
+  <icon src="res/icon/icon.png" /> 
 
-    <gap:config-file platform="ios" parent="CFBundleShortVersionString">
-    <string>249</string>
-    </gap:config-file>
-
-    
-	<preference name="orientation" value="portrait" />
-    <preference name="permissions" value="none" />
-    
-    <preference name="target-device" value="universal" />
-    <preference name="fullscreen" value="true" />
-    <preference name="webviewbounce" value="true" />
-    <preference name="prerendered-icon" value="true" />
-    <preference name="stay-in-webview" value="false" />
-    <preference name="ios-statusbarstyle" value="black-translucent" />
-	<preference name="StatusBarOverlaysWebView" value="true" />
-	<preference name="AutoHideSplashScreen" value="true" />
-	<preference name="SplashScreenDelay" value="10000" />
-	<preference name="SplashScreen" value="screen" />
-	<preference name="detect-data-types" value="true" />
-    <preference name="exit-on-suspend" value="false" />
-    <preference name="show-splash-screen-spinner" value="true" />
-    <preference name="disable-cursor" value="true" />
-    <preference name="android-minSdkVersion" value="14" />
-    <preference name="android-installLocation" value="auto" />
-
-
-    <gap:plugin name="org.apache.cordova.battery-status" />
-    <gap:plugin name="org.apache.cordova.camera" />
-    <gap:plugin name="org.apache.cordova.media-capture" />
-    <gap:plugin name="org.apache.cordova.console" />
-    <gap:plugin name="org.apache.cordova.contacts" />
-    <gap:plugin name="org.apache.cordova.device" />
-    <gap:plugin name="org.apache.cordova.device-motion" />
-    <gap:plugin name="org.apache.cordova.device-orientation" />
-    <gap:plugin name="org.apache.cordova.dialogs" />
-    <gap:plugin name="org.apache.cordova.file" />
-    <gap:plugin name="org.apache.cordova.file-transfer" />
-    <gap:plugin name="org.apache.cordova.geolocation" />
-    <gap:plugin name="org.apache.cordova.globalization" />
-    <gap:plugin name="org.apache.cordova.inappbrowser" />
-    <gap:plugin name="org.apache.cordova.media" />
-    <gap:plugin name="org.apache.cordova.network-information" />
-    <gap:plugin name="org.apache.cordova.splashscreen" />
-    <gap:plugin name="org.apache.cordova.vibration" />
-	<gap:plugin name="org.apache.cordova.statusbar" />  
-
-    <gap:plugin name="br.com.dekwilde.micvolume" />
-	<gap:plugin name="uk.co.ilee.gamecenter" /> 
-	
-	
-	
-	<gap:config-file platform="ios" parent="UISupportedInterfaceOrientations" overwrite="true">
-	        <array>
-	            <string>UIInterfaceOrientationPortrait</string>
-	        </array>
-	</gap:config-file>
-	<gap:config-file platform="ios" parent="UISupportedInterfaceOrientations~ipad" overwrite="true">
-	        <array>
-	            <string>UIInterfaceOrientationPortrait</string>
-	        </array>
-	</gap:config-file>
-	
-	
-    
-	<icon src="res/icon/icon.png" /> 
-
-	<platform name="android">
-		<splash density="land-hdpi" src="res/screen/android/drawable-land-hdpi.png" />
-		<splash density="land-ldpi" src="res/screen/android/drawable-land-ldpi.png" />
-		<splash density="land-mdpi" src="res/screen/android/drawable-land-mdpi.png" />
-		<splash density="land-xhdpi" src="res/screen/android/drawable-land-xhdpi.png" />
-		<splash density="port-hdpi" src="res/screen/android/drawable-port-hdpi.png" />
-		<splash density="port-ldpi" src="res/screen/android/drawable-port-ldpi.png" />
-		<splash density="port-mdpi" src="res/screen/android/drawable-port-mdpi.png" />
-		<splash density="port-xhdpi" src="res/screen/android/drawable-port-xhdpi.png" />
-		<icon density="ldpi" src="res/icon/android/drawable-ldpi.png" />
-		<icon density="mdpi" src="res/icon/android/drawable-mdpi.png" />
-		<icon density="hdpi" src="res/icon/android/drawable-hdpi.png" />
-		<icon density="xhdpi" src="res/icon/android/drawable-xhdpi.png" />
-	</platform>
-	<platform name="ios">
-		<splash height="480" src="res/screen/ios/Default~iphone.png" width="320" />
-		<splash height="960" src="res/screen/ios/Default@2x~iphone.png" width="640" />
-		<splash height="1024" src="res/screen/ios/Default-Portrait~ipad.png" width="768" />
-		<splash height="2048" src="res/screen/ios/Default-Portrait@2x~ipad.png" width="1536" />
-		<splash height="768" src="res/screen/ios/Default-Landscape~ipad.png" width="1024" />
-		<splash height="1536" src="res/screen/ios/Default-Landscape@2x~ipad.png" width="2048" />
-		<splash height="1136" src="res/screen/ios/Default-568h@2x~iphone.png" width="640" />
-		<icon height="60" src="res/icon/ios/icon-60.png" width="60" />
-		<icon height="120" src="res/icon/ios/icon-60@2x.png" width="120" />
-		<icon height="76" src="res/icon/ios/icon-76.png" width="76" />
-		<icon height="152" src="res/icon/ios/icon-76@2x.png" width="152" />
-		<icon height="40" src="res/icon/ios/icon-40.png" width="40" />
-		<icon height="80" src="res/icon/ios/icon-40@2x.png" width="80" />
-		<icon height="57" src="res/icon/ios/icon.png" width="57" />
-		<icon height="114" src="res/icon/ios/icon@2x.png" width="114" />
-		<icon height="72" src="res/icon/ios/icon-72.png" width="72" />
-		<icon height="144" src="res/icon/ios/icon-72@2x.png" width="144" />
-		<icon height="29" src="res/icon/ios/icon-small.png" width="29" />
-		<icon height="58" src="res/icon/ios/icon-small@2x.png" width="58" />
-		<icon height="50" src="res/icon/ios/icon-50.png" width="50" />
-		<icon height="100" src="res/icon/ios/icon-50@2x.png" width="100" />
-	</platform>
-
+  <platform name="android">
+    <splash density="land-hdpi" src="res/screen/android/drawable-land-hdpi.png" />
+    <splash density="land-ldpi" src="res/screen/android/drawable-land-ldpi.png" />
+    <splash density="land-mdpi" src="res/screen/android/drawable-land-mdpi.png" />
+    <splash density="land-xhdpi" src="res/screen/android/drawable-land-xhdpi.png" />
+    <splash density="port-hdpi" src="res/screen/android/drawable-port-hdpi.png" />
+    <splash density="port-ldpi" src="res/screen/android/drawable-port-ldpi.png" />
+    <splash density="port-mdpi" src="res/screen/android/drawable-port-mdpi.png" />
+    <splash density="port-xhdpi" src="res/screen/android/drawable-port-xhdpi.png" />
+    <icon density="ldpi" src="res/icon/android/drawable-ldpi.png" />
+    <icon density="mdpi" src="res/icon/android/drawable-mdpi.png" />
+    <icon density="hdpi" src="res/icon/android/drawable-hdpi.png" />
+    <icon density="xhdpi" src="res/icon/android/drawable-xhdpi.png" />
+  </platform>
+  <platform name="ios">
+    <splash height="480" src="res/screen/ios/Default~iphone.png" width="320" />
+    <splash height="960" src="res/screen/ios/Default@2x~iphone.png" width="640" />
+    <splash height="1024" src="res/screen/ios/Default-Portrait~ipad.png" width="768" />
+    <splash height="2048" src="res/screen/ios/Default-Portrait@2x~ipad.png" width="1536" />
+    <splash height="768" src="res/screen/ios/Default-Landscape~ipad.png" width="1024" />
+    <splash height="1536" src="res/screen/ios/Default-Landscape@2x~ipad.png" width="2048" />
+    <splash height="1136" src="res/screen/ios/Default-568h@2x~iphone.png" width="640" />
+    <icon height="60" src="res/icon/ios/icon-60.png" width="60" />
+    <icon height="120" src="res/icon/ios/icon-60@2x.png" width="120" />
+    <icon height="76" src="res/icon/ios/icon-76.png" width="76" />
+    <icon height="152" src="res/icon/ios/icon-76@2x.png" width="152" />
+    <icon height="40" src="res/icon/ios/icon-40.png" width="40" />
+    <icon height="80" src="res/icon/ios/icon-40@2x.png" width="80" />
+    <icon height="57" src="res/icon/ios/icon.png" width="57" />
+    <icon height="114" src="res/icon/ios/icon@2x.png" width="114" />
+    <icon height="72" src="res/icon/ios/icon-72.png" width="72" />
+    <icon height="144" src="res/icon/ios/icon-72@2x.png" width="144" />
+    <icon height="29" src="res/icon/ios/icon-small.png" width="29" />
+    <icon height="58" src="res/icon/ios/icon-small@2x.png" width="58" />
+    <icon height="50" src="res/icon/ios/icon-50.png" width="50" />
+    <icon height="100" src="res/icon/ios/icon-50@2x.png" width="100" />
+  </platform>
 
 
 

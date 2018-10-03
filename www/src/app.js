@@ -80,12 +80,9 @@ function loadPDE() {
 
 
 function init() {
-	if(isMobile.any()) {
-		app.initialize();
-	} else {
-		deviceZigFu()
-		$("#stores").show();
-	}
+	app.initialize();
+	deviceZigFu()
+	$("#stores").show();
 	showPageLoadingMsg("c", "loading"); 
 	loadPDE(); 
 	window.addEventListener("resize", resizeCanvas);
@@ -215,36 +212,37 @@ function loginGameCenter() {
 
 // MIC
 var micLevelPluginPhoneGap = 0;
-var micTimer;
 var micEnable = false;
-var micSuccess = function() {
-    //alert("Plugin Start");
-}
-var micFailure = function() {
-    alert("Error calling Mic Plugin");
-}
 
 
 function micStart() {
 	if(!micEnable && phonegap) {
 		micEnable = true;
-		window.micVolume.start(micSuccess, micFailure);
+		DBMeter.start(function(dB){
+        	micLevelPluginPhoneGap = dB;
+    	});
 
-	    micTimer = setInterval(function(){
-			window.micVolume.read(function(reading){			
-				micLevelPluginPhoneGap = reading.volume;    
-		    }, micFailure);		
-		},100);	
+		DBMeter.isListening((isListening) => {
+			this.isListening = isListening;
+			if (!isListening) {
+				micEnable = false;
+				setTimeout(function(){
+					micStart();
+				}, 1000);
+			}
+		});
 	}
 }
 
 function micStop() {
 	if(micEnable && phonegap) {	
 		micEnable = false;
-		window.micVolume.stop(micSuccess, micFailure);
-		clearInterval(micTimer);
+		DBMeter.stop(function(){
+		  console.log("DBMeter well stopped");
+		}, function(e){
+		  console.log('code: ' + e.code + ', message: ' + e.message);  
+		});
 	}
-		
 }
 
 
@@ -255,10 +253,9 @@ var app = {
     },
 
     onDeviceReady: function() {
-		phonegap = true;
-		StatusBar.hide();	       
+		phonegap = true;       
 		micStart();
-		loginGameCenter();  	
+		//loginGameCenter();  	
 		console.log("deviceready");  
     }
 };
@@ -266,10 +263,8 @@ var app = {
 ////////////////////////////////////////////////////////////// READY ////////////////////////////////////////////////////  
 $(document).ready(function(){    
 
-
 	setTimeout(init, 2000); // if not playvideo   
 		
-	
 	///////////////////////////////////////////////////// GLOBAL - pageShow /////////////////////////////////////////////
 	$( "div" ).on( 'pageshow',function(event, ui){ 
 		activePage = $.mobile.activePage.attr('id');  

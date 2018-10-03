@@ -11,15 +11,15 @@ class Dialog {
     translate(width/2,height/2);
     scale(1.0);
     dialogTimer += 4;
-    scl = 1.6 - (dialogTimer*2)/100;
-    aph = sin((dialogTimer*2)/50)*255;
-    if(scl < 1.0) {
-      scl = 1.0;
+    scl = 2.6 - (dialogTimer*2)/200;
+    aph = sin((dialogTimer*2)/200)*255;
+    if(scl < 1.4) {
+      scl = 1.4;
     }
     scale(scl);
     
     noStroke();
-    fill(255,204,0, aph);
+    fill(255,255,255, aph);
     
     pushMatrix();
     rotate(radians(180));
@@ -38,7 +38,7 @@ class Dialog {
     
     popMatrix();
     
-    if(dialogTimer>100) {
+    if(dialogTimer>300) {
       if(loop) {
         dialogLoop = false;
       } else {
