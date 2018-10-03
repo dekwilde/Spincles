@@ -219,7 +219,7 @@ function micStart() {
 	if(!micEnable && phonegap) {
 		micEnable = true;
 		DBMeter.start(function(dB){
-        	micLevelPluginPhoneGap = dB;
+        	micLevelPluginPhoneGap = dB-30;
     	});
 
 		DBMeter.isListening((isListening) => {
