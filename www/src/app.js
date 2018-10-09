@@ -222,7 +222,7 @@ function micStart() {
         	micLevelPluginPhoneGap = dB-30;
     	});
 
-		DBMeter.isListening((isListening) => {
+		DBMeter.isListening(function(isListening) {
 			this.isListening = isListening;
 			if (!isListening) {
 				micEnable = false;
