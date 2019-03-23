@@ -53,11 +53,27 @@ void infect() {
   pebug("infectSegment " + infectSegment); 
 }
 
-void gotch() {
+void gotch() { // gameDesign
   if(level == 0) {
-    energy = energy + 4;  
-  } else {
-    energy = energy + 2;  
+    energy = energy + 20;  
+  }
+  else if(level == 1) {
+    energy = energy + 20;  
+  }
+  else if(level == 2) {
+    energy = energy + 20;  
+  }
+  else if(level == 3) {
+    energy = energy + 10;  
+  }
+  else if(level == 4) {
+    energy = energy + 10;  
+  }
+  else if(level == 5) {
+    energy = energy + 10;  
+  }
+  else {
+    energy = energy + 5;  
   }
   score = score + 1;
   saveScore();

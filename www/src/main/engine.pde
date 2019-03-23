@@ -1,5 +1,6 @@
 int rad; //triangle radius 215 is default
-int rangeTrixType = 5;
+int rangeTrixType = 10;
+int rangechangeTime = 10;
 class TrixelMatrix {  
   Trixel[] trixel;
   int n = 0;
@@ -82,7 +83,7 @@ class Trixel {
   int type;
   float loopTrix = 0.0f; 
   float loopTrixInit = millis();
-  int changeTime = 10000;
+  int changeTime = rangechangeTime*1000;
   int changeActive = loopTrixSpeed/30;
   String trixelState;
   float initAlpha = 0.0;
@@ -382,13 +383,13 @@ class Trixel {
     }    
   }
 
-  void resetTrix() {
+  void resetTrix() { // gameDesign esta aqui nessa funcao e no type de inimigo
     gameEnemy = "Null";
     enemyActive = false;
     enemyDraw = false;
     tweenAlpha = 255;
     type = int(random(rangeTrixType));
-    changeTime = 10 + int(random(100-microfone, 200-microfone*2))*int(random(5-microfone/200));
+    changeTime = 10 + int(random(100-microfone, 200-microfone*2))*int(random(rangechangeTime));
     loopTrixInit = millis();
     
     if(type>3) {
@@ -399,14 +400,44 @@ class Trixel {
       if(type != rangeTrixType) {
         if(type>0 && level == 0) {
           type = rangeTrixType;  
+          rangeTrixType = 10;
+          rangechangeTime = 5;
         }
-        
-        if(type>1 && level == 1) {
+
+        if(type>0 && level == 1) {
           type = rangeTrixType;  
+          rangeTrixType = 10;
+          rangechangeTime = 5;
         }
-        
-        if(type>2 && level == 2) {
+
+        if(type>0 && level == 2) {
           type = rangeTrixType;  
+          rangeTrixType = 5;
+          rangechangeTime = 4;
+        }
+
+        if(type>1 && level == 3) {
+          type = rangeTrixType; 
+          rangeTrixType = 10; 
+          rangechangeTime = 4;
+        }
+
+        if(type>1 && level == 4) {
+          type = rangeTrixType; 
+          rangeTrixType = 5; 
+          rangechangeTime = 3;
+        }        
+        
+        if(type>2 && level == 5) {
+          type = rangeTrixType;
+          rangeTrixType = 10; 
+          rangechangeTime = 3;
+        }
+
+        if(type>2 && level == 6) {
+          type = rangeTrixType;
+          rangeTrixType = 5;  
+          rangechangeTime = 2;
         }
         
       }

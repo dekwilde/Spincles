@@ -90,7 +90,7 @@ void stateStart() {
   fill(255,204,0,40);
   noStroke();        
   rect(0,0,width,height);
-  tEff.draw2(microfone+10, 0);
+  tEff.draw2(microfone+10, 255);
   tEff.draw0(); 
   
   int Talign = -150;
