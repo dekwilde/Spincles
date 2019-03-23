@@ -439,6 +439,12 @@ class Trixel {
           rangeTrixType = 5;  
           rangechangeTime = 2;
         }
+
+        if(type>2 && level > 6) {
+          type = rangeTrixType;
+          rangeTrixType = 4;  
+          rangechangeTime = 1;
+        }        
         
       }
     }

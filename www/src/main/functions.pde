@@ -61,19 +61,19 @@ void gotch() { // gameDesign
     energy = energy + 20;  
   }
   else if(level == 2) {
-    energy = energy + 20;  
+    energy = energy + 15;  
   }
   else if(level == 3) {
     energy = energy + 10;  
   }
   else if(level == 4) {
-    energy = energy + 10;  
+    energy = energy + 5;  
   }
   else if(level == 5) {
-    energy = energy + 10;  
+    energy = energy + 5;  
   }
   else {
-    energy = energy + 5;  
+    energy = energy + 3;  
   }
   score = score + 1;
   saveScore();
